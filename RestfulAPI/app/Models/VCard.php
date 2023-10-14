@@ -23,4 +23,9 @@ class VCard extends Model
         'custom_options',
         'custom_data'
     ];
+
+    protected $casts = [
+        'custom_options' => 'json',
+        'custom_data' => 'json',
+    ];
 }
