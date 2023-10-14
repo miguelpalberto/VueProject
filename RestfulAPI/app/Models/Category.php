@@ -10,6 +10,7 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public $timestamps = false;
     protected $fillable = [
         'vcard',
         'type',
