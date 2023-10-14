@@ -30,22 +30,22 @@ class UserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($this->id),
             ],
-            'password_inicial' => 'sometimes|required',
+            'password_init' => 'sometimes|required',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' =>  'O nome é obrigatório',
-            'name.string' =>  'O nome tem de ser uma string',
-            'name.max' =>  'O nome tem de ter no máximo 255 caracteres',
-            'email.required' => 'O email é obrigatório',
-            'email.email' =>    'O formato do email é inválido',
-            'email.unique' =>   'O email tem que ser único',
-            'email.max' =>      'O email tem de ter no máximo 255 caracteres',
+            'name.required' => 'Name is required',
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name must have a maximum of 255 characters',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email format is invalid',
+            'email.unique' => 'Email must be unique',
+            'email.max' => 'Email must have a maximum of 255 characters',
 
-            'password_inicial.required' => 'A password inicial é obrigatória',
+            'password_init.required' => 'Initial password is required',
         ];
     }
 }
