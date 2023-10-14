@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DefaultCategoriesRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;//
+        return true;
     }
 
     /**
@@ -22,11 +22,11 @@ class DefaultCategoriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|in:C,D',
+            'vcard' => 'required|string|exists:vcards,phone_number',
             'name' => 'required|string|max:255',
+            'type' => 'required|in:C,D',
         ];
     }
-
 
     public function messages(): array//////
     {
@@ -36,6 +36,9 @@ class DefaultCategoriesRequest extends FormRequest
             'name.string' => 'The name must be a string',
             'type.required' => 'The transaction type is required',
             'type.in' => 'The type must be C (Credit) or D (Debit)',
+            'vcard.string' => 'The vcard must be a string',
+            'vcard.exists' => 'Vcard not found on the DB',
+
         ];
     }
 }
