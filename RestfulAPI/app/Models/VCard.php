@@ -11,6 +11,8 @@ class VCard extends Model
     use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'phone_number';
+    protected $keyType = 'string';
+
     protected $fillable = [
         'phone_number',
         'name',
