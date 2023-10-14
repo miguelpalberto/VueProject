@@ -26,7 +26,7 @@ class Transaction extends Model
     ];
 
     protected $casts = [
-        'custom_options' => 'array',
-        'custom_data' => 'array'
+        'custom_options' => 'json',
+        'custom_data' => 'json'
     ];
 }
