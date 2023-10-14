@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VCard extends Model
 {
@@ -30,4 +31,19 @@ class VCard extends Model
         'custom_options' => 'json',
         'custom_data' => 'json',
     ];
+    
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class, 'vcard', 'phone_number');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'vcard', 'phone_number');
+    }
+
+    public function pairTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'pair_vcard', 'phone_number');
+    }
 }
