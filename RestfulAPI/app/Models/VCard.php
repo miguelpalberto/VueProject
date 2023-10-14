@@ -30,8 +30,10 @@ class VCard extends Model
     protected $casts = [
         'custom_options' => 'json',
         'custom_data' => 'json',
+        'password' => 'hashed',
+        'confirmation_code' => 'hashed',
     ];
-    
+
     public function categories(): HasMany
     {
         return $this->hasMany(Category::class, 'vcard', 'phone_number');
