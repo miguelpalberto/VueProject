@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VCardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+//VCARDS 
+Route::resource('vcards', VCardController::class);
+
