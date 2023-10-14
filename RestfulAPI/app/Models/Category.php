@@ -6,26 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class VCard extends Model
+class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $primaryKey = 'phone_number';
+    public $timestamps = false;
     protected $fillable = [
-        'phone_number',
+        'vcard',
+        'type',
         'name',
-        'email',
-        'photo_url',
-        'confirmation_code',
-        'blocked',
-        'balance',
-        'max_debit',
         'custom_options',
         'custom_data'
     ];
 
     protected $casts = [
         'custom_options' => 'json',
-        'custom_data' => 'json',
+        'custom_data' => 'json'
     ];
 }
