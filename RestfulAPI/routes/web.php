@@ -18,6 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//VCARDS 
-Route::resource('vcards', VCardController::class);
 

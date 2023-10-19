@@ -10,6 +10,10 @@ class VCardController extends Controller
     public function index()
     {
         $vCards = VCard::all();
-        return response()->json($vCards);
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully retrieved vcards',
+            'data' => $vCards
+        ], 200);
     }
 }
