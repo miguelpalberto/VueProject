@@ -28,3 +28,4 @@ Route::resource('categories', CategoryController::class);
 Route::resource("vcards", VCardController::class);
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);
+Route::resource('defaultCategories', 'App\Http\Controllers\DefaultCategoryController');

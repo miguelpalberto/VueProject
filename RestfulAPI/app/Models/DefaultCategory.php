@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class DefaultCategories extends Model
+class DefaultCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
