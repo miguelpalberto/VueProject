@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ViewAuthUsers extends Model
+class AuthUser extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -25,7 +25,5 @@ class ViewAuthUsers extends Model
     ];
 
     protected $dates = ['deleted_at'];
-
-
 
 }
