@@ -11,6 +11,7 @@ class VCard extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'vcards';
     protected $primaryKey = 'phone_number';
     protected $keyType = 'string';
 

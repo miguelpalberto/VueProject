@@ -22,6 +22,7 @@ class Transaction extends Model
         'pair_transaction',
         'pair_vcard',
         'category_id',
+        'description',
         'custom_options',
         'custom_data'
     ];

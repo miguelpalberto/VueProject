@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\AuthUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\VCardController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::resource('defaultCategories', 'App\Http\Controllers\DefaultCategoryController');
+Route::resource('authUsers', AuthUserController::class);
+Route::resource('categories', CategoryController::class);
+Route::resource("vcards", VCardController::class);
+Route::resource('transactions', TransactionController::class);
+Route::resource('users', UserController::class);
