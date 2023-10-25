@@ -31,3 +31,4 @@ Route::resource('vcards', VCardController::class)->except('create', 'edit');
 
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);
+
