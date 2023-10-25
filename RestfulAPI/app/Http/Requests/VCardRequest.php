@@ -23,23 +23,36 @@ class VCardRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'phone_number' => [
+                'required',
+                'string',
+                'size:9',
+                'regex:/^9[1236]\d{7}$/',
+                Rule::unique('vcards', 'phone_number')->ignore($this->id),
+            ],
             'name' => 'required|string|max:255',
             'email' => [
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($this->id),
+                Rule::unique('vcards', 'email')->ignore($this->id),
             ],
             'password' => 'required|string',
-            'confirmation_code' => 'required|string',
-            'balance' => 'required|float|min:0.00|max:0.00',
-            'max_debit' => 'required|float|min:5000.00|max:5000.00',
+            'confirmation_code' => 'required|string|size:4', //mudar para o enunciado
+            'custom_options' => 'sometimes|json',
+            'custom_data' => 'sometimes|json',
+            'photo_file' =>         'sometimes|image|max:4096' // maxsize = 4Mb
         ];
     }
 
     public function messages(): array//////
     {
         return [
+            'phone_number.required' => 'Phone number is required',
+            'phone_number.string' => 'Phone number must be a string',
+            'phone_number.unique' => 'Phone number must be unique',
+            'phone_number.regex' => 'Phone number format is invalid. It must a standard Portuguese mobile phone number',
+            'phone_number.size' => 'Phone number must have exactly 9 characters',
             'name.max' => 'The maximum character limit for the name is 255 characters',
             'name.required' => 'The name is required',
             'name.string' => 'The name must be a string',
@@ -51,18 +64,19 @@ class VCardRequest extends FormRequest
             'password.string' => 'Password must be a string',
             'confirmation_code.required' => 'Confirmation code is required',
             'confirmation_code.string' => 'Confirmation code must be a string',
-            'balance.required' => 'Balance is required',
-            'balance.float' => 'Balance must be a float',
-            'balance.min' => 'Default balance must be 0.00',
-            'balance.max' => 'Default balance must be 0.00',
-            'max_debit.required' => 'Max debit is required',
-            'max_debit.float' => 'Max debit must be a float',
-            'max_debit.min' => 'Default debit must be 5000.00',
-            'max_debit.max' => 'Default debit must be 5000.00',
-
-
-
-
+            'confirmation_code.size' => 'Confirmation code must have exactly 4 characters',
+            'photo_file.image' =>    'The photo file must be an image',
+            'photo_file.size' =>     'The photo file must be smaller than 4Mb',
+            'custom_options.json' => 'Custom options must be a valid JSON',
+            'custom_data.json' =>    'Custom data must be a valid JSON'
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'custom_options' => json_encode($this->custom_options),
+            'custom_data' => json_encode($this->custom_data)
+        ]);
     }
 }
