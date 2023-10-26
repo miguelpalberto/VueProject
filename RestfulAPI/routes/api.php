@@ -27,5 +27,6 @@ Route::resource('defaultCategories', 'App\Http\Controllers\DefaultCategoryContro
 Route::resource('authUsers', AuthUserController::class);
 Route::resource('categories', CategoryController::class);
 Route::resource("vcards", VCardController::class);
+Route::get('transactions/getByPhoneNumber/{phoneNumber}', [TransactionController::class, 'showByPhoneNumber']);
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);
