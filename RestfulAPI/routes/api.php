@@ -34,7 +34,8 @@ Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'sh
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 
 Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
-Route::patch('/orders/{order}/vcard-categories', [VCardController::class, 'updateVCardCategories']); //?todo
+Route::patch('/vcards/{vcard}/categories/{category}', [VCardController::class, 'updateVCardCategory']);
+Route::delete('/vcards/{vcard}/categories/{category}', [VCardController::class, 'deleteVCardCategory']);
 
 Route::resource("vcards", VCardController::class);
 Route::resource('transactions', TransactionController::class);

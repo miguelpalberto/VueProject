@@ -56,8 +56,8 @@ class VCardController extends Controller
             $newVCard->blocked = 0;
             $newVCard->balance = 0;
             $newVCard->max_debit = 5000;
-            $newVCard->customOptions = $validRequest['custom_options'] ?? null;
-            $newVCard->customData = $validRequest['custom_data'] ?? null;
+            $newVCard->custom_options = $validRequest['custom_options'] ?? null;
+            $newVCard->custom_data = $validRequest['custom_data'] ?? null;
             $newVCard->vcardCategory()->associate($validRequest['vcard_category_id']);//?????rever
 
             if ($request->hasFile('photo_file')) {
@@ -84,50 +84,8 @@ class VCardController extends Controller
     }
 
 
-    // public function update(VCard $vCard, VCardRequest $request) : JsonResponse
-    // {
-    //     $validRequest = $request->validated();
-
-    //     $vCard->name = $validRequest['name'];
-    //     $vCard->email = $validRequest['email'];
-    //     $vCard->confirmation_code = $validRequest['confirmation_code'];
-    //     $vCard->password = Hash::make($validRequest['password']);
-    //     $vCard->blocked = $validRequest['blocked'];
-    //     $vCard->balance = $validRequest['balance'];
-    //     $vCard->max_debit = $validRequest['max_debit'];
-    //     $vCard->customOptions = $validRequest['custom_options'] ?? null;
-    //     $vCard->customData = $validRequest['custom_data'] ?? null;
-
-    //     if ($request->hasFile('photo_file')) {
-    //         $path = $request->photo_file->store('public/photos');
-    //         $vCard->photo_url = basename($path);
-    //     }
-
-    //     $vCard->save();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Successfully updated vcard',
-    //         'data' => $vCard
-    //     ], 200);
-    // }
-
-    //todo mudar para cats
-    public function updateVCardCategories(VCard $vCard, VCardRequest $request) : JsonResponse
-    {
-        $validRequest = $request->validate([
-            'vcard_category_id' => 'required|exists:vcard_categories,id' //confirmar
-        ]);
 
 
-        $vCard->vcardCategory()->associate($validRequest['vcard_category_id']);//rever
-
-        $vCard->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated vcard',
-            'data' => $vCard
 
     public function block(VCard $vcard){
         //falta implementar a autorização
