@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('defaultCategories', 'App\Http\Controllers\DefaultCategoryController');
 Route::resource('authUsers', AuthUserController::class);
 Route::resource('categories', CategoryController::class);
-Route::resource("vcards", VCardController::class);
+
+Route::resource('vcards', VCardController::class)->except('create', 'edit');
+
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);
+
