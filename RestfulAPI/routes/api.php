@@ -24,20 +24,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// DEFAULT CATEGORIES
 Route::resource('defaultCategories', DefaultCategoryController::class)->except(['create', 'edit', 'show']);
-Route::resource('authUsers', AuthUserController::class);
-Route::resource('categories', CategoryController::class);
-Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
 
+// CATEGORIES
+Route::post('vcards/{vcard}/categories', [CategoryController::class, 'createByVCard']);
+Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getByVCard']);
+Route::delete('vcards/{vcard}/categories/{category}', [CategoryController::class, 'deleteByVCard']);
+Route::put('vcards/{vcard}/categories/{category}', [CategoryController::class, 'updateByVCard']);
+
+// AUTH USERS
+Route::resource('authUsers', AuthUserController::class);
+
+// TRANSACTIONS
+Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
+
+Route::resource('transactions', TransactionController::class);
+
+// USERS
+Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+
+// VCARDs
+Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
 
-Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
-
-Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
-Route::patch('/vcards/{vcard}/categories/{category}', [VCardController::class, 'updateVCardCategory']);
-Route::delete('/vcards/{vcard}/categories/{category}', [VCardController::class, 'deleteVCardCategory']);
-Route::get('/vcards/{vcard}', [VCardController::class, 'getVCardStats']);
-
-Route::resource("vcards", VCardController::class);
-Route::resource('transactions', TransactionController::class);
-Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
