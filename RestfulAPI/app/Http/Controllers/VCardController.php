@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Models\VCard;
+use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -79,5 +80,26 @@ class VCardController extends Controller
             'message' => 'Successfully created vcard',
             'data' => $vCard
         ], 201);
+    }
+
+    public function getByPhoneNumber($phoneNumber){
+        if (VCard::find($phoneNumber) == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, VCard with phone number "' . $phoneNumber . '" cannot be found'
+            ], 400);
+        }
+
+        $transactions = Transaction::where('vcard', $phoneNumber)
+            ->orWhere('pair_vcard', $phoneNumber)
+            ->with('category')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully retrieved transactions',
+            'data' => $transactions
+        ], 200);
     }
 }
