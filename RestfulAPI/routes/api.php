@@ -36,6 +36,7 @@ Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
 Route::patch('/vcards/{vcard}/categories/{category}', [VCardController::class, 'updateVCardCategory']);
 Route::delete('/vcards/{vcard}/categories/{category}', [VCardController::class, 'deleteVCardCategory']);
+Route::get('/vcards/{vcard}', [VCardController::class, 'getVCardStats']);
 
 Route::resource("vcards", VCardController::class);
 Route::resource('transactions', TransactionController::class);

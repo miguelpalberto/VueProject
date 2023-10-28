@@ -58,7 +58,10 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-            $newVCard->vcardCategory()->associate($validRequest['vcard_category_id']);//?????rever
+
+            foreach ($validRequest['categories'] as $category) {
+                $newVCard->categories = $category['id'];
+            }
 
             if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/photos');
@@ -87,6 +90,7 @@ class VCardController extends Controller
 
 
 
+
     public function block(VCard $vcard){
         //falta implementar a autorização
         if ($vcard->blocked) {
@@ -104,5 +108,16 @@ class VCardController extends Controller
             'data' => $vcard
 
         ], 200);
+    }
+
+
+    //ESTATISTICAS
+    //Ver biblioteca vue-chartjs
+
+    //Para User apenas (nao admin):
+    public function getVCardStats(VCard $vcard){
+        //ver media dinheiro gasto por mes (no presente ano) (bar chart)
+        //ver % dinheiro gasto por categoria (pie chart)
+
     }
 }
