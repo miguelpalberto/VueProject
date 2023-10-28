@@ -24,11 +24,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// DEFAULT CATEGORIES
 Route::resource('defaultCategories', DefaultCategoryController::class)->except(['create', 'edit', 'show']);
+
+// CATEGORIES
+Route::post('vcards/{vcard}/categories', [CategoryController::class, 'createByVCard']);
+Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getByVCard']);
+Route::delete('vcards/{vcard}/categories/{category}', [CategoryController::class, 'deleteByVCard']);
+Route::put('vcards/{vcard}/categories/{category}', [CategoryController::class, 'updateByVCard']);
+
+// AUTH USERS
 Route::resource('authUsers', AuthUserController::class);
-Route::resource('categories', CategoryController::class);
+
+// VCARDs
 Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
 Route::resource("vcards", VCardController::class);
+
+// TRANSACTIONS
 Route::resource('transactions', TransactionController::class);
+
+// USERS
 Route::resource('users', UserController::class);
 

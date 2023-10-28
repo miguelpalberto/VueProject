@@ -25,6 +25,8 @@ class CategoryRequest extends FormRequest
             'vcard' => 'required|string|exists:vcards,phone_number',
             'name' => 'required|string|max:255',
             'type' => 'required|in:C,D',
+            'custom_options' => 'sometimes|json',
+            'custom_data' => 'sometimes|json',
         ];
     }
 
@@ -38,7 +40,8 @@ class CategoryRequest extends FormRequest
             'type.in' => 'The type must be C (Credit) or D (Debit)',
             'vcard.string' => 'The vcard must be a string',
             'vcard.exists' => 'Vcard not found on the DB',
-
+            'custom_options.json' => 'The custom options must be a valid JSON',
+            'custom_data.json' => 'The custom data must be a valid JSON',
         ];
     }
 }
