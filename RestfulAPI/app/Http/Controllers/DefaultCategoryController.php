@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DefaultCategoryRequest;
 use App\Models\DefaultCategory;
-use Illuminate\Http\Request;
 
 class DefaultCategoryController extends Controller
 {
@@ -14,6 +14,52 @@ class DefaultCategoryController extends Controller
             'success' => true,
             'message' => 'Successfully retrieved default categories',
             'data' => $defaultCategories
+        ], 200);
+    }
+
+    public function store(DefaultCategoryRequest $request)
+    {
+        $validRequest = $request->validated();
+
+        $defaultCategory = new DefaultCategory();
+        $defaultCategory->type = $validRequest['type'];
+        $defaultCategory->name = $validRequest['name'];
+        $defaultCategory->customOptions = $validRequest['customOptions'];
+        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully created default category',
+            'data' => $defaultCategory
+        ], 201);
+    }
+
+    public function update(DefaultCategory $defaultCategory, DefaultCategoryRequest $request)
+    {
+        $validRequest = $request->validated();
+
+        $defaultCategory->type = $validRequest['type'];
+        $defaultCategory->name = $validRequest['name'];
+        $defaultCategory->customOptions = $validRequest['customOptions'];
+        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated default category',
+            'data' => $defaultCategory
+        ], 200);
+    }
+    
+    public function delete(DefaultCategory $defaultCategory)
+    {
+        $defaultCategory->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted default category',
+            'data' => $defaultCategory
         ], 200);
     }
 }
