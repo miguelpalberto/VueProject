@@ -28,9 +28,14 @@ Route::resource('defaultCategories', DefaultCategoryController::class)->except([
 Route::resource('authUsers', AuthUserController::class);
 Route::resource('categories', CategoryController::class);
 Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
+
 Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
-Route::resource('transactions', TransactionController::class);
-Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+
+Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 
 Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
-Route::patch('/orders/{order}/vcard-categories', [VCardController::class, 'updateVCardCategories']); //?
+Route::patch('/orders/{order}/vcard-categories', [VCardController::class, 'updateVCardCategories']); //?todo
+
+Route::resource("vcards", VCardController::class);
+Route::resource('transactions', TransactionController::class);
+Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
