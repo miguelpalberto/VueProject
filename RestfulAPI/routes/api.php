@@ -36,13 +36,14 @@ Route::put('vcards/{vcard}/categories/{category}', [CategoryController::class, '
 // AUTH USERS
 Route::resource('authUsers', AuthUserController::class);
 
-// VCARDs
-Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
-Route::resource("vcards", VCardController::class);
-
 // TRANSACTIONS
+Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
 Route::resource('transactions', TransactionController::class);
 
 // USERS
-Route::resource('users', UserController::class);
+Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+
+// VCARDs
+Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
+Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
 
