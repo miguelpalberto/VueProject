@@ -28,6 +28,7 @@ Route::resource('defaultCategories', DefaultCategoryController::class)->except([
 Route::resource('authUsers', AuthUserController::class);
 Route::resource('categories', CategoryController::class);
 Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
+Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 Route::resource("vcards", VCardController::class);
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);
