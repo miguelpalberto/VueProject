@@ -25,7 +25,7 @@ class DefaultCategoryController extends Controller
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
         $defaultCategory->customOptions = $validRequest['customOptions'];
-        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->customData = $validRequest['custom_data'];
         $defaultCategory->save();
 
         return response()->json([
@@ -42,7 +42,7 @@ class DefaultCategoryController extends Controller
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
         $defaultCategory->customOptions = $validRequest['customOptions'];
-        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->customData = $validRequest['custom_data'];
         $defaultCategory->save();
 
         return response()->json([
@@ -51,7 +51,7 @@ class DefaultCategoryController extends Controller
             'data' => $defaultCategory
         ], 200);
     }
-    
+
     public function delete(DefaultCategory $defaultCategory)
     {
         $defaultCategory->delete();
