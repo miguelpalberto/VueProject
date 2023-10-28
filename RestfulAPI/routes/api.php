@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::resource('defaultCategories', 'App\Http\Controllers\DefaultCategoryController');
 Route::resource('authUsers', AuthUserController::class);
 Route::resource('categories', CategoryController::class);
-Route::get('vcards/{phoneNumber}/transactions', [VCardController::class, 'getByPhoneNumber']);
+Route::get('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
 Route::resource("vcards", VCardController::class);
 Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class);

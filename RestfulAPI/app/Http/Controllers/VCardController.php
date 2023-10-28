@@ -81,25 +81,4 @@ class VCardController extends Controller
             'data' => $vCard
         ], 201);
     }
-
-    public function getByPhoneNumber($phoneNumber){
-        if (VCard::find($phoneNumber) == null) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, VCard with phone number "' . $phoneNumber . '" cannot be found'
-            ], 400);
-        }
-
-        $transactions = Transaction::where('vcard', $phoneNumber)
-            ->orWhere('pair_vcard', $phoneNumber)
-            ->with('category')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved transactions',
-            'data' => $transactions
-        ], 200);
-    }
 }
