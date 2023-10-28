@@ -26,7 +26,7 @@ class VCardController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, vcard with phone number "' . $phoneNumber . '" cannot be found'
-            ], 400);
+            ], 404);
         }
 
         return response()->json([
