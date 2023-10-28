@@ -18,6 +18,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
+
     public function getByVCard(VCard $vcard){
         $categories = Category::where('vcard', $vcard->phone_number)->get();
         return response()->json([

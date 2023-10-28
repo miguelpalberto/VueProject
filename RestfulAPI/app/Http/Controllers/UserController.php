@@ -29,8 +29,8 @@ class UserController extends Controller
             $newUser->name = $validRequest['name'];
             $newUser->email = $validRequest['email'];
             $newUser->password = $validRequest['password'];
-            $newUser->customOptions = $validRequest['custom_options'] ?? null;
-            $newUser->customData = $validRequest['custom_data'] ?? null;
+            $newUser->custom_options = $validRequest['custom_options'] ?? null;
+            $newUser->custom_data = $validRequest['custom_data'] ?? null;
 
             $newUser->save();
             return $newUser; //?

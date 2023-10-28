@@ -38,6 +38,7 @@ Route::resource('authUsers', AuthUserController::class);
 
 // TRANSACTIONS
 Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
+
 Route::resource('transactions', TransactionController::class);
 
 // USERS

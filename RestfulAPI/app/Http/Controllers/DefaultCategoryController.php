@@ -24,8 +24,8 @@ class DefaultCategoryController extends Controller
         $defaultCategory = new DefaultCategory();
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
-        $defaultCategory->customOptions = $validRequest['customOptions'];
-        $defaultCategory->customData = $validRequest['custom_data'];
+        $defaultCategory->custom_options = $validRequest['custom_options'];
+        $defaultCategory->custom_data = $validRequest['custom_data'];
         $defaultCategory->save();
 
         return response()->json([
@@ -41,8 +41,8 @@ class DefaultCategoryController extends Controller
 
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
-        $defaultCategory->customOptions = $validRequest['customOptions'];
-        $defaultCategory->customData = $validRequest['custom_data'];
+        $defaultCategory->custom_options = $validRequest['customOptions'];
+        $defaultCategory->custom_data = $validRequest['custom_data'];
         $defaultCategory->save();
 
         return response()->json([
