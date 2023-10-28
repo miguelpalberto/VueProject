@@ -55,9 +55,10 @@ class VCardController extends Controller
             $newVCard->password = Hash::make($validRequest['password']);
             $newVCard->blocked = 0;
             $newVCard->balance = 0;
-            $newVCard->max_debit = 1000; //mudar isto para o valor do enunciado
+            $newVCard->max_debit = 5000;
             $newVCard->customOptions = $validRequest['custom_options'] ?? null;
             $newVCard->customData = $validRequest['custom_data'] ?? null;
+            $newVCard->vcardCategory()->associate($validRequest['vcard_category_id']);//?????rever
 
             if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/photos');
@@ -82,24 +83,42 @@ class VCardController extends Controller
         ], 201);
     }
 
-    public function update(VCard $vCard, VCardRequest $request) : JsonResponse
+    // public function update(VCard $vCard, VCardRequest $request) : JsonResponse
+    // {
+    //     $validRequest = $request->validated();
+
+    //     $vCard->name = $validRequest['name'];
+    //     $vCard->email = $validRequest['email'];
+    //     $vCard->confirmation_code = $validRequest['confirmation_code'];
+    //     $vCard->password = Hash::make($validRequest['password']);
+    //     $vCard->blocked = $validRequest['blocked'];
+    //     $vCard->balance = $validRequest['balance'];
+    //     $vCard->max_debit = $validRequest['max_debit'];
+    //     $vCard->customOptions = $validRequest['custom_options'] ?? null;
+    //     $vCard->customData = $validRequest['custom_data'] ?? null;
+
+    //     if ($request->hasFile('photo_file')) {
+    //         $path = $request->photo_file->store('public/photos');
+    //         $vCard->photo_url = basename($path);
+    //     }
+
+    //     $vCard->save();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Successfully updated vcard',
+    //         'data' => $vCard
+    //     ], 200);
+    // }
+
+    public function updateVCardCategories(VCard $vCard, VCardRequest $request) : JsonResponse
     {
-        $validRequest = $request->validated();
+        $validRequest = $request->validate([
+            'vcard_category_id' => 'required|exists:vcard_categories,id' //confirmar
+        ]);
 
-        $vCard->name = $validRequest['name'];
-        $vCard->email = $validRequest['email'];
-        $vCard->confirmation_code = $validRequest['confirmation_code'];
-        $vCard->password = Hash::make($validRequest['password']);
-        $vCard->blocked = $validRequest['blocked'];
-        $vCard->balance = $validRequest['balance'];
-        $vCard->max_debit = $validRequest['max_debit'];
-        $vCard->customOptions = $validRequest['custom_options'] ?? null;
-        $vCard->customData = $validRequest['custom_data'] ?? null;
 
-        if ($request->hasFile('photo_file')) {
-            $path = $request->photo_file->store('public/photos');
-            $vCard->photo_url = basename($path);
-        }
+        $vCard->vcardCategory()->associate($validRequest['vcard_category_id']);//rever
 
         $vCard->save();
 
