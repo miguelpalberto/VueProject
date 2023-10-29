@@ -59,6 +59,7 @@ class VCardController extends Controller
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
 
+            //todo  incompleto:
             foreach ($validRequest['categories'] as $category) {
                 $newVCard->categories = $category['id'];
             }
@@ -114,10 +115,15 @@ class VCardController extends Controller
     //ESTATISTICAS
     //Ver biblioteca vue-chartjs
 
+    //todo - incompleto
     //Para User apenas (nao admin):
     public function getVCardStats(VCard $vcard){
         //ver media dinheiro gasto por mes (no presente ano) (bar chart)
+        $sql = "SELECT SUM([value]) FROM transactions WHERE [type] = 'D' AND vcard = @vcardNumber   AND YEAR([date]) = YEAR(CURRENT_DATE()) GROUP BY MONTH([date]) ORDER BY MONTH([date]);";//todo fiqeui aqui
+
+
         //ver % dinheiro gasto por categoria (pie chart)
+        $sql2 = "SELECT SUM(t.[value]) FROM transactions t JOIN categories c ON c.vcard=t.vcard WHERE t.[type] = 'D' AND t.vcard = @vcardNumber GROUP BY c.name ORDER BY c.name;";
 
     }
 }
