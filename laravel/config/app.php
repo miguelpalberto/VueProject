@@ -168,6 +168,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //App\Providers\TelescopeServiceProvider::class, // following https://laravel.com/docs/10.x/telescope#local-only-installation guidelines
     ])->toArray(),
 
     /*
