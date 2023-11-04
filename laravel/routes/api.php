@@ -42,10 +42,11 @@ Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, '
 Route::resource('transactions', TransactionController::class);
 
 // USERS
-Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+//Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+Route::apiResource('users', UserController::class);
 
 // VCARDs
 Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
-Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
+Route::resource("vcards", VCardController::class);
 

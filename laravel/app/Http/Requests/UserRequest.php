@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($this->id),
             ],
-            'password_init' => 'sometimes|required',
+            'password' => 'sometimes|required',
         ];
     }
 
@@ -45,7 +45,7 @@ class UserRequest extends FormRequest
             'email.unique' => 'Email must be unique',
             'email.max' => 'Email must have a maximum of 255 characters',
 
-            'password_init.required' => 'Initial password is required',
+            'password.required' => 'Initial password is required',
         ];
     }
 }

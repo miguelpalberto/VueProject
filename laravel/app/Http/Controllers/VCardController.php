@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\VCardRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use App\Models\VCard;
+use App\Models\Category;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
+use App\Models\DefaultCategory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\VCardRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VCardController extends Controller
 {
     // esta função só deve ser chamada por um administrador (falta implementar a autorização)
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
         $vCards = VCard::all();
         return response()->json([
@@ -24,7 +26,7 @@ class VCardController extends Controller
         ], 200);
     }
 
-    public function show($phoneNumber) : JsonResponse
+    public function show($phoneNumber): JsonResponse
     {
         $vCard = VCard::find($phoneNumber);
 
@@ -42,7 +44,7 @@ class VCardController extends Controller
         ], 200);
     }
 
-    public function store(VCardRequest $request) : JsonResponse
+    public function store(VCardRequest $request): JsonResponse
     {
         $validRequest = $request->validated();
 
@@ -59,17 +61,33 @@ class VCardController extends Controller
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
 
-            //todo  incompleto:
-            foreach ($validRequest['categories'] as $category) {
-                $newVCard->categories = $category['id'];
-            }
+            $newVCard->save();
+            // $defaultCategories = DefaultCategory::all();
+            // foreach ($defaultCategories as $defaultCategory) {
+            //     $newVCard->categories()->attach($defaultCategory->id);
+            // }
+
+            // Manually insert associations with default categories
+            $categories = DefaultCategory::all()->map(function ($defaultCategory, $newVCard) {
+
+                var_dump($newVCard->phone_number);
+                return [
+                    'vcard' => strval($newVCard->phone_number),
+                    'type' => $defaultCategory->type,
+                    'name' => $defaultCategory->name,
+                    'custom_options' => $defaultCategory->custom_options,
+                    'custom_data' => $defaultCategory->custom_data
+                ];
+            })->toArray();
+
+            DB::table('categories')->insert($categories);
 
             if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/photos');
                 $newVCard->photo_url = basename($path);
             }
 
-            $newVCard->save();
+
             return $newVCard;
         });
 
@@ -92,7 +110,8 @@ class VCardController extends Controller
 
 
 
-    public function block(VCard $vcard){
+    public function block(VCard $vcard)
+    {
         //falta implementar a autorização
         if ($vcard->blocked) {
             return response()->json([
@@ -117,13 +136,13 @@ class VCardController extends Controller
 
     //todo - incompleto
     //Para User apenas (nao admin):
-    public function getVCardStats(VCard $vcard){
+    public function getVCardStats(VCard $vcard)
+    {
         //ver media dinheiro gasto por mes (no presente ano) (bar chart)
-        $sql = "SELECT SUM([value]) FROM transactions WHERE [type] = 'D' AND vcard = @vcardNumber   AND YEAR([date]) = YEAR(CURRENT_DATE()) GROUP BY MONTH([date]) ORDER BY MONTH([date]);";//todo fiqeui aqui
+        $sql = "SELECT SUM([value]) FROM transactions WHERE [type] = 'D' AND vcard = @vcardNumber   AND YEAR([date]) = YEAR(CURRENT_DATE()) GROUP BY MONTH([date]) ORDER BY MONTH([date]);"; //todo fiqeui aqui
 
 
         //ver % dinheiro gasto por categoria (pie chart)
         $sql2 = "SELECT SUM(t.[value]) FROM transactions t JOIN categories c ON c.vcard=t.vcard WHERE t.[type] = 'D' AND t.vcard = @vcardNumber GROUP BY c.name ORDER BY c.name;";
-
     }
 }
