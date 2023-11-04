@@ -45,6 +45,7 @@ Route::resource('transactions', TransactionController::class);
 Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
 
 // VCARDs
+Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
 Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
 
