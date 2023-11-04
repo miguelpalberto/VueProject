@@ -88,8 +88,33 @@ class VCardController extends Controller
     }
 
 
+    public function update(VCard $vCard, VCardRequest $request) : JsonResponse
+    {
+        $validRequest = $request->validated();
 
+        $vCard->name = $validRequest['name'];
+        $vCard->email = $validRequest['email'];
+        $vCard->confirmation_code = $validRequest['confirmation_code'];
+        $vCard->password = Hash::make($validRequest['password']);
+        $vCard->blocked = $validRequest['blocked'];
+        $vCard->balance = $validRequest['balance'];
+        $vCard->max_debit = $validRequest['max_debit'];
+        $vCard->customOptions = $validRequest['custom_options'] ?? null;
+        $vCard->customData = $validRequest['custom_data'] ?? null;
 
+        if ($request->hasFile('photo_file')) {
+            $path = $request->photo_file->store('public/photos');
+            $vCard->photo_url = basename($path);
+        }
+
+        $vCard->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated vcard',
+            'data' => $vCard
+        ], 200);
+    }
 
 
     public function block(VCard $vcard){
