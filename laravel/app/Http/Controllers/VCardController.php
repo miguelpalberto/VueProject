@@ -50,7 +50,7 @@ class VCardController extends Controller
 
         $vCard = DB::transaction(function () use ($validRequest, $request) {
             $newVCard = new VCard();
-            $newVCard->phone_number = strval($validRequest['phone_number']);
+            $newVCard->phone_number = $validRequest['phone_number'];
             $newVCard->name = $validRequest['name'];
             $newVCard->email = $validRequest['email'];
             $newVCard->confirmation_code = $validRequest['confirmation_code'];
@@ -60,33 +60,23 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-
-            $newVCard->save();
-            // $defaultCategories = DefaultCategory::all();
-            // foreach ($defaultCategories as $defaultCategory) {
-            //     $newVCard->categories()->attach($defaultCategory->id);
-            // }
-
-            // Manually insert associations with default categories
-            $categories = DefaultCategory::all()->map(function ($defaultCategory, $newVCard) {
-
-                var_dump($newVCard->phone_number);
-                return [
-                    'vcard' => strval($newVCard->phone_number),
-                    'type' => $defaultCategory->type,
-                    'name' => $defaultCategory->name,
-                    'custom_options' => $defaultCategory->custom_options,
-                    'custom_data' => $defaultCategory->custom_data
-                ];
-            })->toArray();
-
-            DB::table('categories')->insert($categories);
-
             if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/photos');
                 $newVCard->photo_url = basename($path);
             }
 
+            $newVCard->save();
+            // $categories = DefaultCategory::all()->map(function ($defaultCategory) use ($newVCard) {
+
+
+            //     return [
+            //         'vcard' => $newVCard->phone_number,
+            //         'type' => $defaultCategory->type,
+            //         'name' => $defaultCategory->name,
+            //         'custom_options' => $defaultCategory->custom_options,
+            //         'custom_data' => $defaultCategory->custom_data
+            //     ];
+            // })->toArray();
 
             return $newVCard;
         });
@@ -98,17 +88,26 @@ class VCardController extends Controller
             ], 500);
         }
 
+        $defaultCategories = DefaultCategory::all();
+        $categories = [];
+        foreach ($defaultCategories as $defaultCategory) {
+            $category = new Category();
+            $category->vcard = $vCard->phone_number;
+            $category->type = $defaultCategory->type;
+            $category->name = $defaultCategory->name;
+            $category->custom_options = $defaultCategory->custom_options;
+            $category->custom_data = $defaultCategory->custom_data;
+            array_push($categories, $category);
+        }
+
+        $vCard->categories()->saveMany($categories);
+
         return response()->json([
             'success' => true,
             'message' => 'Successfully created vCard',
             'data' => $vCard
         ], 201);
     }
-
-
-
-
-
 
     public function block(VCard $vcard)
     {

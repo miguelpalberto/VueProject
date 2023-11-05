@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\AuthUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ use App\Http\Controllers\DefaultCategoryController;
 use App\Http\Controllers\VCardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,21 @@ use App\Http\Controllers\UserController;
 |
 */
 
+
+//AUTH PASSPORT
+Route::post('auth/login', [AuthController::class, 'login']);
+Route::middleware('auth:api')->post(
+    'logout',
+    [AuthController::class, 'auth/logout']
+);
+
+Route::middleware('auth:api')->group(
+    function () {
+        Route::apiResource('categories', CategoryController::class);
+    }
+);
+
+//AUTH
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
