@@ -25,27 +25,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // DEFAULT CATEGORIES
-Route::resource('defaultCategories', DefaultCategoryController::class)->except(['create', 'edit', 'show']);
+Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
 
 // CATEGORIES
-Route::post('vcards/{vcard}/categories', [CategoryController::class, 'createByVCard']);
-Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getByVCard']);
-Route::delete('vcards/{vcard}/categories/{category}', [CategoryController::class, 'deleteByVCard']);
-Route::put('vcards/{vcard}/categories/{category}', [CategoryController::class, 'updateByVCard']);
+Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
+Route::apiResource('categories', CategoryController::class)->except(['show']);
 
 // AUTH USERS
 Route::resource('authUsers', AuthUserController::class);
 
 // TRANSACTIONS
-Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, 'getByPhoneNumber']);
-
-Route::resource('transactions', TransactionController::class);
+Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
+Route::post('transactions', [TransactionController::class, 'store']);
+Route::get('transactions', [TransactionController::class, 'index']);
 
 // USERS
-Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+Route::apiResource('users', UserController::class);
 
 // VCARDs
 Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
-Route::resource("vcards", VCardController::class)->except(['create', 'edit', 'show']);
+Route::apiResource("vcards", VCardController::class);
 
