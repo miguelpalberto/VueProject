@@ -90,6 +90,20 @@ class VCardController extends Controller
             ], 500);
         }
 
+        $defaultCategories = DefaultCategory::all();
+        $categories = [];
+        foreach ($defaultCategories as $defaultCategory) {
+            $category = new Category();
+            $category->vcard = $vCard->phone_number;
+            $category->type = $defaultCategory->type;
+            $category->name = $defaultCategory->name;
+            $category->custom_options = $defaultCategory->custom_options;
+            $category->custom_data = $defaultCategory->custom_data;
+            array_push($categories, $category);
+        }
+
+        $vCard->categories()->saveMany($categories);
+
         return response()->json([
             'success' => true,
             'message' => 'Successfully created vCard',
@@ -97,13 +111,36 @@ class VCardController extends Controller
         ], 201);
     }
 
-
-
-
-
-
-    public function block(VCard $vcard)
+    public function update(VCard $vCard, VCardRequest $request) : JsonResponse
     {
+        $validRequest = $request->validated();
+
+        $vCard->name = $validRequest['name'];
+        $vCard->email = $validRequest['email'];
+        $vCard->confirmation_code = $validRequest['confirmation_code'];
+        $vCard->password = Hash::make($validRequest['password']);
+        $vCard->blocked = $validRequest['blocked'];
+        $vCard->balance = $validRequest['balance'];
+        $vCard->max_debit = $validRequest['max_debit'];
+        $vCard->customOptions = $validRequest['custom_options'] ?? null;
+        $vCard->customData = $validRequest['custom_data'] ?? null;
+
+        if ($request->hasFile('photo_file')) {
+            $path = $request->photo_file->store('public/photos');
+            $vCard->photo_url = basename($path);
+        }
+
+        $vCard->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated vcard',
+            'data' => $vCard
+        ], 200);
+    }
+
+
+    public function block(VCard $vcard){
         //falta implementar a autorização
         if ($vcard->blocked) {
             return response()->json([
