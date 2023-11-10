@@ -50,7 +50,7 @@ class VCardController extends Controller
 
         $vCard = DB::transaction(function () use ($validRequest, $request) {
             $newVCard = new VCard();
-            $newVCard->phone_number = strval($validRequest['phone_number']);
+            $newVCard->phone_number = $validRequest['phone_number'];
             $newVCard->name = $validRequest['name'];
             $newVCard->email = $validRequest['email'];
             $newVCard->confirmation_code = $validRequest['confirmation_code'];
@@ -60,19 +60,17 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
+            if ($request->hasFile('photo_file')) {
+                $path = $request->photo_file->store('public/photos');
+                $newVCard->photo_url = basename($path);
+            }
 
             $newVCard->save();
-            // $defaultCategories = DefaultCategory::all();
-            // foreach ($defaultCategories as $defaultCategory) {
-            //     $newVCard->categories()->attach($defaultCategory->id);
-            // }
 
             // Manually insert associations with default categories
-            $categories = DefaultCategory::all()->map(function ($defaultCategory, $newVCard) {
-
-                var_dump($newVCard->phone_number);
+            $categories = DefaultCategory::all()->map(function ($defaultCategory) use ($newVCard) {
                 return [
-                    'vcard' => strval($newVCard->phone_number),
+                    'vcard' => $newVCard->phone_number,
                     'type' => $defaultCategory->type,
                     'name' => $defaultCategory->name,
                     'custom_options' => $defaultCategory->custom_options,
@@ -81,12 +79,6 @@ class VCardController extends Controller
             })->toArray();
 
             DB::table('categories')->insert($categories);
-
-            if ($request->hasFile('photo_file')) {
-                $path = $request->photo_file->store('public/photos');
-                $newVCard->photo_url = basename($path);
-            }
-
 
             return $newVCard;
         });
