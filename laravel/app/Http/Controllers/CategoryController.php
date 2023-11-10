@@ -19,7 +19,7 @@ class CategoryController extends Controller
     }
 
 
-    public function getByVCard(VCard $vcard){
+    public function getVCardCategories(VCard $vcard){
         $categories = Category::where('vcard', $vcard->phone_number)->get();
         return response()->json([
             'success' => true,
@@ -28,11 +28,11 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function createByVCard(VCard $vcard, CategoryRequest $request){
+    public function create(CategoryRequest $request){
         $validRequest = $request->validated();
 
         $category = new Category();
-        $category->vcard = $vcard->phone_number;
+        $category->vcard = $validRequest['vcard'];
         $category->type = $validRequest['type'];
         $category->name = $validRequest['name'];
         $category->custom_options = $validRequest['custom_options'] ?? null;
@@ -46,7 +46,7 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    public function updateByVCard(VCard $vcard, Category $category, CategoryRequest $request){
+    public function update(Category $category, CategoryRequest $request){
         $validRequest = $request->validated();
 
         $category->type = $validRequest['type'];
@@ -62,7 +62,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function deleteByVCard(VCard $vcard, Category $category){
+    public function delete(Category $category){
         $category->delete();
 
         return response()->json([

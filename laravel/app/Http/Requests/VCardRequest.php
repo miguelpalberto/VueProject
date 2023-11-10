@@ -27,7 +27,7 @@ class VCardRequest extends FormRequest
                 'required',
                 'string',
                 'size:9',
-                'regex:/^9[1236]\d{7}$/',
+                'regex:/^9\d{8}$/',
                 Rule::unique('vcards', 'phone_number')->ignore($this->id),
             ],
             'name' => 'required|string|max:255',
