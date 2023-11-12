@@ -52,7 +52,7 @@ class UserController extends Controller
     }
 
     //todo: authorization admin
-    public function delete(User $user)
+    public function destroy(User $user)
     {
         $user->delete();
 

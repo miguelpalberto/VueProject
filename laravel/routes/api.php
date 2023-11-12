@@ -46,7 +46,7 @@ Route::apiResource('defaultCategories', DefaultCategoryController::class)->excep
 
 // CATEGORIES
 Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
-Route::apiResource('categories', CategoryController::class)->except(['show']);
+Route::apiResource('categories', CategoryController::class)->except(['show']);//G4.1, ...
 
 // AUTH USERS
 Route::resource('authUsers', AuthUserController::class);
@@ -57,10 +57,10 @@ Route::post('transactions', [TransactionController::class, 'store']);
 Route::get('transactions', [TransactionController::class, 'index']);
 
 // USERS
-Route::apiResource('users', UserController::class);
+Route::apiResource('users', UserController::class);//G4.2, G4.4, ...
 
 // VCARDs
 Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
-Route::apiResource("vcards", VCardController::class);
+Route::apiResource("vcards", VCardController::class); //G4.3, ...
 

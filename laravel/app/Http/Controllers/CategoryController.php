@@ -20,12 +20,8 @@ class CategoryController extends Controller
 
 
     public function getVCardCategories(VCard $vcard){
-        $categories = Category::where('vcard', $vcard->phone_number)->get();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved categories',
-            'data' => $categories
-        ], 200);
+        //todo deleted categories wont show up -ver 1o se tem
+        return $vcard->categories;
     }
 
     public function create(CategoryRequest $request){
@@ -46,6 +42,8 @@ class CategoryController extends Controller
         ], 201);
     }
 
+
+
     public function update(Category $category, CategoryRequest $request){
         $validRequest = $request->validated();
 
@@ -62,7 +60,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function delete(Category $category){
+    public function destroy(Category $category){
         $category->delete();
 
         return response()->json([

@@ -52,7 +52,7 @@ class DefaultCategoryController extends Controller
         ], 200);
     }
 
-    public function delete(DefaultCategory $defaultCategory)
+    public function destroy(DefaultCategory $defaultCategory)
     {
         $defaultCategory->delete();
 
