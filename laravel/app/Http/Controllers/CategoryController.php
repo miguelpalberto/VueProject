@@ -10,22 +10,12 @@ use App\Models\VCard;
 class CategoryController extends Controller
 {
     public function index(){
-        $categories = Category::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved categories',
-            'data' => $categories
-        ], 200);
+        return Category::all();
     }
 
 
     public function getVCardCategories(VCard $vcard){
-        $categories = Category::where('vcard', $vcard->phone_number)->get();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved categories',
-            'data' => $categories
-        ], 200);
+        return $vcard->categories;
     }
 
     public function create(CategoryRequest $request){
@@ -39,11 +29,7 @@ class CategoryController extends Controller
         $category->custom_data = $validRequest['custom_data'] ?? null;
         $category->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created category',
-            'data' => $category
-        ], 201);
+        return $category;
     }
 
     public function update(Category $category, CategoryRequest $request){
@@ -55,11 +41,7 @@ class CategoryController extends Controller
         $category->custom_data = $validRequest['custom_data'] ?? null;
         $category->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated category',
-            'data' => $category
-        ], 200);
+        return $category;
     }
 
     public function delete(Category $category){
