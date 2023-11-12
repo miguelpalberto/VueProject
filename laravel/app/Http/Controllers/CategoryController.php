@@ -15,6 +15,7 @@ class CategoryController extends Controller
 
 
     public function getVCardCategories(VCard $vcard){
+        //todo deleted categories wont show up -ver 1o se tem
         return $vcard->categories;
     }
 
@@ -32,6 +33,7 @@ class CategoryController extends Controller
         return $category;
     }
 
+
     public function update(Category $category, CategoryRequest $request){
         $validRequest = $request->validated();
 
@@ -44,7 +46,7 @@ class CategoryController extends Controller
         return $category;
     }
 
-    public function delete(Category $category){
+    public function destroy(Category $category){
         $category->delete();
 
         return response()->json([

@@ -39,7 +39,7 @@ class DefaultCategoryController extends Controller
         return $defaultCategory;
     }
 
-    public function delete(DefaultCategory $defaultCategory)
+    public function destroy(DefaultCategory $defaultCategory)
     {
         $defaultCategory->delete();
 

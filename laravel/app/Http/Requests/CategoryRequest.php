@@ -22,7 +22,7 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vcard' => 'required|string|exists:vcards,phone_number',
+            'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
             'name' => 'required|string|max:255',
             'type' => 'required|in:C,D',
             'custom_options' => 'sometimes|json',
