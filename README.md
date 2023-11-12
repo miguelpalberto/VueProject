@@ -7,7 +7,7 @@ the backend (a Restful API with Laravel and a WebSocket server with Node.js).
 ## Vue
 npm install 
 
-npm run dev or npm run build for publishinh
+npm run dev or npm run build for publishing
 
 ## Laravel
 
