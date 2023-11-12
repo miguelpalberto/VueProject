@@ -29,6 +29,7 @@ class VCard extends Model
     ];
 
     protected $casts = [
+        'phone_number' => 'string',
         'custom_options' => 'json',
         'custom_data' => 'json',
         'password' => 'hashed',

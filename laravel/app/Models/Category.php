@@ -21,6 +21,7 @@ class Category extends Model
     ];
 
     protected $casts = [
+        'vcard' => 'string',
         'custom_options' => 'json',
         'custom_data' => 'json'
     ];
