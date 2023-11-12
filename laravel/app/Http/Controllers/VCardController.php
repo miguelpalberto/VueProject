@@ -16,17 +16,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class VCardController extends Controller
 {
     // esta função só deve ser chamada por um administrador (falta implementar a autorização)
-    public function index(): JsonResponse
+    public function index()
     {
-        $vCards = VCard::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved vCards',
-            'data' => $vCards
-        ], 200);
+        return VCard::all();
     }
 
-    public function show($phoneNumber): JsonResponse
+    public function show($phoneNumber)
     {
         $vCard = VCard::find($phoneNumber);
 
@@ -44,7 +39,7 @@ class VCardController extends Controller
         ], 200);
     }
 
-    public function store(VCardRequest $request): JsonResponse
+    public function store(VCardRequest $request)
     {
         $validRequest = $request->validated();
 
@@ -111,7 +106,7 @@ class VCardController extends Controller
         ], 201);
     }
 
-    public function update(VCard $vCard, VCardRequest $request) : JsonResponse
+    public function update(VCard $vCard, VCardRequest $request) 
     {
         $validRequest = $request->validated();
 
@@ -132,11 +127,7 @@ class VCardController extends Controller
 
         $vCard->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated vcard',
-            'data' => $vCard
-        ], 200);
+        return $vCard;
     }
 
 
@@ -151,12 +142,7 @@ class VCardController extends Controller
 
         $vcard->blocked = true;
         $vcard->save();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully blocked vCard',
-            'data' => $vcard
-
-        ], 200);
+        return $vcard;
     }
 
 

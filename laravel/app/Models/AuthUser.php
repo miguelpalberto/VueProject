@@ -4,26 +4,43 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-class AuthUser extends Model
+class AuthUser extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'VIEW_AUTH_USERS';
 
     protected $fillable = [
-        //'id',
         'user_type',
         'username',
-        'password',
-        'confirmation_code',
         'name',
         'email',
         'blocked',
-        'photo_url',
+        'deleted_at',
     ];
 
-    protected $dates = ['deleted_at'];
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'confirmation_code',
+    ];
+
+    protected $casts = [
+        'deleted_at' => 'datetime',
+    ];
+
+    
+    public function findForPassport($username)
+    {
+        return $this->where('username', $username)->first();
+    }
 
 }

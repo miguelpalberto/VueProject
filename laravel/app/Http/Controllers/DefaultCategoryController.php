@@ -9,12 +9,7 @@ class DefaultCategoryController extends Controller
 {
     public function index()
     {
-        $defaultCategories = DefaultCategory::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved default categories',
-            'data' => $defaultCategories
-        ], 200);
+        return DefaultCategory::all();
     }
 
     public function store(DefaultCategoryRequest $request)
@@ -28,11 +23,7 @@ class DefaultCategoryController extends Controller
         $defaultCategory->custom_data = $validRequest['custom_data'];
         $defaultCategory->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created default category',
-            'data' => $defaultCategory
-        ], 201);
+        return $defaultCategory;
     }
 
     public function update(DefaultCategory $defaultCategory, DefaultCategoryRequest $request)
@@ -45,11 +36,7 @@ class DefaultCategoryController extends Controller
         $defaultCategory->custom_data = $validRequest['custom_data'];
         $defaultCategory->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated default category',
-            'data' => $defaultCategory
-        ], 200);
+        return $defaultCategory;
     }
 
     public function delete(DefaultCategory $defaultCategory)
