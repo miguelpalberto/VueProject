@@ -11,12 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved users',
-            'data' => $users
-        ], 200);
+        return User::all();
     }
 
     //todo: authorization admin
@@ -37,18 +32,7 @@ class UserController extends Controller
 
         });
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, user cannot be created'
-            ], 500);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created user',
-            'data' => $user
-        ], 201);
+        return $user;
     }
 
     //todo: authorization admin

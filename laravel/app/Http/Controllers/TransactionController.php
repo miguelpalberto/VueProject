@@ -12,12 +12,7 @@ use Illuminate\Support\Facades\DB;
 class TransactionController extends Controller
 {
     public function index(){
-        $transactions = Transaction::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved transactions',
-            'data' => $transactions
-        ], 200);
+        return Transaction::all();
     }
 
     public function getVCardTransactions(VCard $vcard){
@@ -27,11 +22,7 @@ class TransactionController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved transactions',
-            'data' => $transactions
-        ], 200);
+        return $transactions;
     }
 
     //to do: testar
@@ -112,11 +103,6 @@ class TransactionController extends Controller
             return $transaction;
         });
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created transaction',
-            'data' => $transaction
-        ], 201);
-
+        return $transaction;
     }
 }
