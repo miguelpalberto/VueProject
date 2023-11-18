@@ -1,30 +1,38 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { useAuthStore } from './stores/auth'
+import { useRouter } from 'vue-router'
 
 import axios from 'axios'
 
-// REMOVE THESE IMPORTS WHEN VUE-ROUTER IS CONFIGURED
-/* const workInProgressProjects = ref([])
-onMounted(async () => {
+const authStore = useAuthStore()
+const router = useRouter()
+
+const logout = async () => {
   try {
-    const userId = 1
-    const response = await axios.get("users/" + userId + "/projects/inprogress")
-    workInProgressProjects.value = response.data.data
-  } catch (error) {
+    await axios.post('/auth/logout')
+  }
+  catch (error) {
     console.log(error)
   }
-}) */
+  finally {
+    authStore.clearUser()
+    delete axios.defaults.headers.common.Authorization
+    sessionStorage.removeItem('token')
+    router.push({ name: 'login' })
+  }
+}
 
 </script>
 
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
     <div class="container-fluid">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
+      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }">
         <img src="@/assets/logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-        My App
-      </a>
+        vCard
+      </router-link>
       <button id="buttonSidebarExpandId" class="navbar-toggler" type="button" data-bs-toggle="collapse"
         data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -32,26 +40,23 @@ onMounted(async () => {
 
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
-          <li class="nav-item">
+          <li class="nav-item" v-if="!authStore.isAuthenticated">
             <a class="nav-link" href="#"><i class="bi bi-person-check-fill"></i>
               Register
             </a>
           </li>
-          <li class="nav-item">
-            <a class="dropdown-item" href="#">
+          <li class="nav-item" v-if="!authStore.isAuthenticated">
+            <router-link class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">
               <i class="bi bi-box-arrow-in-right"></i>
               Login
-            </a>
-            <!--  <router-link class="nav-link" :class="{ active: $route.name === 'Login' }" :to="{ name: 'Login' }">
-              <i class="bi bi-box-arrow-in-right"></i>
-              Login
-            </router-link> -->
+            </router-link>
           </li>
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown" v-if="authStore.isAuthenticated">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="@/assets/avatar-none.png" class="rounded-circle z-depth-0 avatar-img" alt="avatar image">
-              <span class="avatar-text">User Name</span>
+              <img :src="authStore.userPhotoUrl" class="rounded-circle z-depth-0 avatar-img" alt="avatar
+image">
+              <span class="avatar-text">{{ authStore.userName }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
               <li>
@@ -81,7 +86,7 @@ onMounted(async () => {
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <a class="dropdown-item" href="#"><i class="bi bi-arrow-right"></i>Logout</a>
+                <button class="dropdown-item" @click="logout"><i class="bi bi-arrow-right"></i>Logout</button>
               </li>
             </ul>
           </li>
@@ -105,6 +110,13 @@ onMounted(async () => {
                 <i class="bi bi-house"></i>
                 Dashboard
               </router-link> -->
+            </li>
+            <li class="nav-item">
+
+              <router-link class="nav-link" :class="{ active: $route.name === 'about' }" :to="{ name: 'about' }">
+                <i class="bi bi-list-stars"></i>
+                About
+              </router-link>
             </li>
             <li class="nav-item">
 
@@ -170,19 +182,19 @@ onMounted(async () => {
             </a>
           </h6>
           <ul class="nav flex-column mb-2">
-            <li class="nav-item" v-for="prj in workInProgressProjects" :key="prj.id">
+            <!-- <li class="nav-item" v-for="prj in workInProgressProjects" :key="prj.id">
               
               <a class="nav-link" href="#">
                 <i class="bi bi-file-ruled"></i>
                 X
               </a>
-              <!-- <router-link class="nav-link w-100 me-3"
+               <router-link class="nav-link w-100 me-3"
                 :class="{ active: $route.name == 'ProjectTasks' && $route.params.id == prj.id }"
                 :to="{ name: 'ProjectTasks', params: { id: prj.id } }">
                 <i class="bi bi-file-ruled"></i>
                 {{ prj.name }}
-              </router-link> -->
-            </li>
+              </router-link> 
+            </li> -->
           </ul>
 
           <div class="d-block d-md-none">
@@ -190,22 +202,22 @@ onMounted(async () => {
               <span>User</span>
             </h6>
             <ul class="nav flex-column mb-2">
-              <li class="nav-item">
+              <li class="nav-item" v-if="!authStore.isAuthenticated">
                 <a class="nav-link" href="#"><i class="bi bi-person-check-fill"></i>
                   Register
                 </a>
               </li>
-              <li class="nav-item">
-                <!-- <router-link class="nav-link" :class="{ active: $route.name === 'Login' }" :to="{ name: 'Login' }">
+              <li class="nav-item" v-if="!authStore.isAuthenticated">
+                <router-link class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">
                   <i class="bi bi-box-arrow-in-right"></i>
                   Login
-                </router-link> -->
+                </router-link>
               </li>
-              <li class="nav-item dropdown">
+              <li class="nav-item dropdown" v-if="authStore.isAuthenticated">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button"
                   data-bs-toggle="dropdown" aria-expanded="false">
-                  <!-- <img src="@/assets/avatar-exemplo-1.jpg" class="rounded-circle z-depth-0 avatar-img" alt="avatar image"> -->
-                  <span class="avatar-text">User Name</span>
+                  <img :src="authStore.userPhotoUrl" class="rounded-circle z-depth-0 avatar-img" alt="avatarimage">
+                  <span class="avatar-text">{{ authStore.userName }}</span>
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
                   <li>
@@ -225,9 +237,9 @@ onMounted(async () => {
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li><a class="dropdown-item" href="#">
-                      <i class="bi bi-arrow-right"></i>Logout
-                    </a></li>
+                  <li>
+                    <button class="dropdown-item" @click="logout"><i class="bi bi-arrow-right"></i>Logout</button>
+                  </li>
                 </ul>
               </li>
             </ul>
