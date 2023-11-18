@@ -41,9 +41,10 @@ const logout = async () => {
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item" v-if="!authStore.isAuthenticated">
-            <a class="nav-link" href="#"><i class="bi bi-person-check-fill"></i>
+            <router-link class="nav-link" :class="{ active: $route.name === 'register' }" :to="{ name: 'register' }">
+              <i class="bi bi-person-check-fill"></i>
               Register
-            </a>
+            </router-link>
           </li>
           <li class="nav-item" v-if="!authStore.isAuthenticated">
             <router-link class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">
@@ -99,7 +100,7 @@ image">
     <div class="row">
       <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
         <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
+          <ul class="nav flex-column" v-if="authStore.isAuthenticated">
             <li class="nav-item">
 
               <a class="nav-link" href="#">
@@ -175,12 +176,12 @@ image">
             </li>
           </ul>
 
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+          <!-- <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>My Projects</span>
             <a class="link-secondary" href="#" aria-label="Add a new project">
               <i class="bi bi-xs bi-plus-circle"></i>
             </a>
-          </h6>
+          </h6> -->
           <ul class="nav flex-column mb-2">
             <!-- <li class="nav-item" v-for="prj in workInProgressProjects" :key="prj.id">
               
@@ -203,9 +204,10 @@ image">
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item" v-if="!authStore.isAuthenticated">
-                <a class="nav-link" href="#"><i class="bi bi-person-check-fill"></i>
+                <router-link class="nav-link" :class="{ active: $route.name === 'register' }" :to="{ name: 'register' }">
+                  <i class="bi bi-person-check-fill"></i>
                   Register
-                </a>
+                </router-link>
               </li>
               <li class="nav-item" v-if="!authStore.isAuthenticated">
                 <router-link class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">

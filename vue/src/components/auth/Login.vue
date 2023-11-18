@@ -15,7 +15,6 @@ const credentials = ref({
   password: ''
 })
 
-const emit = defineEmits(['login'])
 
 const isLoading = ref(false)
 
@@ -27,7 +26,6 @@ const login = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${response.data.access_token}`
     sessionStorage.setItem('token', response.data.access_token)
     await authStore.loadUser()
-    emit('login')
     router.push({ name: 'home' })
     toast.success('Login successful')
   }

@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\VCard;
-use App\Models\Category;
-use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Models\DefaultCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VCardRequest;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Route;
 
 class VCardController extends Controller
 {
@@ -48,24 +46,26 @@ class VCardController extends Controller
             $newVCard->phone_number = $validRequest['phone_number'];
             $newVCard->name = $validRequest['name'];
             $newVCard->email = $validRequest['email'];
-            $newVCard->confirmation_code = $validRequest['confirmation_code'];
+            $newVCard->confirmation_code = Hash::make($validRequest['confirmation_code']);
             $newVCard->password = Hash::make($validRequest['password']);
             $newVCard->blocked = 0;
             $newVCard->balance = 0;
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
+            $newVCard->save();
+            
             if ($request->hasFile('photo_file')) {
-                $path = $request->photo_file->store('public/photos');
+                $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
-
+            
             $newVCard->save();
-
+            $phoneNumber = $validRequest['phone_number'];
             // Manually insert associations with default categories
-            $categories = DefaultCategory::all()->map(function ($defaultCategory) use ($newVCard) {
+            $categories = DefaultCategory::all()->map(function ($defaultCategory) use ($phoneNumber) {
                 return [
-                    'vcard' => $newVCard->phone_number,
+                    'vcard' => $phoneNumber,
                     'type' => $defaultCategory->type,
                     'name' => $defaultCategory->name,
                     'custom_options' => $defaultCategory->custom_options,
@@ -78,32 +78,14 @@ class VCardController extends Controller
             return $newVCard;
         });
 
-        if (!$vCard) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, vCard could not be created'
-            ], 500);
-        }
+        request()->request->add([
+            'username' => $validRequest['phone_number'],
+            'password' => $validRequest['password']
+        ]);
 
-        $defaultCategories = DefaultCategory::all();
-        $categories = [];
-        foreach ($defaultCategories as $defaultCategory) {
-            $category = new Category();
-            $category->vcard = $vCard->phone_number;
-            $category->type = $defaultCategory->type;
-            $category->name = $defaultCategory->name;
-            $category->custom_options = $defaultCategory->custom_options;
-            $category->custom_data = $defaultCategory->custom_data;
-            array_push($categories, $category);
-        }
-
-        $vCard->categories()->saveMany($categories);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully created vCard',
-            'data' => $vCard
-        ], 201);
+        $request = Request::create(env('PASSPORT_URL') . '/api/auth/login', 'POST');
+        $response = Route::dispatch($request);
+        return json_decode((string) $response->content(), true);
     }
 
     public function update(VCard $vCard, VCardRequest $request) 
