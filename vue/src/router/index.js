@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import axios from 'axios'
 import HomeView from '../views/HomeView.vue'
+import Transactions from "../components/transactions/Transactions.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +21,12 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('../components/auth/Login.vue')
-        }
+        },
+        {
+          path: "/transactions",
+          name: "transactions",
+          component: Transactions,
+        },
     ]
 })
 
