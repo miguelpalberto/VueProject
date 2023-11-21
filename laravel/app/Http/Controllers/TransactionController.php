@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TransactionRequest;
-use Illuminate\Http\Request;
-use App\Models\Transaction;
-use App\Models\VCard;
 use DateTime;
+use App\Models\VCard;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\TransactionRequest;
+use App\Http\Resources\TransactionResource;
 
 class TransactionController extends Controller
 {
@@ -17,12 +18,14 @@ class TransactionController extends Controller
 
     public function getVCardTransactions(VCard $vcard){
         
-        $transactions = Transaction::where('vcard', $vcard->phone_number)
-            ->with('category')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $paginatedResult = Transaction::where('vcard', $vcard->phone_number)
+        ->with('category')
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
 
-        return $transactions;
+        //$paginatedResult['data'] = TransactionResource::collection($paginatedResult->data);
+        //return $paginatedResult;
+        return TransactionResource::collection($paginatedResult);
     }
 
     //to do: testar
