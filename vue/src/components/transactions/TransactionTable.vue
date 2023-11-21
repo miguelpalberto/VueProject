@@ -128,11 +128,12 @@
           <tr>
             <th v-if="showId">#</th>
             <th>From/To</th><!-- payment_reference column -->
+            <th>Value</th>
+            <th>New Balance</th>
+            <th>Category</th>
             <th>Type</th>
             <th>Date</th>
-            <th>Value</th>
             <th>Method</th>
-            <th>Category</th>
             <th>Description</th>
             <!-- <th>Time</th> -->
             <!-- <th v-if="showEditButton || showDeleteButton"></th> -->
@@ -145,11 +146,12 @@
           >
             <td v-if="showId">{{ transaction.id }}</td>
             <td>{{ transaction.payment_reference }}</td>
+            <td>{{ transaction.value }}</td>
+            <td>{{ transaction.new_balance }}</td>
+            <td>{{ transaction.category_id }}</td>
             <td>{{ transaction.type }}</td>
             <td>{{ transaction.datetime }}</td>
-            <td>{{ transaction.value }}</td>
             <td>{{ transaction.payment_type }}</td>
-            <td>{{ transaction.category_id }}</td>
             <td>{{ transaction.description }}</td>
             <!-- <td
               class="text-end"

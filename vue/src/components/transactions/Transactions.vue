@@ -2,10 +2,13 @@
   import axios from 'axios'
   import { ref, computed, onMounted } from 'vue'
   import TransactionTable from "./TransactionTable.vue"
+  import { useAuthStore } from '../../stores/auth';
+
+  const authStore = useAuthStore()
 
   const loadTransactions = () => {
 
-    const vcardId = 900000001    // todo Change later when authentication is implemented
+    const vcardId = authStore.user.username    // todo Change later when authentication is implemented
     axios.get('vcards/' + vcardId + '/transactions')
       .then((response) => {
         console.log(response)//
