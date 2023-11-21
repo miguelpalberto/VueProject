@@ -36,7 +36,8 @@ Route::middleware('auth:api')->group(
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
 
         // AUTH USERS
-        Route::resource('authUsers', AuthUserController::class);
+        Route::get('authUsers/me', [AuthUserController::class, 'me']);
+        Route::get('authUsers', [AuthUserController::class, 'index']);
         
         // TRANSACTIONS
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
