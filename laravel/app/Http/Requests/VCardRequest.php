@@ -34,10 +34,9 @@ class VCardRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'max:255',
-                Rule::unique('vcards', 'email')->ignore($this->id),
+                'max:255'
             ],
-            'password' => 'required|string',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
             'confirmation_code' => 'required|string|size:4', //mudar para o enunciado
             'custom_options' => 'sometimes|json',
             'custom_data' => 'sometimes|json',
@@ -50,7 +49,7 @@ class VCardRequest extends FormRequest
         return [
             'phone_number.required' => 'Phone number is required',
             'phone_number.string' => 'Phone number must be a string',
-            'phone_number.unique' => 'Phone number must be unique',
+            'phone_number.unique' => 'Phone number is already in use',
             'phone_number.regex' => 'Phone number format is invalid. It must a standard Portuguese mobile phone number',
             'phone_number.size' => 'Phone number must have exactly 9 characters',
             'name.max' => 'The maximum character limit for the name is 255 characters',
@@ -58,10 +57,11 @@ class VCardRequest extends FormRequest
             'name.string' => 'The name must be a string',
             'email.required' => 'Email is required',
             'email.email' => 'Email format is invalid',
-            'email.unique' => 'Email must be unique',
             'email.max' => 'Email must have a maximum of 255 characters',
             'password.required' => 'Password is required',
             'password.string' => 'Password must be a string',
+            'password.min' => 'Password must have at least 8 characters',
+            'password.regex' => 'Password must have at least one lowercase letter, one uppercase letter and one number',
             'confirmation_code.required' => 'Confirmation code is required',
             'confirmation_code.string' => 'Confirmation code must be a string',
             'confirmation_code.size' => 'Confirmation code must have exactly 4 characters',

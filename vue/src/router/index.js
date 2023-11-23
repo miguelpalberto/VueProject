@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import axios from 'axios'
 import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import Login from '../components/auth/Login.vue'
+import Register from '../components/auth/Register.vue'
 import Transactions from "../components/transactions/Transactions.vue";
 
 const router = createRouter({
@@ -15,12 +18,17 @@ const router = createRouter({
         {
             path: '/about',
             name: 'about',
-            component: () => import('../views/AboutView.vue')
+            component: AboutView
         },
         {
             path: '/login',
             name: 'login',
-            component: () => import('../components/auth/Login.vue')
+            component: Login
+        },
+        {
+            path: '/register',
+            name: 'register',
+            component: Register
         },
         {
           path: "/transactions",
@@ -29,6 +37,8 @@ const router = createRouter({
         },
     ]
 })
+
+const publicRouteNames = ['login', 'register', '/']
 
 router.beforeEach(async (to, from) => {
     const authStore = useAuthStore()
@@ -44,7 +54,7 @@ router.beforeEach(async (to, from) => {
         }
     }
 
-    if (!authStore.isAuthenticated && to.name !== 'login') {
+    if (!authStore.isAuthenticated && !publicRouteNames.includes(to.name)) {
         return { name: 'login' }
     }
 

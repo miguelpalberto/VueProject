@@ -15,7 +15,6 @@ const credentials = ref({
   password: ''
 })
 
-const emit = defineEmits(['login'])
 
 const isLoading = ref(false)
 
@@ -27,7 +26,6 @@ const login = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${response.data.access_token}`
     sessionStorage.setItem('token', response.data.access_token)
     await authStore.loadUser()
-    emit('login')
     router.push({ name: 'home' })
     toast.success('Login successful')
   }
@@ -61,7 +59,7 @@ const login = async () => {
       </div>
     </div>
     <div class="mb-3 d-flex justify-content-center">
-      <button type="button" class="btn btn-primary px-5" @click="login" :disabled="isLoading">
+      <button type="submit" class="btn btn-primary px-5" @click="login" :disabled="isLoading">
         <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isLoading"></span>
         <span role="login">Login</span>
       </button>
