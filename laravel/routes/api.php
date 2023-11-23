@@ -27,27 +27,29 @@ use App\Http\Controllers\UserController;
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('vcards', [VCardController::class, 'store']);
 
+Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//remove
+
 Route::middleware('auth:api')->group(
     function () {
         // CATEGORIES
         Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
         Route::apiResource('categories', CategoryController::class)->except(['show']); //G4.1, ...
-        
+
         // DEFAULT CATEGORIES
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
 
         // AUTH USERS
         Route::get('authUsers/me', [AuthUserController::class, 'me']);
         Route::get('authUsers', [AuthUserController::class, 'index']);
-        
+
         // TRANSACTIONS
-        Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
+        //Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//descomentar
         Route::post('transactions', [TransactionController::class, 'store']);
-        Route::get('transactions', [TransactionController::class, 'index']);
-        
+
+
         // USERS
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
-        
+
         // VCARD
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);

@@ -113,6 +113,12 @@ image">
               </router-link> -->
             </li>
             <li class="nav-item">
+              
+              <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }" 
+                          :to="{ name: 'transactions' }">
+                <i class="bi bi-list-check"></i>
+                Transactions
+              </router-link>
 
               <router-link class="nav-link" :class="{ active: $route.name === 'about' }" :to="{ name: 'about' }">
                 <i class="bi bi-list-stars"></i>
