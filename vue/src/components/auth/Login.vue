@@ -58,12 +58,15 @@ const login = async () => {
         <input type="password" class="form-control" id="inputPassword" required v-model="credentials.password">
       </div>
     </div>
-    <div class="mb-3 d-flex justify-content-center">
+    <div class="d-flex justify-content-center">
       <button type="submit" class="btn btn-primary px-5" @click="login" :disabled="isLoading">
         <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isLoading"></span>
-        <span role="login">Login</span>
+        <span role="login">Sign In</span>
       </button>
-
+    </div>
+    <div class="d-flex flex-row justify-content-center align-items-center">
+      <b style="margin-top:3px">Don't have an account?</b>
+      <router-link class="btn btn-link" to="/register">Sign up now!</router-link>
     </div>
   </form>
 </template>
