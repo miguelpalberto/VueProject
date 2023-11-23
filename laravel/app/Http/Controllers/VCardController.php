@@ -53,9 +53,9 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-            $newVCard->save();
             
-            if ($request->hasFile('photo_file')) {
+            
+            if ($request->hasFile('photo_file')) { 
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
