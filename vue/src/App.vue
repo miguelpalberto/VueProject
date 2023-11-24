@@ -100,7 +100,7 @@ image">
     <div class="row">
       <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
         <div class="position-sticky pt-3">
-          <ul class="nav flex-column" v-if="authStore.isAuthenticated">
+          <ul class="nav flex-column">
             <li class="nav-item">
 
               <a class="nav-link" href="#">
@@ -113,16 +113,11 @@ image">
               </router-link> -->
             </li>
             <li class="nav-item">
-              
-              <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }" 
-                          :to="{ name: 'transactions' }">
+
+              <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
+                :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions
-              </router-link>
-
-              <router-link class="nav-link" :class="{ active: $route.name === 'about' }" :to="{ name: 'about' }">
-                <i class="bi bi-list-stars"></i>
-                About
               </router-link>
             </li>
             <li class="nav-item">
@@ -212,7 +207,7 @@ image">
               <li class="nav-item" v-if="!authStore.isAuthenticated">
                 <router-link class="nav-link" :class="{ active: $route.name === 'register' }" :to="{ name: 'register' }">
                   <i class="bi bi-person-check-fill"></i>
-                  Register
+                  Sign Up
                 </router-link>
               </li>
               <li class="nav-item" v-if="!authStore.isAuthenticated">
@@ -245,7 +240,7 @@ image">
                   <li>
                     <hr class="dropdown-divider">
                   </li>
-                  <li>
+                  <li v-if="authStore.isAuthenticated">
                     <button class="dropdown-item" @click="logout"><i class="bi bi-arrow-right"></i>Logout</button>
                   </li>
                 </ul>
