@@ -53,13 +53,13 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-            
-            
-            if ($request->hasFile('photo_file')) { 
+
+
+            if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
-            
+
             $newVCard->save();
             $phoneNumber = $validRequest['phone_number'];
             // Manually insert associations with default categories
@@ -88,7 +88,7 @@ class VCardController extends Controller
         return json_decode((string) $response->content(), true);
     }
 
-    public function update(VCard $vCard, VCardRequest $request) 
+    public function update(VCard $vCard, VCardRequest $request)
     {
         $validRequest = $request->validated();
 
@@ -113,7 +113,7 @@ class VCardController extends Controller
     }
 
 
-    public function updateCategories(VCard $vCard, VCardRequest $request) : JsonResponse
+    public function updateCategories(VCard $vCard, VCardRequest $request): JsonResponse
     {
         $validRequest = $request->validated();
 
@@ -142,7 +142,8 @@ class VCardController extends Controller
     }
 
 
-    public function block(VCard $vcard){
+    public function block(VCard $vcard)
+    {
         //falta implementar a autorização
         if ($vcard->blocked) {
             return response()->json([
@@ -152,6 +153,21 @@ class VCardController extends Controller
         }
 
         $vcard->blocked = true;
+        $vcard->save();
+        return $vcard;
+    }
+
+    public function unblock(VCard $vcard)
+    {
+        //falta implementar a autorização
+        if (!$vcard->blocked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'vCard is already unblocked'
+            ], 400);
+        }
+
+        $vcard->blocked = false;
         $vcard->save();
         return $vcard;
     }
