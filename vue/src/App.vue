@@ -112,26 +112,23 @@ image">
                 Dashboard
               </router-link> -->
             </li>
-            <li class="nav-item">
 
+            <li class="nav-item">
               <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
                 :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions
               </router-link>
             </li>
-            <li class="nav-item">
 
-              <a class="nav-link" href="#">
-                <i class="bi bi-list-stars"></i>
-                Current Tasks
-              </a>
-              <!-- <router-link class="nav-link" :class="{ active: $route.name === 'CurrentTasks' }"
-                :to="{ name: 'CurrentTasks' }">
-                <i class="bi bi-list-stars"></i>
-                Current Tasks
-              </router-link> -->
+            <li class="nav-item">
+              <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'categories' }"
+                :to="{ name: 'categories' }">
+                <i class="bi bi-list-check"></i>
+                VCard Categories
+              </router-link>
             </li>
+
             <li class="nav-item d-flex justify-content-between align-items-center pe-3">
 
               <a class="nav-link" href="#">

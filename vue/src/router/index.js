@@ -7,6 +7,7 @@ import Login from '../components/auth/Login.vue'
 import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
+import Categories from '../components/categories/Categories.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
             name: "editTransaction",
             component: Transaction,
             props: (route) => ({ id: parseInt(route.params.id) }),
+        },
+        {
+            path: '/categories',
+            name: 'categories',
+            component: Categories
         },
     ]
 })

@@ -20,12 +20,12 @@
     ]);
 
 
-    watch(
-      () => props.tasks,
-      (newTasks) => {
-        //editingTasks.value = newTasks;
-      }
-    );   
+    // watch(
+    //   () => props.tasks,
+    //   (newTasks) => {
+    //     //editingTasks.value = newTasks;
+    //   }
+    // );   
 
     </script>
   
