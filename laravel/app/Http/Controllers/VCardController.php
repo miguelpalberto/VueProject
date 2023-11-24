@@ -53,12 +53,12 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-            
+          
             if ($request->hasFile('photo_file')) { 
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
-            
+
             $newVCard->save();
             $phoneNumber = $validRequest['phone_number'];
             // Manually insert associations with default categories
@@ -87,32 +87,7 @@ class VCardController extends Controller
         return json_decode((string) $response->content(), true);
     }
 
-    public function update(VCard $vCard, VCardRequest $request) 
-    {
-        $validRequest = $request->validated();
-
-        $vCard->name = $validRequest['name'];
-        $vCard->email = $validRequest['email'];
-        $vCard->confirmation_code = $validRequest['confirmation_code'];
-        $vCard->password = Hash::make($validRequest['password']);
-        $vCard->blocked = $validRequest['blocked'];
-        $vCard->balance = $validRequest['balance'];
-        $vCard->max_debit = $validRequest['max_debit'];
-        $vCard->customOptions = $validRequest['custom_options'] ?? null;
-        $vCard->customData = $validRequest['custom_data'] ?? null;
-
-        if ($request->hasFile('photo_file')) {
-            $path = $request->photo_file->store('public/photos');
-            $vCard->photo_url = basename($path);
-        }
-
-        $vCard->save();
-
-        return $vCard;
-    }
-
-
-    public function updateCategories(VCard $vCard, VCardRequest $request) : JsonResponse
+    public function update(VCard $vCard, VCardRequest $request)
     {
         $validRequest = $request->validated();
 
@@ -135,13 +110,43 @@ class VCardController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Successfully updated vcard',
+            'message' => 'Successfully updated vCard',
             'data' => $vCard
         ], 200);
     }
 
 
-    public function block(VCard $vcard){
+    public function updateCategories(VCard $vCard, VCardRequest $request): JsonResponse
+    {
+        $validRequest = $request->validated();
+
+        $vCard->name = $validRequest['name'];
+        $vCard->email = $validRequest['email'];
+        $vCard->confirmation_code = $validRequest['confirmation_code'];
+        $vCard->password = Hash::make($validRequest['password']);
+        $vCard->blocked = $validRequest['blocked'];
+        $vCard->balance = $validRequest['balance'];
+        $vCard->max_debit = $validRequest['max_debit'];
+        $vCard->customOptions = $validRequest['custom_options'] ?? null;
+        $vCard->customData = $validRequest['custom_data'] ?? null;
+
+        if ($request->hasFile('photo_file')) {
+            $path = $request->photo_file->store('public/photos');
+            $vCard->photo_url = basename($path);
+        }
+
+        $vCard->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated vCard',
+            'data' => $vCard
+        ], 200);
+    }
+
+
+    public function block(VCard $vcard)
+    {
         //falta implementar a autorização
         if ($vcard->blocked) {
             return response()->json([
@@ -152,7 +157,47 @@ class VCardController extends Controller
 
         $vcard->blocked = true;
         $vcard->save();
-        return $vcard;
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully blocked vCard',
+            'data' => $vcard
+        ], 200);
+    }
+
+    public function unblock(VCard $vcard)
+    {
+        //falta implementar a autorização
+        if (!$vcard->blocked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'vCard is already unblocked'
+            ], 400);
+        }
+
+        $vcard->blocked = false;
+        $vcard->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully unblocked vCard',
+            'data' => $vcard
+        ], 200);
+    }
+
+    public function destroy(VCard $vcard)
+    {
+        $hasTransactions = $vcard->transactions()->exists();
+
+        if ($hasTransactions) {
+            $vcard->delete();  // Soft delete
+        } else {
+            $vcard->categories()->forceDelete();
+            $vcard->forceDelete();  // Hard delete
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted vCard'
+        ], 200);
     }
 
     //ESTATISTICAS
