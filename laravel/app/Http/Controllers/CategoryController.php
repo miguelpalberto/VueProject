@@ -18,7 +18,7 @@ class CategoryController extends Controller
         return CategoryResource::collection($vcard->categories);
     }
 
-    public function create(CategoryRequest $request){
+    public function store(CategoryRequest $request){
         $validRequest = $request->validated();
 
         $category = new Category();

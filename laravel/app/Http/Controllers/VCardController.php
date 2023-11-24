@@ -53,13 +53,13 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-            
-            
-            if ($request->hasFile('photo_file')) { 
+
+
+            if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
-            
+
             $newVCard->save();
             $phoneNumber = $validRequest['phone_number'];
             // Manually insert associations with default categories
@@ -88,7 +88,7 @@ class VCardController extends Controller
         return json_decode((string) $response->content(), true);
     }
 
-    public function update(VCard $vCard, VCardRequest $request) 
+    public function update(VCard $vCard, VCardRequest $request)
     {
         $validRequest = $request->validated();
 
@@ -110,35 +110,6 @@ class VCardController extends Controller
         $vCard->save();
 
         return $vCard;
-    }
-
-
-    public function updateCategories(VCard $vCard, VCardRequest $request) : JsonResponse
-    {
-        $validRequest = $request->validated();
-
-        $vCard->name = $validRequest['name'];
-        $vCard->email = $validRequest['email'];
-        $vCard->confirmation_code = $validRequest['confirmation_code'];
-        $vCard->password = Hash::make($validRequest['password']);
-        $vCard->blocked = $validRequest['blocked'];
-        $vCard->balance = $validRequest['balance'];
-        $vCard->max_debit = $validRequest['max_debit'];
-        $vCard->customOptions = $validRequest['custom_options'] ?? null;
-        $vCard->customData = $validRequest['custom_data'] ?? null;
-
-        if ($request->hasFile('photo_file')) {
-            $path = $request->photo_file->store('public/photos');
-            $vCard->photo_url = basename($path);
-        }
-
-        $vCard->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated vcard',
-            'data' => $vCard
-        ], 200);
     }
 
 
