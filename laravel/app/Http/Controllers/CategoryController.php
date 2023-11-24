@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\VCard;
@@ -13,10 +14,8 @@ class CategoryController extends Controller
         return Category::all();
     }
 
-
     public function getVCardCategories(VCard $vcard){
-        //todo deleted categories wont show up -ver 1o se tem
-        return $vcard->categories;
+        return CategoryResource::collection($vcard->categories);
     }
 
     public function create(CategoryRequest $request){
@@ -30,7 +29,7 @@ class CategoryController extends Controller
         $category->custom_data = $validRequest['custom_data'] ?? null;
         $category->save();
 
-        return $category;
+        return new CategoryResource($category);
     }
 
 
@@ -43,7 +42,7 @@ class CategoryController extends Controller
         $category->custom_data = $validRequest['custom_data'] ?? null;
         $category->save();
 
-        return $category;
+        return new CategoryResource($category);
     }
 
     public function destroy(Category $category){

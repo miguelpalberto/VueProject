@@ -25,7 +25,7 @@ class TransactionRequest extends FormRequest
         return [
             'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
             'type' => 'required|in:C,D',
-            'value' => 'required|decimal:2|min:0.01',
+            'value' => 'required|decimal:0,2|min:0.01',
             'payment_reference' => [
                 'required',
                 new PaymentReferenceValidationRule()

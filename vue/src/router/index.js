@@ -6,6 +6,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Login from '../components/auth/Login.vue'
 import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
+import Transaction from '../components/transactions/Transaction.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +35,18 @@ const router = createRouter({
             path: '/transactions',
             name: 'transactions',
             component: Transactions
-        }
+        },
+        {
+            path: '/transactions/create',
+            name: 'createtransaction',
+            component: Transaction
+        },
+        {
+            path: "/transactions/:id/edit",
+            name: "editTransaction",
+            component: Transaction,
+            props: (route) => ({ id: parseInt(route.params.id) }),
+        },
     ]
 })
 

@@ -66,8 +66,8 @@
     }
   })
 
-  const task = ref(newTask())
   const projects = ref([])
+  const task = ref(newTask())
 
   const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
   
