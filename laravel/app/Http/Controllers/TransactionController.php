@@ -28,6 +28,10 @@ class TransactionController extends Controller
         return TransactionResource::collection($paginatedResult);
     }
 
+    public function show(Transaction $transaction){
+        return $transaction;
+    }
+
     //to do: testar
     public function store(TransactionRequest $request){
         //falta autorização
@@ -37,17 +41,25 @@ class TransactionController extends Controller
 
         if ($isDebitTransaction && $vcard->balance < $validRequest['value']) {
             return response()->json([
-                'success' => false,
-                'message' => 'Sorry, you do not have enough balance to make this transaction'
-            ], 400);
+                'errors' => [
+                    'value' => [
+                        'Sorry, you do not have enough balance to make this transaction'
+                    ]
+                ]
+            ], 422);
         }
 
-        if (!$isDebitTransaction && $validRequest['payment_type'] == 'VCARD') {
+        if ($validRequest['value'] > $vcard->max_debit) {
             return response()->json([
-                'success' => false,
-                'message' => 'Sorry, you are not allowed to make a credit transaction to another vCard'
-            ], 400);
+                'errors' => [
+                    'value' => [
+                        "Sorry, you cannot make a transaction with a value higher than your maximum debit ($vcard->max_debit" . "€)"
+                    ]
+                ]
+            ], 422);
         }
+
+
         
         $transaction = DB::transaction(function () use ($validRequest, $vcard, $isDebitTransaction) {
             $utcDatetimeNow = new DateTime('now', new \DateTimeZone('UTC'));

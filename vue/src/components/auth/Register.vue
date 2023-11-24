@@ -176,7 +176,7 @@ const register = async () => {
     <div class="mt-2 d-flex justify-content-center">
       <button type="submit" class="btn btn-primary px-5" @click="register" :disabled="isLoading">
         <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isLoading"></span>
-        <span role="login">Register</span>
+        <span role="register">Register</span>
       </button>
     </div>
   </form>

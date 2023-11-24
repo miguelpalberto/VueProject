@@ -12,10 +12,12 @@ import { io } from 'socket.io-client'
 import App from './App.vue'
 import router from './router'
 import Toast from "vue-toastification";
+import { setMask } from 'simple-mask-money'
 
 const app = createApp(App)
 
 const apiDomain = import.meta.env.VITE_API_DOMAIN
+const externalApiDomain = import.meta.env.VITE_EXTERNAL_API_DOMAIN
 const wsConnection = import.meta.env.VITE_WS_CONNECTION
 
 axios.defaults.baseURL = apiDomain + '/api'
@@ -41,6 +43,7 @@ app.use(Toast, {
 
 app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
+app.provide('externalApiUrl',`${externalApiDomain}/api`)
 //app.provive('socket',io(wsConnection))
 
 app.mount('#app')
