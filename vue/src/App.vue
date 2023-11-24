@@ -102,35 +102,11 @@ image">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
             <li class="nav-item">
-
-              <a class="nav-link" href="#">
-                <i class="bi bi-list-stars"></i>
-                Current Tasks
-              </a>
-              <!-- <router-link class="nav-link" :class="{ active: $route.name === 'Dashboard' }" :to="{ name: 'Dashboard' }">
-                <i class="bi bi-house"></i>
-                Dashboard
-              </router-link> -->
-            </li>
-            <li class="nav-item">
-
               <router-link class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
                 :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions
               </router-link>
-            </li>
-            <li class="nav-item">
-
-              <a class="nav-link" href="#">
-                <i class="bi bi-list-stars"></i>
-                Current Tasks
-              </a>
-              <!-- <router-link class="nav-link" :class="{ active: $route.name === 'CurrentTasks' }"
-                :to="{ name: 'CurrentTasks' }">
-                <i class="bi bi-list-stars"></i>
-                Current Tasks
-              </router-link> -->
             </li>
             <li class="nav-item d-flex justify-content-between align-items-center pe-3">
 
@@ -145,34 +121,6 @@ image">
               </router-link> -->
               <a class="link-secondary" href="#" aria-label="Add a new task">
                 <i class="bi bi-xs bi-plus-circle"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-
-              <a class="nav-link" href="#">
-                <i class="bi bi-files"></i>
-                Projects
-              </a>
-              <!-- <router-link class="nav-link" :class="{ active: $route.name === 'Projects' }" :to="{ name: 'Projects' }">
-                <i class="bi bi-files"></i>
-                Projects
-              </router-link> -->
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <i class="bi bi-people"></i>
-                Team Members
-              </a>
-              <!-- <router-link class="nav-link" :class="{ active: $route.name === 'Users' }" :to="{ name: 'Users' }">
-                <i class="bi bi-people"></i>
-                Team Members
-              </router-link> -->
-
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <i class="bi bi-bar-chart-line"></i>
-                Reports
               </a>
             </li>
           </ul>
@@ -252,6 +200,13 @@ image">
       </nav>
 
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-end">
+          <div class="alert alert-light" role="alert">
+            <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
+              Current Balance: {{ authStore.user.balance }}€
+            </h4>
+          </div>
+        </div>
         <router-view />
       </main>
     </div>

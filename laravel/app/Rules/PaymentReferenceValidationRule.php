@@ -39,6 +39,7 @@ class PaymentReferenceValidationRule implements DataAwareRule, ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $passes = false;
+        $errorMessage = '';
 
         switch ($this->data['payment_type']) {
             case 'VCARD':
