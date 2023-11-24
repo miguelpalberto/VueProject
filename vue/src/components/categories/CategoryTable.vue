@@ -28,10 +28,6 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="tables-container">
-        <!-- First Table -->
-        <div class="table-wrapper">
-
             <table class="table">
                 <thead>
                     <tr>
@@ -46,27 +42,6 @@ const props = defineProps({
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Second Table
-        <div class="table-wrapper">
-            <h4>Credit</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th v-if="showId">#</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="category in categories" :key="category.id">
-                        <td v-if="showId">{{ category.id }}</td>
-                        <td>{{ category.name }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> -->
-    </div>
 </template>
 
 <style scoped>

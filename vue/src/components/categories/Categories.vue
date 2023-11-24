@@ -79,10 +79,16 @@ onMounted(() => {//so depois de estar tudo carregado
         ><i class="bi bi-xs bi-plus-circle"></i>&nbsp; Add Task</button>
     </div> -->
   </div>
-  <h4>Debit</h4>
-  <category-table :categories="debitCategories" :showId="true"></category-table>
-  <h4>Credit</h4>
-  <category-table :categories="creditCategories" :showId="true"></category-table>
+  <div class="row">
+    <div class="col-xs-12 col-md-6">
+      <h4>Debit</h4>
+      <category-table :categories="debitCategories" :showId="true"></category-table>
+    </div>
+    <div class="col-xs-12 col-md-6">
+      <h4>Credit</h4>
+      <category-table :categories="creditCategories" :showId="true"></category-table>
+    </div>
+  </div>
   <!-- dentro do transaction-table
     :tasks="filteredTasks"
     :showId="true"
