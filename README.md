@@ -32,3 +32,9 @@ copiar o client secret 2 para o .env
 
 ![image](https://github.com/miguelpalberto/DADProject/assets/96576701/7e8d0642-4f58-4f95-9a11-cc3114694fda)
 
+## Other Installations
+Link / Update Photos:
+php artisan storage:link
+
+SimpleMaskMoney:
+npm i simple-mask-money --save
