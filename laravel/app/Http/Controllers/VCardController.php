@@ -172,6 +172,23 @@ class VCardController extends Controller
         return $vcard;
     }
 
+    public function destroy(VCard $vcard)
+    {
+        $hasTransactions = $vcard->transactions()->exists();
+
+        if ($hasTransactions) {
+            $vcard->delete();  // Soft delete
+        } else {
+            $vcard->categories()->forceDelete();
+            $vcard->forceDelete();  // Hard delete
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted vCard'
+        ], 200);
+    }
+
     //ESTATISTICAS
     //Ver biblioteca vue-chartjs
 
