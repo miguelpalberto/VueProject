@@ -53,11 +53,12 @@ Route::middleware('auth:api')->group(
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']); //remove
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
+        Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
         Route::get('vcards', [VCardController::class, 'index']);
         Route::get('vcards/{vcard}', [VCardController::class, 'show']);
         Route::put('vcards/{vcard}', [VCardController::class, 'update']);
         Route::delete('vcards/{vcard}', [VCardController::class, 'destroy']);
-        Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
+
 
         // AUTH PASSPORT LOGOUT
         Route::post('auth/logout', [AuthController::class, 'logout']);
