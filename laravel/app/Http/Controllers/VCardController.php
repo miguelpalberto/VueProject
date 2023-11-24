@@ -109,7 +109,11 @@ class VCardController extends Controller
 
         $vCard->save();
 
-        return $vCard;
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated vCard',
+            'data' => $vCard
+        ], 200);
     }
 
 
@@ -136,7 +140,7 @@ class VCardController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Successfully updated vcard',
+            'message' => 'Successfully updated vCard',
             'data' => $vCard
         ], 200);
     }
@@ -154,7 +158,11 @@ class VCardController extends Controller
 
         $vcard->blocked = true;
         $vcard->save();
-        return $vcard;
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully blocked vCard',
+            'data' => $vcard
+        ], 200);
     }
 
     public function unblock(VCard $vcard)
@@ -169,7 +177,11 @@ class VCardController extends Controller
 
         $vcard->blocked = false;
         $vcard->save();
-        return $vcard;
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully unblocked vCard',
+            'data' => $vcard
+        ], 200);
     }
 
     public function destroy(VCard $vcard)
