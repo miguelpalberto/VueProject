@@ -50,13 +50,15 @@ Route::middleware('auth:api')->group(
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
 
         // VCARD
-        Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//remove
+        Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']); //remove
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
+        Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
         Route::get('vcards', [VCardController::class, 'index']);
         Route::get('vcards/{vcard}', [VCardController::class, 'show']);
         Route::put('vcards/{vcard}', [VCardController::class, 'update']);
         Route::delete('vcards/{vcard}', [VCardController::class, 'destroy']);
+
 
         // AUTH PASSPORT LOGOUT
         Route::post('auth/logout', [AuthController::class, 'logout']);

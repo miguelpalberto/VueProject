@@ -7,8 +7,8 @@ import { useToast } from "vue-toastification";
 import TransactionDetail from "./TransactionDetail.vue"
 
 const props = defineProps({
-    id: {
-        type: Number,
+    vcard: {
+        type: String,
         default: null
     },
 })
@@ -16,7 +16,7 @@ const props = defineProps({
 const newTransaction = () => {
     return {
         id: null,
-        vcard: authStore.user.username,
+        vcard: null,
         type: 'D',
         value: 0,
         payment_reference: '',
@@ -27,19 +27,18 @@ const newTransaction = () => {
     }
 }
 
-const apiUrl = inject('apiUrl')
-const externalApiUrl = inject('externalApiUrl')
+const axiosExternal = inject('axiosExternal')
 
 const router = useRouter()
 const authStore = useAuthStore()
 const toast = useToast()
 
-const categories = ref([])
+const allCategories = ref([])
 const transaction = ref(newTransaction())
 const errors = ref({})
 const isLoading = ref(false)
 
-const paymentTypes = [
+const allPaymentTypes = [
     'VCARD',
     'MBWAY',
     'PAYPAL',
@@ -52,8 +51,33 @@ watch(
     () => transaction.value,
     () => {
         transaction.value.type = authStore.isAdmin ? 'C' : 'D'
+        transaction.value.vcard = props.vcard ? props.vcard : authStore.user.username
     }
 )
+
+const paymentTypes = computed(() => {
+    if (!authStore.isAdmin) {
+        return allPaymentTypes
+    }
+    
+    return allPaymentTypes.filter((paymentType) => {
+        return paymentType != 'VCARD'
+    })
+})
+
+const vcard = computed(() => {
+    return props.vcard ? props.vcard : authStore.user.username
+})
+
+const backUrl = computed(() => {
+    return props.vcard ? '/vcards/' + props.vcard + '/transactions' : '/transactions'
+})
+
+const categories = computed(() => {
+    return allCategories.value.filter((category) => {
+        return category.type == transaction.value.type
+    })
+})
 
 const isExternalPaymentType = computed(() => {
     return transaction.value.payment_type != 'VCARD'
@@ -67,29 +91,10 @@ const externalApiRequest = computed(() => {
     }
 })
 
-const operation = computed(() => (!props.id || props.id < 0) ? 'insert' : 'update')
-
-
-const loadTransaction = (id) => {
-    if (!id || (id < 0)) {
-        transaction.value = newTransaction()
-    } else {
-        axios.get('transactions/' + id)
-            .then((response) => {
-                transaction.value = response.data.data
-            })
-            .catch((error) => {
-                console.log(error)
-                toast.error('Error loading transaction')
-                // router.push({ name: 'transactions' })
-            })
-    }
-}
-
 const loadCategories = () => {
-    axios.get('vcards/' + authStore.user.username + '/categories')
+    axios.get('vcards/' + vcard.value + '/categories')
         .then((response) => {
-            categories.value = response.data.data
+            allCategories.value = response.data.data
         })
         .catch((error) => {
             console.log(error)
@@ -101,59 +106,81 @@ const loadCategories = () => {
 const save = () => {
     isLoading.value = true
     delete errors.value
-    if (operation.value == 'insert') {
 
-        if (transaction.value.value < 0.01) {
-            errors.value = { 'value': ['Value must be greater than 0'] }
-            isLoading.value = false
-            return
-        }
+    if (!validateInsert()) {
+        isLoading.value = false
+        return
+    }
 
-        if (isExternalPaymentType.value) {
-            axios.defaults.baseURL = externalApiUrl
-            axios.post('debit', externalApiRequest.value)
-                .then(() => {
-                    axios.defaults.baseURL = apiUrl
-                    insertTransaction(transaction.value)
-                })
-                .catch((error) => {
-                    console.dir(error)
-                    axios.defaults.baseURL = apiUrl
-                    isLoading.value = false
-                    toast.error('Error creating transaction')
-                })
-        }
-        else {
-            console.log(transaction.value)
-            transaction.value.pair_vcard = transaction.value.payment_reference
-            insertTransaction(transaction.value)
-        }
-    } else {
-        axios.put('transactions/' + props.id, transaction.value.category_id)
-            .then((response) => {
-                console.dir(response.data.data)
+    if (isExternalPaymentType.value) {
+        const externalEndpoint = authStore.isAdmin ? 'credit' : 'debit'
+        axiosExternal.post(externalEndpoint, externalApiRequest.value)
+            .then(() => {
+                insertTransaction(transaction.value)
             })
             .catch((error) => {
-                console.dir(error)
-                toast.error('Error updating transaction')
-            })
-            .finally(() => {
+                if (error.response.status === 422) {
+                    generateExternalErrors(error.response.data.message)
+                }
                 isLoading.value = false
+                toast.error('Error creating transaction')
             })
     }
+    else {
+        transaction.value.pair_vcard = transaction.value.payment_reference
+        insertTransaction(transaction.value)
+    }
+}
+
+const generateExternalErrors = (message) => {
+    const capitalizedMessage = message.charAt(0).toUpperCase() + message.slice(1)
+    if (message.includes('type')) {
+        errors.value.payment_type = [capitalizedMessage]
+    }
+
+    if (message.includes('reference')) {
+        errors.value.payment_reference = [capitalizedMessage]
+    }
+
+    if (message.includes('value') || message.includes('limit exceeded')) {
+        errors.value.value = [capitalizedMessage]
+    }
+}
+
+const validateInsert = () => {
+    let isValid = true
+
+    if (transaction.value.value < 0.01) {
+        errors.value.value = ['Value must be greater than 0']
+        isValid = false
+    }
+
+    if (transaction.value.payment_reference == null || transaction.value.payment_reference == '') {
+        errors.value.payment_reference = ['Payment reference is required']
+        isValid = false
+    }
+
+    if (transaction.value.payment_type == null) {
+        errors.value.payment_type = ['Payment type is required']
+        isValid = false
+    }
+
+    return isValid
 }
 
 const insertTransaction = (transaction) => {
     axios.post('transactions', transaction)
         .then(() => {
             toast.success('Transaction created')
-            router.push({ name: 'transactions' })
+            if (!props.isAdmin)
+                authStore.loadUser()
+            router.push({ path: backUrl.value })
         })
         .catch((error) => {
             if (error.response.status === 422) {
                 errors.value = error.response.data.errors
             }
-            
+
             toast.error('Error creating transaction')
         })
         .finally(() => {
@@ -167,16 +194,13 @@ const cancel = () => {
 }
 
 onMounted(() => {
+    transaction.value = newTransaction()
     loadCategories()
-    loadTransaction(props.id)
 })
 
 
 </script>
 <template>
-    <h2>
-        Total Balance: {{ authStore.user.balance }}
-    </h2>
-    <transaction-detail :operationType="operation" :is-parent-loading="isLoading" :transaction="transaction"
+    <transaction-detail :is-admin="authStore.isAdmin" :is-parent-loading="isLoading" :transaction="transaction"
         :paymentTypes="paymentTypes" :categories="categories" :errors="errors" @save="save" @cancel="cancel" />
 </template>
