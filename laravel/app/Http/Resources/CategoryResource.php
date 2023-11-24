@@ -16,7 +16,7 @@ class CategoryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type == 'D' ? 'Debit' : 'Credit',
+            'type' => $this->type,
             'name' => $this->name
         ];
     }

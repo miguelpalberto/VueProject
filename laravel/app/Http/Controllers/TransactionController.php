@@ -49,7 +49,7 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        if ($validRequest['value'] > $vcard->max_debit) {
+        if ($isDebitTransaction && $validRequest['value'] > $vcard->max_debit) {
             return response()->json([
                 'errors' => [
                     'value' => [

@@ -23,6 +23,13 @@ const wsConnection = import.meta.env.VITE_WS_CONNECTION
 axios.defaults.baseURL = apiDomain + '/api'
 axios.defaults.headers.common['Content-type'] = 'application/json'
 
+const axiousExternal = axios.create({
+    baseURL: externalApiDomain + '/api',
+    headers: {
+        'Content-type': 'application/json'
+    }
+})
+
 app.use(createPinia())
 app.use(router)
 
@@ -43,7 +50,7 @@ app.use(Toast, {
 
 app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
-app.provide('externalApiUrl',`${externalApiDomain}/api`)
+app.provide('axiosExternal', axiousExternal)
 //app.provive('socket',io(wsConnection))
 
 app.mount('#app')
