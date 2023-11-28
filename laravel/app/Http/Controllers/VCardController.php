@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeVCardPasswordRequest;
 use App\Models\VCard;
 use Illuminate\Http\Request;
 use App\Models\DefaultCategory;
@@ -19,22 +20,9 @@ class VCardController extends Controller
         return VCard::all();
     }
 
-    public function show($phoneNumber)
+    public function show(VCard $vcard)
     {
-        $vCard = VCard::find($phoneNumber);
-
-        if (!$vCard) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, vCard with phone number "' . $phoneNumber . '" cannot be found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved vCard',
-            'data' => $vCard
-        ], 200);
+        return $vcard;
     }
 
     public function store(VCardRequest $request)
