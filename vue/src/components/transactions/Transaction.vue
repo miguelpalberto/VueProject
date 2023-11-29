@@ -201,7 +201,9 @@ const cancel = () => {
 
 onMounted(() => {
     transaction.value = newTransaction()
-    loadCategories()
+    if (!authStore.isAdmin){
+        loadCategories()
+    }
 })
 
 
