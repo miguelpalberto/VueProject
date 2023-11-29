@@ -64,7 +64,7 @@ onMounted(() => {
       fractionDigits: 2,
       decimalSeparator: ',',
       thousandsSeparator: '.',
-      cursor: 'move'
+      cursor: 'end'
     })
 })
 
@@ -96,8 +96,9 @@ onBeforeUnmount(() => {
       <label for="inputPaymentReference" class="form-label">Payment Reference<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span>
       </label>
-      <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.payment_reference || errors.pair_vcard }"
-        :disabled="isParentLoading" id="inputPaymentReference" required v-model="editingTransaction.payment_reference">
+      <input type="text" class="form-control"
+        :class="{ 'is-invalid': errors && errors.payment_reference || errors.pair_vcard }" :disabled="isParentLoading"
+        id="inputPaymentReference" required v-model="editingTransaction.payment_reference">
       <div class="invalid-feedback" v-if="errors && errors.payment_reference">
         {{ errors.payment_reference[0] }}
       </div>
@@ -134,7 +135,21 @@ onBeforeUnmount(() => {
         {{ errors.description[0] }}
       </div>
     </div>
-    <div class="mb-1 d-flex justify-content-end">
+    <div class="p-2 rounded-3" v-if="!isAdmin">
+      <label for="inputConfirmationCode" class="form-label">
+        <h6><i class="bi bi-person-vcard"></i>
+          Confirmation Code<span class="text-danger">*</span>
+          &nbsp;<span class="text-muted">(required)</span>
+        </h6>
+      </label>
+      <input type="password" class="form-control" :class="{ 'is-invalid': errors && errors.confirmation_code }"
+        :disabled="isParentLoading" id="inputConfirmationCode" maxlength="4" required
+        v-model="editingTransaction.confirmation_code">
+      <div class="invalid-feedback" v-if="errors && errors.confirmation_code">
+        {{ errors.confirmation_code[0] }}
+      </div>
+    </div>
+    <div class="mb-5 d-flex">
       <button :disabled="isParentLoading" type="button" class="btn btn-primary px-5" @click="save">
         <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isParentLoading"></span>
         <span role="save">Save</span>

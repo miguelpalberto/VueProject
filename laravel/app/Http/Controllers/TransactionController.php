@@ -7,6 +7,7 @@ use App\Models\VCard;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
 
@@ -38,6 +39,16 @@ class TransactionController extends Controller
         $validRequest = $request->validated();
         $vcard = VCard::find($validRequest['vcard']);
         $isDebitTransaction = $validRequest['type'] == 'D';
+
+        if ($isDebitTransaction && !Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
+            return response()->json([
+                'errors' => [
+                    'confirmation_code' => [
+                        'The confirmation code is incorrect'
+                    ]
+                ]
+            ], 422);
+        }
 
         if ($isDebitTransaction && $vcard->balance < $validRequest['value']) {
             return response()->json([

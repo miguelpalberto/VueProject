@@ -24,6 +24,7 @@ class TransactionRequest extends FormRequest
     {
         return [
             'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
+            'confirmation_code' => 'required_if:type,D|string',
             'type' => 'required|in:C,D',
             'value' => 'required|decimal:0,2|min:0.01',
             'payment_reference' => [
@@ -44,6 +45,8 @@ class TransactionRequest extends FormRequest
             'type.in' => 'The type must be C (Credit) or D (Debit)',
             'vcard.string' => 'The vCard must be a string',
             'vcard.exists' => 'Vcard was not found',
+            'confirmation_code.required_if' => 'The confirmation code is required',
+            'confirmation_code.string' => 'The confirmation code must be a string',
             'value.required' => 'The value is required',
             'value.decimal' => 'The value must be a decimal number with 2 decimal places',
             'value.min' => 'The value must be greater than 0.01',

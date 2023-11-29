@@ -23,7 +23,8 @@ const newTransaction = () => {
         pair_vcard: null,
         payment_type: null,
         category_id: null,
-        description: ''
+        description: '',
+        confirmation_code: undefined,
     }
 }
 
@@ -162,6 +163,11 @@ const validateInsert = () => {
 
     if (transaction.value.payment_type == null) {
         errors.value.payment_type = ['Payment type is required']
+        isValid = false
+    }
+
+    if (transaction.value.type == 'D' && transaction.value.confirmation_code == null) {
+        errors.value.confirmation_code = ['Confirmation code is required']
         isValid = false
     }
 
