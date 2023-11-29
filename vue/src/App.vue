@@ -109,9 +109,9 @@ image">
 
   <div class="container-fluid">
     <div class="row">
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <nav id="sidebarMenu" class="bg-light sidebar collapse"  :class="authStore.isAuthenticated ? 'd-md-block col-md-3 col-lg-2' : 'd-md-none'">
         <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
+          <ul v-if="authStore.isAuthenticated" class="nav flex-column">
             <li class="nav-item">
               <router-link @click="clickMenuOption" class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
                 :to="{ name: 'transactions' }">
@@ -218,7 +218,7 @@ image">
         </div>
       </nav>
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
         <div class="d-flex justify-content-end">
           <div class="alert alert-light" role="alert">
             <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
