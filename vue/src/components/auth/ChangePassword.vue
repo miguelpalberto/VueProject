@@ -35,7 +35,7 @@ const changePassword = async () => {
   try {
     await axios.patch(`/authUsers/changePassword`, formData.value)
     router.push({ name: 'home' })
-    toast.success('Passoword changed successfully')
+    toast.success('Password changed successfully')
   }
   catch (error) {
     if (error.response.status === 422) {

@@ -40,7 +40,7 @@ class AuthUser extends Authenticatable
     
     public function findForPassport($username)
     {
-        return $this->where('username', $username)->first();
+        return $this->where('username', $username)->where('deleted_at', null)->first();
     }
 
 }

@@ -8,6 +8,7 @@ import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import ChangePassword from '../components/auth/ChangePassword.vue'
+import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
             component: ChangePassword
         },
         {
+            path: '/change-confirmation-code',
+            name: 'changeConfirmationCode',
+            component: ChangeConfirmationCode
+        },
+        {
             path: '/transactions',
             name: 'transactions',
             component: Transactions
@@ -63,6 +69,8 @@ const router = createRouter({
 })
 
 const publicRouteNames = ['login', 'register', 'home']
+const vcardOnlyRouteNames = ['changeConfirmationCode']
+const adminOnlyRouteNames = ['test']
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
@@ -83,6 +91,16 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (authStore.isAuthenticated && publicRouteNames.includes(to.name)) {
+        return next({ name: 'dashboard' })
+    }
+
+    //vcard only routes
+    if (authStore.isAuthenticated && authStore.isAdmin && vcardOnlyRouteNames.includes(to.name)) {
+        return next({ name: 'dashboard' })
+    }
+
+    //admin only routes
+    if (authStore.isAuthenticated && !authStore.isAdmin && adminOnlyRouteNames.includes(to.name)) {
         return next({ name: 'dashboard' })
     }
 

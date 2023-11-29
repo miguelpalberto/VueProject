@@ -79,6 +79,14 @@ image">
                 </router-link>
               </li>
               <li>
+                <router-link v-if="authStore.isAuthenticated && !authStore.isAdmin" class="dropdown-item"
+                  :class="{ active: $route.name === 'changeConfirmationCode' }"
+                  :to="{ name: 'changeConfirmationCode' }">
+                  <i class="bi bi-person-vcard"></i>
+                  Change Confirmation Code
+                </router-link>
+              </li>
+              <li>
                 <hr class="dropdown-divider">
               </li>
               <li>
@@ -174,10 +182,18 @@ image">
                     </router-link> -->
                   </li>
                   <li>
-                    <router-link v-if="authStore.isAuthenticated" class="dropdown-item" :class="{ active: $route.name === 'changePassword' }"
-                      :to="{ name: 'changePassword' }">
+                    <router-link v-if="authStore.isAuthenticated" class="dropdown-item"
+                      :class="{ active: $route.name === 'changePassword' }" :to="{ name: 'changePassword' }">
                       <i class="bi bi-key-fill"></i>
                       Change password
+                    </router-link>
+                  </li>
+                  <li>
+                    <router-link v-if="authStore.isAuthenticated && !authStore.isAdmin" class="dropdown-item"
+                      :class="{ active: $route.name === 'changeConfirmationCode' }"
+                      :to="{ name: 'changeConfirmationCode' }">
+                      <i class="bi bi-person-vcard"></i>
+                      Change Confirmation Code
                     </router-link>
                   </li>
                   <li>
