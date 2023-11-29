@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
         {{ errors.value[0] }}
       </div>
     </div>
-    <div class="mb-1">
+    <div class="mb-1" v-if="!isAdmin">
       <label for="inputCategory" class="form-label">Category</label>
       <select class="form-select" :class="{ 'is-invalid': errors && errors.category_id }" :disabled="isParentLoading"
         id="inputCategory" required v-model="editingTransaction.category_id">
@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
         {{ errors.category_id[0] }}
       </div>
     </div>
-    <div class="mb-1">
+    <div class="mb-1" v-if="!isAdmin">
       <label for="inputDescription" class="form-label">Description</label>
       <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.description }"
         :disabled="isParentLoading" id="inputDescription" required v-model="editingTransaction.description">
