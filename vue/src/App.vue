@@ -113,7 +113,7 @@ image">
         <div class="position-sticky pt-3">
           <ul v-if="authStore.isAuthenticated" class="nav flex-column">
             <li class="nav-item">
-              <router-link @click="clickMenuOption" class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
+              <router-link v-if="!authStore.isAdmin" @click="clickMenuOption" class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
                 :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions

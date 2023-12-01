@@ -69,8 +69,8 @@ const router = createRouter({
 })
 
 const publicRouteNames = ['login', 'register', 'home']
-const vcardOnlyRouteNames = ['changeConfirmationCode']
-const adminOnlyRouteNames = ['test']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createtransaction']
+const adminOnlyRouteNames = ['createvCardtransaction']
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()

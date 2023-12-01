@@ -23,7 +23,8 @@ const newTransaction = () => {
         pair_vcard: null,
         payment_type: null,
         category_id: null,
-        description: ''
+        description: '',
+        confirmation_code: undefined,
     }
 }
 
@@ -165,6 +166,11 @@ const validateInsert = () => {
         isValid = false
     }
 
+    if (transaction.value.type == 'D' && transaction.value.confirmation_code == null) {
+        errors.value.confirmation_code = ['Confirmation code is required']
+        isValid = false
+    }
+
     return isValid
 }
 
@@ -195,7 +201,9 @@ const cancel = () => {
 
 onMounted(() => {
     transaction.value = newTransaction()
-    loadCategories()
+    if (!authStore.isAdmin){
+        loadCategories()
+    }
 })
 
 
