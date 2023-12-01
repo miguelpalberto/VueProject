@@ -71,17 +71,12 @@ image">
                   Profile
                 </router-link> -->
               </li>
-              <li>
-
-                <a class="dropdown-item" href="#">
-                  <i class="bi bi-key-fill"></i>
-                  Change Password
-                </a>
-                <!-- <router-link class="dropdown-item" :class="{ active: $route.name === 'ChangePassword' }"
-                  :to="{ name: 'ChangePassword' }">
+              <li v-if="authStore.isAuthenticated">
+                <router-link class="dropdown-item" :class="{ active: $route.name === 'changePassword' }"
+                  :to="{ name: 'changePassword' }">
                   <i class="bi bi-key-fill"></i>
                   Change password
-                </router-link> -->
+                </router-link>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -179,11 +174,11 @@ image">
                     </router-link> -->
                   </li>
                   <li>
-                    <!-- <router-link class="dropdown-item" :class="{ active: $route.name === 'ChangePassword' }"
-                      :to="{ name: 'ChangePassword' }">
+                    <router-link v-if="authStore.isAuthenticated" class="dropdown-item" :class="{ active: $route.name === 'changePassword' }"
+                      :to="{ name: 'changePassword' }">
                       <i class="bi bi-key-fill"></i>
                       Change password
-                    </router-link> -->
+                    </router-link>
                   </li>
                   <li>
                     <hr class="dropdown-divider">
