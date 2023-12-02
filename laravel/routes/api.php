@@ -32,7 +32,7 @@ Route::middleware('auth:api')->group(
     function () {
         // CATEGORIES
         Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
-        Route::apiResource('categories', CategoryController::class)->except(['show']); //G4.1, ...
+        Route::apiResource('categories', CategoryController::class)->except(['show']); //G4.1, G2.1
 
         // DEFAULT CATEGORIES
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);

@@ -12,11 +12,9 @@ const router = useRouter()
 const logout = async () => {
   try {
     await axios.post('/auth/logout')
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error)
-  }
-  finally {
+  } finally {
     authStore.clearUser()
     delete axios.defaults.headers.common.Authorization
     sessionStorage.removeItem('token')
@@ -27,19 +25,18 @@ const logout = async () => {
 const clickMenuOption = () => {
   const domReference = document.getElementById('buttonSidebarExpandId')
   if (domReference) {
-    if (window.getComputedStyle(domReference).display !== "none") {
+    if (window.getComputedStyle(domReference).display !== 'none') {
       domReference.click()
     }
   }
 }
-
 </script>
 
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
     <div class="container-fluid">
-      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }">
-        <img src="@/assets/logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }"  @click="clickMenuOption">
+        <img src="@/assets/logogta1.svg" alt="" width="30" height="30" class="d-inline-block align-text-top" />
         vCard
       </router-link>
       <button id="buttonSidebarExpandId" class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -119,43 +116,20 @@ image">
                 Transactions
               </router-link>
             </li>
-            <li class="nav-item d-flex justify-content-between align-items-center pe-3">
-
-              <a class="nav-link" href="#">
+            <li class="nav-item">
+              <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
+                :class="{ active: $route.name === 'categories' }" :to="{ name: 'categories' }">
                 <i class="bi bi-list-check"></i>
-                Tasks
-              </a>
-              <!-- <router-link @click="clickMenuOption" class="nav-link w-100 me-3" :class="{ active: $route.name === 'Tasks' }"
-                :to="{ name: 'Tasks' }">
-                <i class="bi bi-list-check"></i>
-                Tasks
-              </router-link> -->
-              <a class="link-secondary" href="#" aria-label="Add a new task">
-                <i class="bi bi-xs bi-plus-circle"></i>
-              </a>
+                Categories
+              </router-link>
             </li>
-          </ul>
-
-          <!-- <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-            <span>My Projects</span>
-            <a class="link-secondary" href="#" aria-label="Add a new project">
-              <i class="bi bi-xs bi-plus-circle"></i>
-            </a>
-          </h6> -->
-          <ul class="nav flex-column mb-2">
-            <!-- <li class="nav-item" v-for="prj in workInProgressProjects" :key="prj.id">
-              
-              <a class="nav-link" href="#">
-                <i class="bi bi-file-ruled"></i>
-                X
-              </a>
-               <router-link @click="clickMenuOption" class="nav-link w-100 me-3"
-                :class="{ active: $route.name == 'ProjectTasks' && $route.params.id == prj.id }"
-                :to="{ name: 'ProjectTasks', params: { id: prj.id } }">
-                <i class="bi bi-file-ruled"></i>
-                {{ prj.name }}
-              </router-link> 
-            </li> -->
+            <li class="nav-item">
+              <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
+                :class="{ active: $route.name === 'admins' }" :to="{ name: 'admins' }">
+                <i class="bi bi-list-check"></i>
+                Administrators
+              </router-link>
+            </li>
           </ul>
 
           <div class="d-block d-md-none">
@@ -216,12 +190,10 @@ image">
               </li>
             </ul>
           </div>
-
         </div>
       </nav>
 
-      <main class="ms-sm-auto px-md-4"
-        :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
+      <main class="ms-sm-auto px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
         <div class="d-flex justify-content-end">
           <div class="alert alert-light" role="alert">
             <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
@@ -229,7 +201,7 @@ image">
             </h4>
           </div>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid py-5">
           <router-view />
         </div>
       </main>
@@ -238,7 +210,7 @@ image">
 </template>
 
 <style>
-@import "./assets/dashboard.css";
+@import './assets/dashboard.css';
 
 .avatar-img {
   margin: -1.2rem 0.8rem -2rem 0.8rem;

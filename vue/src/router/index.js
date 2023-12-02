@@ -7,9 +7,11 @@ import Login from '../components/auth/Login.vue'
 import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
+import Categories from '../components/categories/Categories.vue'
 import ChangePassword from '../components/auth/ChangePassword.vue'
 import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
 import Profile from '../components/users/Profile.vue'
+import Admins from '../components/admins/Admins.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,14 +65,28 @@ const router = createRouter({
             path: '/vcards/:vcard/transactions/create',
             name: 'createvCardtransaction',
             component: Transaction,
-            props: (route) => ({ vcard: route.params.vcard }),
+            props: (route) => ({ vcard: route.params.vcard })
         },
         {
-            path: "/transactions/:id/edit",
-            name: "editTransaction",
+            path: '/transactions/:id/edit',
+            name: 'editTransaction',
             component: Transaction,
-            props: (route) => ({ id: parseInt(route.params.id) }),
+            props: (route) => ({ id: parseInt(route.params.id) })
         },
+        {
+            path: '/categories',
+            name: 'categories',
+            component: Categories
+        },
+        { path: '/admins', name: 'admins', component: Admins },
+        {
+            path: '/admins/:id',
+            name: 'User',
+            component: Admins,
+            //props: true,
+            // Replaced with the following line to ensure that id is a number
+            props: (route) => ({ id: parseInt(route.params.id) })
+        }
     ]
 })
 
