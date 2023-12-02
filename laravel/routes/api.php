@@ -49,6 +49,8 @@ Route::middleware('auth:api')->group(
 
         // USERS
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
+        // USERS VERIFICAR JOAO SE ESTÁ BEM!!!!!!!!!!***!!!!!!!!***!!!!!*!!** VER SER AS ROUTAS /USER/MANAGE-ADMIN ESTAO A LIGAR CORRETAMENTE
+        Route::put('/users/manage-administrators', [UserController::class, 'manageAdministrators']);//Policies ja fazem isto: nao é preciso
 
         // VCARD
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']); //remove
@@ -66,3 +68,4 @@ Route::middleware('auth:api')->group(
         Route::post('auth/logout', [AuthController::class, 'logout']);
     }
 );
+
