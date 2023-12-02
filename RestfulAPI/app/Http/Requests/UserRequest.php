@@ -44,7 +44,7 @@ class UserRequest extends FormRequest
             'email.email' => 'Email format is invalid',
             'email.unique' => 'Email must be unique',
             'email.max' => 'Email must have a maximum of 255 characters',
-
+                //REGRA DE PASS SER STRING??
             'password_init.required' => 'Initial password is required',
         ];
     }

@@ -20,8 +20,6 @@ class UserController extends Controller
         ], 200);
     }
 
-    // funcao ze update para admins
-
     public function update(Request $request, User $user)
     {
         // Ve se exites the user
@@ -70,6 +68,29 @@ class UserController extends Controller
             'success' => true,
             'message' => 'User information updated successfully',
             'data' => $user
+        ], 200);
+    }
+
+
+    // VER A QUESTAO DAS POLITICAS MAS DEIXAR PARA JÁ
+    public function manageAdministrators(Request $request)
+    {
+        
+        if ($request->has('add')) {
+        
+        } elseif ($request->has('remove')) {
+           
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ação inválida. Use "add" ou "remove" para gerenciar administradores.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Administrador gerenciado com sucesso.'
+           
         ], 200);
     }
 

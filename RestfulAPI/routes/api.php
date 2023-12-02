@@ -41,8 +41,17 @@ Route::put('vcards/{phoneNumber}/transactions', [TransactionController::class, '
 
 Route::resource('transactions', TransactionController::class);
 
-// USERS
+
+
+// USERS VERIFICAR JOAO SE ESTÁ BEM!!!!!!!!!!***!!!!!!!!***!!!!!*!!** VER SER AS ROUTAS /USER/MANAGE-ADMIN ESTAO A LIGAR
+//CORRETAMENTE
+
 Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
+Route::put('/users/manage-administrators', [UserController::class, 'manageAdministrators']);
+
+//Route::put('vcards/{vcard}/customUpdate', [VCardController::class, 'customUpdate']);
+
+
 
 // VCARDs
 Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
