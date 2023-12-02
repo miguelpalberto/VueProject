@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
+use App\Http\Requests\ChangeVCardPasswordRequest;
 use App\Models\VCard;
 use Illuminate\Http\Request;
 use App\Models\DefaultCategory;
@@ -11,6 +13,8 @@ use App\Http\Requests\VCardRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
+use function Symfony\Component\String\b;
+
 class VCardController extends Controller
 {
     // esta função só deve ser chamada por um administrador (falta implementar a autorização)
@@ -19,22 +23,9 @@ class VCardController extends Controller
         return VCard::all();
     }
 
-    public function show($phoneNumber)
+    public function show(VCard $vcard)
     {
-        $vCard = VCard::find($phoneNumber);
-
-        if (!$vCard) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, vCard with phone number "' . $phoneNumber . '" cannot be found'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully retrieved vCard',
-            'data' => $vCard
-        ], 200);
+        return $vcard;
     }
 
     public function store(VCardRequest $request)
@@ -53,7 +44,7 @@ class VCardController extends Controller
             $newVCard->max_debit = 5000;
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
-          
+
             if ($request->hasFile('photo_file')) { 
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
@@ -111,8 +102,8 @@ class VCardController extends Controller
         return $vCard;
     }
 
-
-    public function block(VCard $vcard){
+    public function block(VCard $vcard)
+    {
         //falta implementar a autorização
         if ($vcard->blocked) {
             return response()->json([
@@ -163,6 +154,39 @@ class VCardController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Successfully deleted vCard'
+        ], 200);
+    }
+
+    public function changeConfirmationCode(VCard $vcard, ChangeVCardConfirmationCodeRequest $request)
+    {
+        if (!Hash::check($request->password, $vcard->password)) {
+            return response()->json([
+                'errors' => [
+                    'password' => [
+                        'The password is incorrect'
+                    ]
+                ]
+            ], 422);
+        }
+
+        if (Hash::check($request->confirmation_code, $vcard->confirmation_code)) {
+            return response()->json([
+                'errors' => [
+                    'confirmation_code' => [
+                        'The new confirmation code must be different from the current one'
+                    ]
+                ]
+            ], 422);
+        }
+
+        $validRequest = $request->validated();
+
+        $vcard->confirmation_code = bcrypt($validRequest['confirmation_code']);
+        $vcard->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully changed confirmation code'
         ], 200);
     }
 

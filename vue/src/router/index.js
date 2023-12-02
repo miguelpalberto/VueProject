@@ -8,6 +8,8 @@ import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import Categories from '../components/categories/Categories.vue'
+import ChangePassword from '../components/auth/ChangePassword.vue'
+import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +33,16 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: Register
+        },
+        {
+            path: '/change-password',
+            name: 'changePassword',
+            component: ChangePassword
+        },
+        {
+            path: '/change-confirmation-code',
+            name: 'changeConfirmationCode',
+            component: ChangeConfirmationCode
         },
         {
             path: '/transactions',
@@ -63,8 +75,10 @@ const router = createRouter({
 })
 
 const publicRouteNames = ['login', 'register', 'home']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createtransaction']
+const adminOnlyRouteNames = ['createvCardtransaction']
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
     const token = sessionStorage.getItem('token')
 
@@ -74,17 +88,29 @@ router.beforeEach(async (to, from) => {
             await authStore.loadUser()
         } catch (error) {
             sessionStorage.removeItem('token')
-            return { name: 'login' }
+            return next({ name: 'login' })
         }
     }
 
     if (!authStore.isAuthenticated && !publicRouteNames.includes(to.name)) {
-        return { name: 'home' }
+        return next({ name: 'home' })
     }
 
     if (authStore.isAuthenticated && publicRouteNames.includes(to.name)) {
-        return { name: 'dashboard' }
+        return next({ name: 'dashboard' })
     }
+
+    //vcard only routes
+    if (authStore.isAuthenticated && authStore.isAdmin && vcardOnlyRouteNames.includes(to.name)) {
+        return next({ name: 'dashboard' })
+    }
+
+    //admin only routes
+    if (authStore.isAuthenticated && !authStore.isAdmin && adminOnlyRouteNames.includes(to.name)) {
+        return next({ name: 'dashboard' })
+    }
+
+    next()
 })
 
 export default router

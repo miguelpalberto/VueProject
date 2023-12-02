@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(
         // AUTH USERS
         Route::get('authUsers/me', [AuthUserController::class, 'me']);
         Route::get('authUsers', [AuthUserController::class, 'index']);
+        Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
 
         // TRANSACTIONS
         //Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//descomentar
@@ -54,6 +55,7 @@ Route::middleware('auth:api')->group(
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
         Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
+        Route::patch('vcards/{vcard}/changeConfirmationCode', [VCardController::class, 'changeConfirmationCode']);
         Route::get('vcards', [VCardController::class, 'index']);
         Route::get('vcards/{vcard}', [VCardController::class, 'show']);
         Route::put('vcards/{vcard}', [VCardController::class, 'update']);

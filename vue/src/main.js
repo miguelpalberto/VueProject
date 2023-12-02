@@ -12,7 +12,6 @@ import { io } from 'socket.io-client'
 import App from './App.vue'
 import router from './router'
 import Toast from "vue-toastification";
-import { setMask } from 'simple-mask-money'
 
 const app = createApp(App)
 
