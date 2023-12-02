@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        return User::all();
+    }
+
+    public function update(Request $request, User $user)
+    {
+        // Ve se exites the user
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Validar os dados 
+        $request->validate([
+            'name' => 'string|max:255',
+            'email' => 'email|unique:users,email,' . $user->id,
+            'password' => 'string|min:8|confirmed',
+            'custom_options' => 'nullable|array',
+            'custom_data' => 'nullable|string'
+        ]);
+
+        // Apenas o administrador pode atualizar informações do usuário
+        
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->has('custom_options')) {
+            $user->custom_options = $request->custom_options;
+        }
+
+        if ($request->has('custom_data')) {
+            $user->custom_data = $request->custom_data;
+        }
+
+        // guarda as cenas
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User information updated successfully',
+            'data' => $user
+        ], 200);
+    }
+
+
+    // VER A QUESTAO DAS POLITICAS MAS DEIXAR PARA JÁ
+    public function manageAdministrators(Request $request)
+    {
+        
+        if ($request->has('add')) {
+        
+        } elseif ($request->has('remove')) {
+           
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ação inválida. Use "add" ou "remove" para gerenciar administradores.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Administrador gerenciado com sucesso.'
+           
+        ], 200);
+    }
+
+
+    //todo: authorization admin
+    public function store(UserRequest $request)
+    {
+        $validRequest = $request->validated();
+
+        $user = DB::transaction(function () use ($validRequest, $request) {
+            $newUser = new User();
+            $newUser->name = $validRequest['name'];
+            $newUser->email = $validRequest['email'];
+            $newUser->password = $validRequest['password'];
+            $newUser->custom_options = $validRequest['custom_options'] ?? null;
+            $newUser->custom_data = $validRequest['custom_data'] ?? null;
+
+            $newUser->save();
+            return $newUser; //?
+
+        });
+
+        return $user;
+    }
+
+    //todo: authorization admin
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully deleted user'
+        ], 200);
+    }
+}
