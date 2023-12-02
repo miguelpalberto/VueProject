@@ -23,7 +23,7 @@ class CategoryRequest extends FormRequest
     {
         return [
             'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'type' => 'required|in:C,D',
             'custom_options' => 'sometimes|json',
             'custom_data' => 'sometimes|json',
@@ -33,7 +33,7 @@ class CategoryRequest extends FormRequest
     public function messages(): array//////
     {
         return [
-            'name.max' => 'The maximum character limit for the name is 255 characters',
+            'name.max' => 'The maximum character limit for the name is 50 characters',
             'name.required' => 'The name is required',
             'name.string' => 'The name must be a string',
             'type.required' => 'The transaction type is required',

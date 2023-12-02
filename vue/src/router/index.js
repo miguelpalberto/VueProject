@@ -8,6 +8,7 @@ import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import Categories from '../components/categories/Categories.vue'
+import Category from '../components/categories/Category.vue'
 import ChangePassword from '../components/auth/ChangePassword.vue'
 import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
 
@@ -70,6 +71,17 @@ const router = createRouter({
             path: '/categories',
             name: 'categories',
             component: Categories
+        },
+        {
+            path: '/categories/create',
+            name: 'createcategory',
+            component: Category
+        },
+        {
+            path: '/categories/:id/edit',
+            name: 'editCategory',
+            component: Category,
+            props: (route) => ({ id: parseInt(route.params.id) })
         },
     ]
 })
