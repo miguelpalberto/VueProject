@@ -10,6 +10,7 @@ import Transaction from '../components/transactions/Transaction.vue'
 import Categories from '../components/categories/Categories.vue'
 import ChangePassword from '../components/auth/ChangePassword.vue'
 import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
+import Profile from '../components/users/Profile.vue'
 import Admins from '../components/admins/Admins.vue'
 
 const router = createRouter({
@@ -34,6 +35,11 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: Register
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: Profile
         },
         {
             path: '/change-password',
