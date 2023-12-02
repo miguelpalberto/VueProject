@@ -9,6 +9,7 @@ import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import ChangePassword from '../components/auth/ChangePassword.vue'
 import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
+import Profile from '../components/users/Profile.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: Register
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: Profile
         },
         {
             path: '/change-password',

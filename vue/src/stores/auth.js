@@ -24,9 +24,15 @@ export const useAuthStore = defineStore('auth', () => {
             throw error;
         }
     }
-    
+
+    async function updateProfile(data) {
+        await axios.put("authUsers/me", data)
+        user.value.name = data.name
+        user.value.email = data.email
+    }
+
     function clearUser() {
         user.value = null;
     }
-    return { isAuthenticated, isAdmin, user, userName, userPhotoUrl, loadUser, clearUser };
+    return { isAuthenticated, isAdmin, user, userName, userPhotoUrl, loadUser, clearUser, updateProfile };
 })

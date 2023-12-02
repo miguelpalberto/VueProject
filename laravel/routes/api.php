@@ -39,26 +39,28 @@ Route::middleware('auth:api')->group(
 
         // AUTH USERS
         Route::get('authUsers/me', [AuthUserController::class, 'me']);
+        Route::put('authUsers/me', [AuthUserController::class, 'update']);
         Route::get('authUsers', [AuthUserController::class, 'index']);
         Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
-
+        
         // TRANSACTIONS
         //Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//descomentar
         Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
         Route::post('transactions', [TransactionController::class, 'store']);
-
+        
         // USERS
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
-
+        
         // VCARD
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']); //remove
+        Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
         Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
         Route::patch('vcards/{vcard}/changeConfirmationCode', [VCardController::class, 'changeConfirmationCode']);
         Route::get('vcards', [VCardController::class, 'index']);
         Route::get('vcards/{vcard}', [VCardController::class, 'show']);
-        Route::put('vcards/{vcard}', [VCardController::class, 'update']);
+        Route::delete('vcards/{vcard}/photo', [VCardController::class, 'deletePhoto']);
         Route::delete('vcards/{vcard}', [VCardController::class, 'destroy']);
 
 

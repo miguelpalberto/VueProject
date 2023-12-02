@@ -50,13 +50,15 @@ const clickMenuOption = () => {
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
           <li class="nav-item" v-if="!authStore.isAuthenticated">
-            <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'register' }" :to="{ name: 'register' }">
+            <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'register' }"
+              :to="{ name: 'register' }">
               <i class="bi bi-person-check-fill"></i>
               Register
             </router-link>
           </li>
           <li class="nav-item" v-if="!authStore.isAuthenticated">
-            <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">
+            <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'login' }"
+              :to="{ name: 'login' }">
               <i class="bi bi-box-arrow-in-right"></i>
               Login
             </router-link>
@@ -70,26 +72,23 @@ image">
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
               <li>
-                <a class="dropdown-item" href="#">
+                <router-link @click="clickMenuOption" class="dropdown-item" :class="{ active: $route.name == 'profile' }"
+                  :to="{ name: 'profile' }">
                   <i class="bi bi-person-square"></i>
                   Profile
-                </a>
-                <!-- <router-link @click="clickMenuOption" class="dropdown-item" :class="{ active: $route.name == 'User' && $route.params.id == 1 }"
-                  :to="{ name: 'User', params: { id: 1 } }">
-                  <i class="bi bi-person-square"></i>
-                  Profile
-                </router-link> -->
+                </router-link>
               </li>
               <li v-if="authStore.isAuthenticated">
-                <router-link @click="clickMenuOption" class="dropdown-item" :class="{ active: $route.name === 'changePassword' }"
-                  :to="{ name: 'changePassword' }">
+                <router-link @click="clickMenuOption" class="dropdown-item"
+                  :class="{ active: $route.name === 'changePassword' }" :to="{ name: 'changePassword' }">
                   <i class="bi bi-key-fill"></i>
                   Change password
                 </router-link>
               </li>
               <li>
-                <router-link @click="clickMenuOption" v-if="authStore.isAuthenticated && !authStore.isAdmin" class="dropdown-item"
-                  :class="{ active: $route.name === 'changeConfirmationCode' }" :to="{ name: 'changeConfirmationCode' }">
+                <router-link @click="clickMenuOption" v-if="authStore.isAuthenticated && !authStore.isAdmin"
+                  class="dropdown-item" :class="{ active: $route.name === 'changeConfirmationCode' }"
+                  :to="{ name: 'changeConfirmationCode' }">
                   <i class="bi bi-person-vcard"></i>
                   Change Confirmation Code
                 </router-link>
@@ -109,12 +108,13 @@ image">
 
   <div class="container-fluid">
     <div class="row">
-      <nav id="sidebarMenu" class="bg-light sidebar collapse"  :class="authStore.isAuthenticated ? 'd-md-block col-md-3 col-lg-2' : 'd-md-none'">
+      <nav id="sidebarMenu" class="bg-light sidebar collapse"
+        :class="authStore.isAuthenticated ? 'd-md-block col-md-3 col-lg-2' : 'd-md-none'">
         <div class="position-sticky pt-3">
           <ul v-if="authStore.isAuthenticated" class="nav flex-column">
             <li class="nav-item">
-              <router-link v-if="!authStore.isAdmin" @click="clickMenuOption" class="nav-link w-100 me-3" :class="{ active: $route.name === 'transactions' }"
-                :to="{ name: 'transactions' }">
+              <router-link v-if="!authStore.isAdmin" @click="clickMenuOption" class="nav-link w-100 me-3"
+                :class="{ active: $route.name === 'transactions' }" :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions
               </router-link>
@@ -164,13 +164,15 @@ image">
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item" v-if="!authStore.isAuthenticated">
-                <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'register' }" :to="{ name: 'register' }">
+                <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'register' }"
+                  :to="{ name: 'register' }">
                   <i class="bi bi-person-check-fill"></i>
                   Sign Up
                 </router-link>
               </li>
               <li class="nav-item" v-if="!authStore.isAuthenticated">
-                <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'login' }" :to="{ name: 'login' }">
+                <router-link @click="clickMenuOption" class="nav-link" :class="{ active: $route.name === 'login' }"
+                  :to="{ name: 'login' }">
                   <i class="bi bi-box-arrow-in-right"></i>
                   Login
                 </router-link>
@@ -183,11 +185,11 @@ image">
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink2">
                   <li>
-                    <!-- <router-link @click="clickMenuOption" class="dropdown-item" :class="{ active: $route.name == 'User' && $route.params.id == 1 }"
-                      :to="{ name: 'User', params: { id: 1 } }">
+                    <router-link @click="clickMenuOption" class="dropdown-item"
+                      :class="{ active: $route.name == 'profile' }" :to="{ name: 'profile' }">
                       <i class="bi bi-person-square"></i>
                       Profile
-                    </router-link> -->
+                    </router-link>
                   </li>
                   <li>
                     <router-link @click="clickMenuOption" v-if="authStore.isAuthenticated" class="dropdown-item"
@@ -197,8 +199,8 @@ image">
                     </router-link>
                   </li>
                   <li>
-                    <router-link @click="clickMenuOption" v-if="authStore.isAuthenticated && !authStore.isAdmin" class="dropdown-item"
-                      :class="{ active: $route.name === 'changeConfirmationCode' }"
+                    <router-link @click="clickMenuOption" v-if="authStore.isAuthenticated && !authStore.isAdmin"
+                      class="dropdown-item" :class="{ active: $route.name === 'changeConfirmationCode' }"
                       :to="{ name: 'changeConfirmationCode' }">
                       <i class="bi bi-person-vcard"></i>
                       Change Confirmation Code
@@ -218,7 +220,8 @@ image">
         </div>
       </nav>
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
+      <main class="ms-sm-auto px-md-4"
+        :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
         <div class="d-flex justify-content-end">
           <div class="alert alert-light" role="alert">
             <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
@@ -226,7 +229,9 @@ image">
             </h4>
           </div>
         </div>
-        <router-view />
+        <div class="container-fluid">
+          <router-view />
+        </div>
       </main>
     </div>
   </div>
