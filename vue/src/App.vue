@@ -35,7 +35,7 @@ const clickMenuOption = () => {
 <template>
   <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top flex-md-nowrap p-0 shadow">
     <div class="container-fluid">
-      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }"  @click="clickMenuOption">
+      <router-link class="navbar-brand col-md-3 col-lg-2 me-0 px-3" :to="{ name: 'home' }" @click="clickMenuOption">
         <img src="@/assets/logogta1.svg" alt="" width="30" height="30" class="d-inline-block align-text-top" />
         vCard
       </router-link>
@@ -109,11 +109,16 @@ image">
         :class="authStore.isAuthenticated ? 'd-md-block col-md-3 col-lg-2' : 'd-md-none'">
         <div class="position-sticky pt-3">
           <ul v-if="authStore.isAuthenticated" class="nav flex-column">
-            <li class="nav-item">
-              <router-link v-if="!authStore.isAdmin" @click="clickMenuOption" class="nav-link w-100 me-3"
+
+            <li class="nav-item d-flex justify-content-between align-items-center pe-3" v-if="!authStore.isAdmin">
+              <router-link @click="clickMenuOption" class="nav-link w-100 text-nowrap me-3"
                 :class="{ active: $route.name === 'transactions' }" :to="{ name: 'transactions' }">
                 <i class="bi bi-list-check"></i>
                 Transactions
+              </router-link>
+              <router-link class="link-secondary" :class="{ active: $route.name === 'createTransaction' }"
+                :to="{ name: 'createTransaction' }" @click="clickMenuOption">
+                <i class="bi bi-xs bi-plus-circle"></i>
               </router-link>
             </li>
             <li class="nav-item">

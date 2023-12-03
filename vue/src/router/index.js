@@ -58,12 +58,12 @@ const router = createRouter({
         },
         {
             path: '/transactions/create',
-            name: 'createtransaction',
+            name: 'createTransaction',
             component: Transaction
         },
         {
             path: '/vcards/:vcard/transactions/create',
-            name: 'createvCardtransaction',
+            name: 'createvCardTransaction',
             component: Transaction,
             props: (route) => ({ vcard: route.params.vcard })
         },
@@ -78,21 +78,17 @@ const router = createRouter({
             name: 'categories',
             component: Categories
         },
-        { path: '/admins', name: 'admins', component: Admins },
-        {
-            path: '/admins/:id',
-            name: 'User',
-            component: Admins,
-            //props: true,
-            // Replaced with the following line to ensure that id is a number
-            props: (route) => ({ id: parseInt(route.params.id) })
-        }
+        { 
+            path: '/admins',
+            name: 'admins',
+            component: Admins
+        },
     ]
 })
 
 const publicRouteNames = ['login', 'register', 'home']
-const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createtransaction']
-const adminOnlyRouteNames = ['createvCardtransaction']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction']
+const adminOnlyRouteNames = ['createvCardTransaction', 'admins',]
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
