@@ -3,21 +3,10 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import TransactionTable from "./TransactionTable.vue"
 import { useAuthStore } from '../../stores/auth';
+import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 
 const authStore = useAuthStore()
-
-const loadTransactions = () => {
-
-  const vcardId = authStore.user.username    // todo Change later when authentication is implemented
-  axios.get('vcards/' + vcardId + '/transactions')
-    .then((response) => {
-      console.log(response)//
-      transactions.value = response.data.data
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
+const transactions = ref([])
 
 const props = defineProps({
   transactionsTitle: {
@@ -26,12 +15,20 @@ const props = defineProps({
   },
 })
 
-const transactions = ref([])
+const loadTransactions = (page = 1) => {
+  const vcardId = authStore.user.username    // todo Change later when authentication is implemented
+  axios.get(`vcards/${vcardId}/transactions`, { params: { page: page } })
+    .then((response) => {
+      transactions.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
 
-onMounted(() => {//so depois de estar tudo carregado
+onMounted(() => {
   loadTransactions()
 })
-
 </script>
 
 <template>
@@ -40,7 +37,6 @@ onMounted(() => {//so depois de estar tudo carregado
       <h3>{{ transactionsTitle }}</h3>
     </div>
     <div class="mx-2 total-filtro">
-      <!-- <h5 class="mt-4">Total: {{ totalTasks }}</h5> -->
     </div>
   </div>
   <hr>
@@ -51,49 +47,14 @@ onMounted(() => {//so depois de estar tudo carregado
   <div class="mb-3 d-flex justify-content-between flex-wrap">
     <div class="mx-2 mt-2 flex-grow-1 filter-div">
       <label for="selectProject" class="form-label">Filter by entity:</label>
-      <!-- <select
-          class="form-select"
-          id="selectProject"
-          v-model="filterByProjectId"
-          >
-          <option value="-1">Any</option>
-          <option :value="null">-- No category --</option>
-          <option
-          v-for="prj in projects"
-            :key="prj.id"
-            :value="prj.id"
-          >{{prj.name}}</option>
-        </select> -->
     </div>
 
     <div class="mx-2 mt-2 flex-grow-1 filter-div">
       <label for="selectCompleted" class="form-label">Filter by category:</label>
-      <!-- <select
-          class="form-select"
-          id="selectCompleted"
-          v-model="filterByCompleted"
-          >
-          <option value="-1">Any</option>
-          <option value="0">Pending Tasks</option>
-          <option value="1">Completed Tasks</option>
-        </select> -->
     </div>
-
-        <!-- <div class="mx-2 mt-2">
-      <button
-      type="button"
-        class="btn btn-success px-4 btn-addtask"
-        @click="addTask"
-        ><i class="bi bi-xs bi-plus-circle"></i>&nbsp; Add Task</button>
-    </div> -->
   </div>
-  <transaction-table :transactions="transactions" :showId="true"></transaction-table>
-  <!-- dentro do transaction-table
-    :tasks="filteredTasks"
-    :showId="true"
-    :showOwner="false"
-    @edit="editTask"
-    @deleted="deletedTask" -->
+  <transaction-table :transactions="transactions.data"></transaction-table>
+  <Bootstrap5Pagination :data="transactions" @pagination-change-page="loadTransactions" />
 </template>
 
 
