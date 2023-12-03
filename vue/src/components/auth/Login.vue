@@ -30,9 +30,8 @@ const login = async () => {
     toast.success('Login successful')
   }
   catch (error) {
-    console.log(error)
     if (error.response.data?.error){
-      toast.error('User credentials are invalid')
+      toast.error(error.response.data.error)
     }
     else{
       toast.error('Something went wrong. Please try again')
