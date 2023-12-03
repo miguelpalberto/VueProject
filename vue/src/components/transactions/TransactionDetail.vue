@@ -88,9 +88,7 @@ onBeforeUnmount(() => {
         <option :value="null" selected>--Choose a Payment Type--</option>
         <option v-for="paymentType in paymentTypes" :key="paymentType" :value="paymentType">{{ paymentType }}</option>
       </select>
-      <div class="invalid-feedback" v-if="errors && errors.payment_type">
-        {{ errors.payment_type[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="payment_type"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputPaymentReference" class="form-label">Payment Reference<span class="text-danger">*</span>
@@ -99,12 +97,8 @@ onBeforeUnmount(() => {
       <input type="text" class="form-control"
         :class="{ 'is-invalid': errors && errors.payment_reference || errors.pair_vcard }" :disabled="isParentLoading"
         id="inputPaymentReference" required v-model="editingTransaction.payment_reference">
-      <div class="invalid-feedback" v-if="errors && errors.payment_reference">
-        {{ errors.payment_reference[0] }}
-      </div>
-      <div class="invalid-feedback" v-if="errors && errors.pair_vcard">
-        {{ errors.pair_vcard[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="payment_reference"></field-error-message>
+      <field-error-message :errors="errors" fieldName="pair_vcard"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputValue" class="form-label">Value<span class="text-danger">*</span>
@@ -112,9 +106,7 @@ onBeforeUnmount(() => {
       </label>
       <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.value }" min="0"
         :disabled="isParentLoading" id="inputValue" required v-model="editingTransaction.value">
-      <div class="invalid-feedback" v-if="errors && errors.value">
-        {{ errors.value[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="value"></field-error-message>
     </div>
     <div class="mb-1" v-if="!isAdmin">
       <label for="inputCategory" class="form-label">Category</label>
@@ -123,17 +115,14 @@ onBeforeUnmount(() => {
         <option :value="null" selected>--No Category--</option>
         <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
       </select>
-      <div class="invalid-feedback" v-if="errors && errors.category_id">
-        {{ errors.category_id[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="category_id"></field-error-message>
     </div>
     <div class="mb-1" v-if="!isAdmin">
       <label for="inputDescription" class="form-label">Description</label>
       <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.description }"
         :disabled="isParentLoading" id="inputDescription" required v-model="editingTransaction.description">
-      <div class="invalid-feedback" v-if="errors && errors.description">
-        {{ errors.description[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="description"></field-error-message>
+
     </div>
     <div class="p-2 rounded-3" v-if="!isAdmin">
       <label for="inputConfirmationCode" class="form-label">
@@ -145,9 +134,9 @@ onBeforeUnmount(() => {
       <input type="password" class="form-control" :class="{ 'is-invalid': errors && errors.confirmation_code }"
         :disabled="isParentLoading" id="inputConfirmationCode" maxlength="4" required
         v-model="editingTransaction.confirmation_code">
-      <div class="invalid-feedback" v-if="errors && errors.confirmation_code">
-        {{ errors.confirmation_code[0] }}
-      </div>
+        
+      <field-error-message :errors="errors" fieldName="confirmation_code"></field-error-message>
+
     </div>
     <div class="mb-5 d-flex">
       <button :disabled="isParentLoading" type="button" class="btn btn-primary px-5" @click="save">
