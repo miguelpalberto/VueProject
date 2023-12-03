@@ -97,4 +97,31 @@ const updateProfileConfirmed = async (isConfirmed) => {
             <span role="Save">Save</span>
         </button>
     </div>
+    <div class="mt-4 d-grid gap-3 justify-content-center">
+        <div class="g-col-12">
+            <router-link class="btn btn-dark w-100" :class="{ disabled: isEditing }" :disabled="isEditing" :to="{ name: 'changePassword' }">
+                
+                <i class="bi bi-key-fill"></i>
+                Change Password
+            </router-link>
+        </div>
+        <div class="g-col-12">
+            <router-link class="btn btn-dark w-100" :class="{ disabled: isEditing }" :to="{ name: 'changeConfirmationCode' }">
+                <i class="bi bi-person-vcard"></i>
+                Change Confirmation Code
+            </router-link>
+        </div>
+        <div class="g-col-12">
+            <router-link class="btn btn-danger w-100" :class="{ disabled: isEditing }" :to="{ name: 'dismissVcard' }">
+                Dismiss VCard
+            </router-link>
+        </div>
+    </div>
 </template>
+<style scoped>
+    .disabled {
+        pointer-events: none;
+        cursor: default;
+        opacity: 0.5;
+    }
+</style>

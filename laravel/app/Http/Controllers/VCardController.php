@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UploadPhotoRequest;
 use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
+use App\Http\Requests\DeleteVCardRequest;
 
 class VCardController extends Controller
 {
@@ -115,12 +116,36 @@ class VCardController extends Controller
         ], 200);
     }
 
-    public function destroy(VCard $vcard)
+    public function destroy(VCard $vcard, DeleteVCardRequest $request)
     {
+        $validRequest = $request->validated();
+
+        if (!Hash::check($validRequest['password'], $vcard->password)) {
+            return response()->json([
+                'errors' => [
+                    'password' => [
+                        'The password is incorrect'
+                    ]
+                ]
+            ], 422);
+        }
+
+        if (!Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
+            return response()->json([
+                'errors' => [
+                    'confirmation_code' => [
+                        'The confirmation code is incorrect'
+                    ]
+                ]
+            ], 422);
+        }
+        
         $hasTransactions = $vcard->transactions()->exists();
 
         if ($hasTransactions) {
             $vcard->delete();  // Soft delete
+            $vcard->transactions()->delete();
+            $vcard->categories()->delete();
         } else {
             $vcard->categories()->forceDelete();
             $vcard->forceDelete();  // Hard delete

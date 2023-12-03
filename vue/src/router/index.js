@@ -8,9 +8,10 @@ import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import Categories from '../components/categories/Categories.vue'
-import ChangePassword from '../components/auth/ChangePassword.vue'
-import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
+import ChangePassword from '../components/users/ChangePassword.vue'
+import ChangeConfirmationCode from '../components/users/ChangeConfirmationCode.vue'
 import Profile from '../components/users/Profile.vue'
+import DismissVCard from '../components/users/DismissVCard.vue'
 import Admins from '../components/admins/Admins.vue'
 
 const router = createRouter({
@@ -83,11 +84,16 @@ const router = createRouter({
             name: 'admins',
             component: Admins
         },
+        { 
+            path: '/dismissVcard',
+            name: 'dismissVcard',
+            component: DismissVCard
+        },
     ]
 })
 
 const publicRouteNames = ['login', 'register', 'home']
-const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction', 'dismissVcard']
 const adminOnlyRouteNames = ['createvCardTransaction', 'admins',]
 
 router.beforeEach(async (to, from, next) => {

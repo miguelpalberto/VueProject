@@ -1,27 +1,14 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
-import { useRouter } from 'vue-router'
-
-import axios from 'axios'
 
 const authStore = useAuthStore()
-const router = useRouter()
 
 const logout = async () => {
-  try {
-    await axios.post('/auth/logout')
-  } catch (error) {
-    console.log(error)
-  } finally {
-    authStore.clearUser()
-    delete axios.defaults.headers.common.Authorization
-    sessionStorage.removeItem('token')
-    clickMenuOption()
-    router.push({ name: 'login' })
-  }
+  authStore.logout()
+  clickMenuOption()
 }
+
 const clickMenuOption = () => {
   const domReference = document.getElementById('buttonSidebarExpandId')
   if (domReference) {
@@ -199,7 +186,7 @@ image">
       </nav>
 
       <main class="ms-sm-auto px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-center">
           <div class="alert alert-light" role="alert">
             <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
               Current Balance: {{ authStore.user.balance }}€
