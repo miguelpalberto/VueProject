@@ -121,14 +121,14 @@ image">
                 <i class="bi bi-xs bi-plus-circle"></i>
               </router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="!authStore.isAdmin">
               <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
                 :class="{ active: $route.name === 'categories' }" :to="{ name: 'categories' }">
                 <i class="bi bi-list-check"></i>
                 Categories
               </router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="authStore.isAdmin">
               <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
                 :class="{ active: $route.name === 'admins' }" :to="{ name: 'admins' }">
                 <i class="bi bi-list-check"></i>

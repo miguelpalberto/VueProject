@@ -152,9 +152,7 @@ onMounted(() => {
                 <span role="delete">Delete</span>
             </button>
         </div>
-        <div class="invalid-feedback" v-if="errors && errors.photo_file">
-            {{ errors.photo_file[0] }}
-        </div>
+      <field-error-message :errors="errors" fieldName="photo_file"></field-error-message>
     </div>
 </template>
 <style scoped>

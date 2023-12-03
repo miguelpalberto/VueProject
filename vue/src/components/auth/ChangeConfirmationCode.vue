@@ -62,27 +62,21 @@ const changeConfirmationCode = async () => {
       <input type="password" class="form-control"
         :class="{ 'is-invalid': errors && errors.password }" id="inputPassword"
         :disabled="isLoading" required v-model="formData.password">
-      <div class="invalid-feedback" v-if="errors && errors.password">
-        {{ errors.password[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="password"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputNewConfirmationCode" class="form-label">New Confirmation Code<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmCodeIsValid || (errors && (errors.confirmation_code || errors.confirmation_code_confirmation)) }" class="form-control"
         id="inputNewConfirmationCode" :disabled="isLoading" required v-model="formData.confirmation_code">
-      <div class="invalid-feedback" v-if="errors && errors.confirmation_code">
-        {{ errors.confirmation_code[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="confirmation_code"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputConfirmationCodeConfirm" class="form-label">Confirm New Confirmation Code<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmCodeIsValid || errors && errors.confirmation_code_confirmation }" class="form-control"
         id="inputConfirmationCodeConfirm" :disabled="isLoading" required v-model="formData.confirmation_code_confirmation">
-      <div class="invalid-feedback" v-if="errors && errors.confirmation_code_confirmation">
-        {{ errors.confirmation_code_confirmation[0] }}
-      </div>
+        <field-error-message :errors="errors" fieldName="confirmation_code_confirmation"></field-error-message>
     </div>
     <div class="d-flex justify-content-center">
       <button type="submit" class="btn btn-primary px-5" @click="changeConfirmationCode" :disabled="isLoading || !confirmCodeIsValid">
