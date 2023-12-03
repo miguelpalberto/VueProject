@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
+use App\Http\Requests\ChangeVCardPasswordRequest;
 use App\Models\VCard;
 use Illuminate\Http\Request;
 use App\Models\DefaultCategory;
@@ -10,9 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VCardRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\UploadPhotoRequest;
-use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
+
+use function Symfony\Component\String\b;
 
 class VCardController extends Controller
 {
@@ -75,6 +76,30 @@ class VCardController extends Controller
         $request = Request::create(env('PASSPORT_URL') . '/api/auth/login', 'POST');
         $response = Route::dispatch($request);
         return json_decode((string) $response->content(), true);
+    }
+
+    public function update(VCard $vCard, VCardRequest $request)
+    {
+        $validRequest = $request->validated();
+
+        $vCard->name = $validRequest['name'];
+        $vCard->email = $validRequest['email'];
+        $vCard->confirmation_code = $validRequest['confirmation_code'];
+        $vCard->password = Hash::make($validRequest['password']);
+        $vCard->blocked = $validRequest['blocked'];
+        $vCard->balance = $validRequest['balance'];
+        $vCard->max_debit = $validRequest['max_debit'];
+        $vCard->customOptions = $validRequest['custom_options'] ?? null;
+        $vCard->customData = $validRequest['custom_data'] ?? null;
+
+        if ($request->hasFile('photo_file')) {
+            $path = $request->photo_file->store('public/photos');
+            $vCard->photo_url = basename($path);
+        }
+
+        $vCard->save();
+
+        return $vCard;
     }
 
     public function block(VCard $vcard)
@@ -162,42 +187,6 @@ class VCardController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Successfully changed confirmation code'
-        ], 200);
-    }
-
-    public function deletePhoto(VCard $vcard){
-        
-        if ($vcard->photo_url != null) {
-            Storage::delete('public/fotos/' . $vcard->photo_url);
-        }
-
-        $vcard->photo_url = null;
-        $vcard->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully removed photo'
-        ], 200);
-    }
-
-    public function uploadPhoto(VCard $vcard, UploadPhotoRequest $request){
-        $validRequest = $request->validated();
-
-        //remove from storage
-        if ($vcard->photo_url != null) { 
-            Storage::delete('public/fotos/' . $vcard->photo_url);
-        }
-
-        if ($request->hasFile('photo_file')) {
-            $path = $request->photo_file->store('public/fotos');
-            $vcard->photo_url = basename($path);
-        }
-
-        $vcard->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully uploaded photo',
         ], 200);
     }
 

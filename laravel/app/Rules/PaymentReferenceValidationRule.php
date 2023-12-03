@@ -38,32 +38,33 @@ class PaymentReferenceValidationRule implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $isValid = false;
+        $passes = false;
+        $errorMessage = '';
 
         switch ($this->data['payment_type']) {
             case 'VCARD':
-                $isValid = preg_match('/^9\d{8}$/', $value) && VCard::where('phone_number', $value)->exists();
+                $passes = preg_match('/^9\d{8}$/', $value) && VCard::where('phone_number', $value)->exists();
                 break;
             case 'MBWAY':
-                $isValid = preg_match('/^9\d{8}$/', $value);
+                $passes = preg_match('/^9\d{8}$/', $value);
                 break;
             case 'PAYPAL':
-                $isValid = filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+                $passes = filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
                 break;
             case 'IBAN':
-                $isValid = preg_match('/^[A-Z]{2}\d{23}$/', $value);
+                $passes = preg_match('/^[A-Z]{2}\d{23}$/', $value);
                 break;
             case 'MB':
-                $isValid = preg_match('/^\d{5}-\d{9}$/', $value);
+                $passes = preg_match('/^\d{5}-\d{9}$/', $value);
                 break;
             case 'VISA':
-                $isValid = preg_match('/^4\d{15}$/', $value);
+                $passes = preg_match('/^4\d{15}$/', $value);
                 break;
             default:
-                $isValid = false;
+                $passes = false;
         }
 
-        if (!$isValid) {
+        if (!$passes) {
             $fail("The payment reference is invalid.");
         }
     }

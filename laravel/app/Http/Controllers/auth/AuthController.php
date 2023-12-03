@@ -31,7 +31,7 @@ class AuthController extends Controller
             return json_decode((string) $response->content(), true);
         } else {
             return response()->json(
-                ['error' => 'User credentials are invalid'],
+                ['msg' => 'User credentials are invalid'],
                 $errorCode
             );
         }

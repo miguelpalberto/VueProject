@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
 import { useToast } from "vue-toastification";
-import AvatarPreviewer from '../users/AvatarPreviewer.vue';
+import AvatarPreviewer from '../images/AvatarPreviewer.vue';
 import avatarNoneUrl from "@/assets/avatar-none.png";
 
 const router = useRouter()
@@ -40,7 +40,6 @@ watch(confirmPasswordIsValid, (isValid) => {
     errors.value.confirmPassword = ['Passwords do not match']
   }
 })
-
 watch(confirmConfirmationCodeIsValid, (isValid) => {
   if (isValid) {
     delete errors.value.confirmConfirmationCode
@@ -102,7 +101,8 @@ const register = async () => {
     <h3 class="mt-5 mb-3">Register</h3>
     <hr>
     <div class="mb-1">
-      <AvatarPreviewer @input-file-changed="onInputFileChanged" :is-parent-loading="isLoading" :imgUrl="avatarNoneUrl"/>
+      <AvatarPreviewer @input-file-changed="onInputFileChanged" :is-parent-loading="isLoading" :imgUrl="avatarNoneUrl" :alt="Avatar" :allowUpload="true"
+        :allowDelete="false" />
       <div class="invalid-feedback" v-if="errors && errors.photo_file">
         {{ errors.photo_file[0] }}
       </div>

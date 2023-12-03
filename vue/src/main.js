@@ -13,10 +13,6 @@ import App from './App.vue'
 import router from './router'
 import Toast from "vue-toastification";
 
-
-import FieldErrorMessage from './components/global/FieldErrorMessage.vue'
-import ConfirmationDialog from './components/global/ConfirmationDialog.vue'
-
 const app = createApp(App)
 
 const apiDomain = import.meta.env.VITE_API_DOMAIN
@@ -55,8 +51,5 @@ app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
 app.provide('axiosExternal', axiousExternal)
 //app.provive('socket',io(wsConnection))
-
-app.component('FieldErrorMessage', FieldErrorMessage)
-app.component('ConfirmationDialog', ConfirmationDialog)
 
 app.mount('#app')

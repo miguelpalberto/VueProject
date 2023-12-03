@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\VCard;
 use App\Models\AuthUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\AuthUserResource;
-use App\Http\Requests\AuthUserUpdateRequest;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Models\User;
+use App\Models\VCard;
 
 class AuthUserController extends Controller
 {
@@ -51,29 +50,6 @@ class AuthUserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Successfully changed password'
-        ], 200);
-    }
-    
-    public function update(AuthUserUpdateRequest $request)
-    {
-        $validRequest = $request->validated();
-        $user = $request->user();
-        $actualUser = null;
-
-        if ($user->user_type == 'A') {
-            $actualUser = User::find($user->id);
-        } else {
-            $actualUser = VCard::find($user->username);
-        }
-
-        $actualUser->name = $validRequest['name'];
-        $actualUser->email = $validRequest['email'];
-
-        $actualUser->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully updated vCard',
         ], 200);
     }
 }
