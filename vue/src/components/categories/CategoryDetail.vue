@@ -51,7 +51,24 @@ const cancel = () => {
   emit('cancel', editingCategory.value)
 }
 
-
+//  data() => {
+//     return {
+//       types: ['C', 'D'], // Your original types array
+//       editingCategory: {
+//         type: null, // Initial value, you can set it based on your requirements
+//       },
+//       isParentLoading: false, // Assuming you have this variable in your component
+//       errors: {
+//         payment_type: false, // Assuming you have error handling for payment_type
+//       },
+//     };
+//   },
+//   computed: {
+//     filteredTypes() {
+//       // Filter the types array to only include 'C' and 'D'
+//       return this.types.filter(type => ['C', 'D'].includes(type));
+//     },
+//   }
 
 
 

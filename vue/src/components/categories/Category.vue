@@ -6,6 +6,12 @@ import { useAuthStore } from '../../stores/auth'
 import { useToast } from 'vue-toastification'
 import CategoryDetail from './CategoryDetail.vue'
 
+
+
+const router = useRouter()
+const authStore = useAuthStore()
+const toast = useToast()
+
 const newCategory = () => {
     return {
         id: null,
@@ -15,20 +21,21 @@ const newCategory = () => {
     }
 }
 
-const router = useRouter()
-const authStore = useAuthStore()
-const toast = useToast()
-
-
 const isLoading = ref(false)
 const category = ref(newCategory())
 const errors = ref({})
+
 
 const props = defineProps({
     id: {
         type: Number,
         default: null
     },
+})
+
+//rever
+const backUrl = computed(() => {
+    return props.vcard ? '/vcards/' + props.vcard + '/categories' : '/categories'
 })
 
 const loadCategory = (id) => {
@@ -47,7 +54,7 @@ const loadCategory = (id) => {
 
 const save = () => {
     isLoading.value = true
-    delete errors.value
+    //delete errors.value
 
     if (!validateInsert()) {
         isLoading.value = false
@@ -59,9 +66,11 @@ const save = () => {
         insertCategory(category.value)
     })
     .catch((error) => {
-        if (error.response.status === 422) {
-            generateExternalErrors(error.response.data.message)
-        }
+        console.log(error)
+         if (error.response.status === 422) {
+        //     generateExternalErrors(error.response.data.message)
+                errors.value = error.response.data.errors
+         }
         isLoading.value = false
         toast.error('Error creating category')
     })
@@ -86,6 +95,27 @@ const validateInsert = () => {
 
     return isValid
 }
+
+const insertCategory = (category) => {
+    axios.post('categories', category)
+        .then(() => {
+            toast.success('Category created')
+            if (!props.isAdmin)
+                authStore.loadUser()
+            router.push({ path: backUrl.value })
+        })
+        .catch((error) => {
+            if (error.response.status === 422) {
+                errors.value = error.response.data.errors
+            }
+
+            toast.error('Error creating category')
+        })
+        .finally(() => {
+            isLoading.value = false
+        })
+}
+
 
 const cancel = () => {
     router.push({ name: 'categories' })
