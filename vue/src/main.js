@@ -2,6 +2,7 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "vue-toastification/dist/index.css";
+import { vue3Debounce } from 'vue-debounce'
 import "bootstrap"
 
 import { createApp } from 'vue'
@@ -58,5 +59,7 @@ app.provide('axiosExternal', axiousExternal)
 
 app.component('FieldErrorMessage', FieldErrorMessage)
 app.component('ConfirmationDialog', ConfirmationDialog)
+
+app.directive('debounce', vue3Debounce({lock: true}))
 
 app.mount('#app')
