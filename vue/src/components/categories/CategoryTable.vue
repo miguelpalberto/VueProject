@@ -2,9 +2,8 @@
 // import axios from 'axios'
 // import { ref, watch, watchEffect } from 'vue'
 import axios from 'axios'
-import { useToast } from "vue-toastification"
-import { ref, watch, computed } from "vue"
-
+import { useToast } from 'vue-toastification'
+import { ref, watch, computed } from 'vue'
 
 const toast = useToast()
 const props = defineProps({
@@ -60,21 +59,47 @@ const deleteClick = (category) => {
     deleteConfirmationDialog.value.show()
 }
 
-const deleteCategoryConfirmed = async () => {
-    try {
-        const response = await axios.delete('categories/' + categoryToDelete.value.id)
-        let deletedCategory = response.data.data
-        toast.info(`Category ${categoryToDeleteDescription.value} was deleted`)
-        emit('deleted', deletedCategory)
-    } catch (error) {
-        console.log(error)
-        toast.error(`It was not possible to delete Category ${categoryToDeleteDescription.value}!`)
+const deleteCategoryConfirmed = async (isConfirmed) => {
+    if (isConfirmed) {
+        try {
+            const response = await axios.delete('categories/' + categoryToDelete.value.id)
+            let deletedCategory = response.data.data
+            toast.info(`Category ${categoryToDeleteDescription.value} was deleted`)
+            emit('deleted', deletedCategory)
+        } catch (error) {
+            console.log(error)
+            toast.error(
+                `It was not possible to delete Category ${categoryToDeleteDescription.value}!`
+            )
+        }
+    }
+}
+//apagar:
+const updateProfileConfirmed = async (isConfirmed) => {
+    if (!isConfirmed) {
+        cancelEditing()
+    } else {
+        isLoading.value = true
+        try {
+            await authStore.updateProfile(formData.value)
+            cancelEditing()
+            toast.success('Profile updated successfully')
+        } catch (error) {
+            if (error.response.status === 422) {
+                console.log(error)
+                errors.value = error.response.data.errors
+            }
+
+            toast.error('Something went wrong please try again')
+        } finally {
+            isLoading.value = false
+        }
     }
 }
 
 const categoryToDeleteDescription = computed(() =>
     categoryToDelete.value
-        ? `#${categoryToDelete.value.id} (${categoryToDelete.value.description})`
+        ? `${categoryToDelete.value.name} (#${categoryToDelete.value.id})`
         : ''
 )
 </script>
@@ -83,8 +108,8 @@ const categoryToDeleteDescription = computed(() =>
     <confirmation-dialog
         ref="deleteConfirmationDialog"
         confirmationBtn="Delete category"
-        :msg="`Do you really want to delete the category ${categoryToDeleteDescription}?`"
-        @confirmed="deleteCategoryConfirmed"
+        :msg="`Do you really want to delete category ${categoryToDeleteDescription}?`"
+        @response="deleteCategoryConfirmed"
     >
     </confirmation-dialog>
 
