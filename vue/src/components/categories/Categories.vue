@@ -19,6 +19,16 @@ const loadCategories = () => {
       console.log(error)
     })
 }
+const editCategory = (category) => {
+    router.push({ name: 'Category', params: { id: category.id } })
+}
+
+const deletedCategory = (deletedCategory) => {
+    let idx = categories.value.findIndex((t) => t.id === deletedCategory.id)
+    if (idx >= 0) {
+      categories.value.splice(idx, 1)
+    }
+}
 const debitCategories = computed(() => {
   return categories.value.filter(t => t.type == 'D')
 })
@@ -82,19 +92,24 @@ onMounted(() => {//so depois de estar tudo carregado
   <div class="row">
     <div class="col-xs-12 col-md-6">
       <h4>Debit</h4>
-      <category-table :categories="debitCategories" :showId="true"></category-table>
+      <category-table 
+      :categories="debitCategories" 
+      :showId="true"
+      @edit="editCategory"
+      @deleted="deletedCategory">
+      </category-table>
     </div>
     <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
-      <category-table :categories="creditCategories" :showId="true"></category-table>
+      <category-table 
+      :categories="creditCategories" 
+      :showId="true"     
+      @edit="editCategory"
+      @deleted="deletedCategory">
+    </category-table>
     </div>
   </div>
-  <!-- dentro do transaction-table
-    :tasks="filteredTasks"
-    :showId="true"
-    :showOwner="false"
-    @edit="editTask"
-    @deleted="deletedTask" -->
+
 </template>
 
 
@@ -107,7 +122,7 @@ onMounted(() => {//so depois de estar tudo carregado
   margin-top: 0.35rem;
 }
 
-.btn-addtask {
+.btn-addcategory{
   margin-top: 1.85rem;
 }
 </style>
