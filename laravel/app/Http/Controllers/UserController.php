@@ -11,7 +11,16 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        return User::all();
+        $queryable = User::query()->orderBy('name', 'asc');
+
+        $filterByNameOrEmail = $request->query('search');
+
+        if ($filterByNameOrEmail) {
+            $queryable->where('name', 'like', "%{$filterByNameOrEmail}%")
+                ->orWhere('email', 'like', "%{$filterByNameOrEmail}%");
+        }
+
+        return $queryable->paginate(10);  
     }
 
     //todo: authorization admin
