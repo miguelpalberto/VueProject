@@ -3,9 +3,11 @@ import axios from 'axios'
 import { ref, onMounted, computed } from 'vue'
 import CategoryTable from "./CategoryTable.vue"
 import { useAuthStore } from '../../stores/auth';
+import { useRouter } from 'vue-router'
 
 
 const authStore = useAuthStore()
+const router = useRouter()
 
 const loadCategories = () => {
 

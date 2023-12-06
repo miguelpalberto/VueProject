@@ -77,11 +77,6 @@ const router = createRouter({
             component: Transaction,
             props: (route) => ({ id: parseInt(route.params.id) })
         },
-        {
-            path: '/categories',
-            name: 'categories',
-            component: Categories
-        },
         { 
             path: '/admins',
             name: 'admins',
@@ -93,12 +88,17 @@ const router = createRouter({
             component: DismissVCard
         },
         {
+            path: '/categories',
+            name: 'categories',
+            component: Categories
+        },
+        {
             path: '/categories/create',
             name: 'createcategory',
             component: Category
         },
         {
-            path: '/categories/:id/edit',//path: '/categories/:id',
+            path: '/categories/:id',//path: '/categories/:id/edit',
             name: 'editCategory',
             component: Category,
             props: (route) => ({ id: parseInt(route.params.id) })
