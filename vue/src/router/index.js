@@ -55,6 +55,7 @@ const router = createRouter({
             name: 'createtransaction',
             component: Transaction
         },
+
         {
             path: '/vcards/:vcard/transactions/create',
             name: 'createvCardtransaction',
@@ -78,11 +79,12 @@ const router = createRouter({
             component: Category
         },
         {
-            path: '/categories/:id/edit',
+            path: '/categories/:id/edit',//path: '/categories/:id',
             name: 'editCategory',
             component: Category,
             props: (route) => ({ id: parseInt(route.params.id) })
         },
+        
     ]
 })
 

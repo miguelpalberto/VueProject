@@ -63,7 +63,10 @@ const save = () => {
 
     axios.post('categories', category.value)
     .then(() => {
-        insertCategory(category.value)
+        toast.success('Category created')
+            if (!props.isAdmin)
+                authStore.loadUser()
+            router.push({ path: backUrl.value })
     })
     .catch((error) => {
         console.log(error)
@@ -72,7 +75,7 @@ const save = () => {
                 errors.value = error.response.data.errors
          }
         isLoading.value = false
-        toast.error('Error creating category')
+        toast.error('Error creating category' )
     })
 }
 
@@ -96,25 +99,6 @@ const validateInsert = () => {
     return isValid
 }
 
-const insertCategory = (category) => {
-    axios.post('categories', category)
-        .then(() => {
-            toast.success('Category created')
-            if (!props.isAdmin)
-                authStore.loadUser()
-            router.push({ path: backUrl.value })
-        })
-        .catch((error) => {
-            if (error.response.status === 422) {
-                errors.value = error.response.data.errors
-            }
-
-            toast.error('Error creating category')
-        })
-        .finally(() => {
-            isLoading.value = false
-        })
-}
 
 
 const cancel = () => {
