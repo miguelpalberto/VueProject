@@ -30,7 +30,7 @@ const login = async () => {
     toast.success('Login successful')
   }
   catch (error) {
-    if (error.response.data?.error){
+    if (error.response?.data?.error){
       toast.error(error.response.data.error)
     }
     else{
