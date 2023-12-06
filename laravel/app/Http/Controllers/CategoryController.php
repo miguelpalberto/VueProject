@@ -21,7 +21,6 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request){
         $validRequest = $request->validated();
 
-
         //check if category combination exists
         if (Category::where('vcard', $validRequest['vcard'])->where('type', $validRequest['type'])->where('name', $validRequest['name'])->exists()) {
             $typeToPrettyString = $validRequest['type'] === 'C' ? 'Credit' : 'Debit';
@@ -33,7 +32,6 @@ class CategoryController extends Controller
                 ]
             ], 422);
         }
-
 
         $category = new Category();
         $category->vcard = $validRequest['vcard'];
@@ -49,6 +47,17 @@ class CategoryController extends Controller
 
     public function update(Category $category, CategoryRequest $request){
         $validRequest = $request->validated();
+        
+        if (Category::where('vcard', $validRequest['vcard'])->where('type', $validRequest['type'])->where('name', $validRequest['name'])->exists()) {
+            $typeToPrettyString = $validRequest['type'] === 'C' ? 'Credit' : 'Debit';
+            return response()->json([
+                'errors' => [
+                    'name' => [
+                        "The category '" . $validRequest['name'] . "' with the type '" . $typeToPrettyString . "' already exists for this vCard."
+                    ]
+                ]
+            ], 422);
+        }
 
         $category->type = $validRequest['type'];
         $category->name = $validRequest['name'];
