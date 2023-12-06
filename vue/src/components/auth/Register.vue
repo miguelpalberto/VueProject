@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
 import { useToast } from "vue-toastification";
-import AvatarPreviewer from '../images/AvatarPreviewer.vue';
+import AvatarPreviewer from '../users/AvatarPreviewer.vue';
 import avatarNoneUrl from "@/assets/avatar-none.png";
 
 const router = useRouter()
@@ -41,6 +41,7 @@ watch(confirmPasswordIsValid, (isValid) => {
     errors.value.confirmPassword = ['Passwords do not match']
   }
 })
+
 watch(confirmConfirmationCodeIsValid, (isValid) => {
   if (isValid) {
     delete errors.value.confirmConfirmationCode
@@ -102,11 +103,8 @@ const register = async () => {
     <h3 class="mt-5 mb-3">Register</h3>
     <hr>
     <div class="mb-1">
-      <AvatarPreviewer @input-file-changed="onInputFileChanged" :is-parent-loading="isLoading" :imgUrl="avatarNoneUrl" :alt="Avatar" :allowUpload="true"
-        :allowDelete="false" />
-      <div class="invalid-feedback" v-if="errors && errors.photo_file">
-        {{ errors.photo_file[0] }}
-      </div>
+      <AvatarPreviewer @input-file-changed="onInputFileChanged" :is-parent-loading="isLoading" :imgUrl="avatarNoneUrl"/>
+      <field-error-message :errors="errors" fieldName="photo_file"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputPhone" class="form-label">Phone Number<span class="text-danger">*</span>
@@ -114,27 +112,21 @@ const register = async () => {
       </label>
       <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.phone_number }" id="inputPhone"
         :disabled="isLoading" required v-model="credentials.phone_number">
-      <div class="invalid-feedback" v-if="errors && errors.phone_number">
-        {{ errors.phone_number[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="phone_number"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputName" class="form-label">Name<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="text" :class="{ 'is-invalid': errors && errors.name }" class="form-control" id="inputName"
         :disabled="isLoading" required v-model="credentials.name">
-      <div class="invalid-feedback" v-if="errors && errors.name">
-        {{ errors.name[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="name"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputEmail" class="form-label">Email<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="text" :class="{ 'is-invalid': errors && errors.email }" class="form-control" id="inputEmail"
         :disabled="isLoading" required v-model="credentials.email">
-      <div class="invalid-feedback" v-if="errors && errors.email">
-        {{ errors.email[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="email"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputConfirmationCode" class="form-label">Confirmation Code<span class="text-danger">*</span>
@@ -142,18 +134,14 @@ const register = async () => {
       <input type="password" class="form-control"
         :class="{ 'is-invalid': errors && errors.confirmation_code || !confirmConfirmationCodeIsValid }"
         id="inputConfirmationCode" :disabled="isLoading" required v-model="credentials.confirmation_code">
-      <div class="invalid-feedback" v-if="errors && errors.confirmation_code">
-        {{ errors.confirmation_code[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="confirmation_code"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputConfirmConfirmationCode" class="form-label">Confirm Confirmation Code<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmConfirmationCodeIsValid }" class="form-control"
         id="inputConfirmConfirmationCode" :disabled="isLoading" required v-model="confirmConfirmationCode">
-      <div class="invalid-feedback" v-if="errors && errors.confirmConfirmationCode">
-        {{ errors.confirmConfirmationCode[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="confirmConfirmationCode"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputPassword" class="form-label">Password<span class="text-danger">*</span>
@@ -161,18 +149,14 @@ const register = async () => {
       <input type="password" class="form-control"
         :class="{ 'is-invalid': errors && errors.password || !confirmPasswordIsValid }" id="inputPassword"
         :disabled="isLoading" required v-model="credentials.password">
-      <div class="invalid-feedback" v-if="errors && errors.password">
-        {{ errors.password[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="password"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputConfirmPassword" class="form-label">Confirm Password<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmPasswordIsValid }" class="form-control"
         id="inputConfirmPassword" :disabled="isLoading" required v-model="confirmPassword">
-      <div class="invalid-feedback" v-if="errors && errors.confirmPassword">
-        {{ errors.confirmPassword[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="confirmPassword"></field-error-message>
     </div>
     <div class="mt-2 d-flex justify-content-center">
       <button type="submit" class="btn btn-primary px-5" @click="register" :disabled="isLoading">

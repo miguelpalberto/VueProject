@@ -8,9 +8,13 @@ import Register from '../components/auth/Register.vue'
 import Transactions from '../components/transactions/Transactions.vue'
 import Transaction from '../components/transactions/Transaction.vue'
 import Categories from '../components/categories/Categories.vue'
+import ChangePassword from '../components/users/ChangePassword.vue'
+import ChangeConfirmationCode from '../components/users/ChangeConfirmationCode.vue'
+import Profile from '../components/users/Profile.vue'
+import DismissVCard from '../components/users/DismissVCard.vue'
+import Admins from '../components/admins/Admins.vue'
 import Category from '../components/categories/Category.vue'
-import ChangePassword from '../components/auth/ChangePassword.vue'
-import ChangeConfirmationCode from '../components/auth/ChangeConfirmationCode.vue'
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +40,11 @@ const router = createRouter({
             component: Register
         },
         {
+            path: '/profile',
+            name: 'profile',
+            component: Profile
+        },
+        {
             path: '/change-password',
             name: 'changePassword',
             component: ChangePassword
@@ -52,26 +61,36 @@ const router = createRouter({
         },
         {
             path: '/transactions/create',
-            name: 'createtransaction',
+            name: 'createTransaction',
             component: Transaction
         },
 
         {
             path: '/vcards/:vcard/transactions/create',
-            name: 'createvCardtransaction',
+            name: 'createvCardTransaction',
             component: Transaction,
-            props: (route) => ({ vcard: route.params.vcard }),
+            props: (route) => ({ vcard: route.params.vcard })
         },
         {
-            path: "/transactions/:id/edit",
-            name: "editTransaction",
+            path: '/transactions/:id/edit',
+            name: 'editTransaction',
             component: Transaction,
-            props: (route) => ({ id: parseInt(route.params.id) }),
+            props: (route) => ({ id: parseInt(route.params.id) })
         },
         {
             path: '/categories',
             name: 'categories',
             component: Categories
+        },
+        { 
+            path: '/admins',
+            name: 'admins',
+            component: Admins
+        },
+        { 
+            path: '/dismissVcard',
+            name: 'dismissVcard',
+            component: DismissVCard
         },
         {
             path: '/categories/create',
@@ -83,14 +102,14 @@ const router = createRouter({
             name: 'editCategory',
             component: Category,
             props: (route) => ({ id: parseInt(route.params.id) })
-        },
+        }
         
     ]
 })
 
 const publicRouteNames = ['login', 'register', 'home']
-const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createtransaction']
-const adminOnlyRouteNames = ['createvCardtransaction']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction', 'dismissVcard']
+const adminOnlyRouteNames = ['createvCardTransaction', 'admins',]
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()

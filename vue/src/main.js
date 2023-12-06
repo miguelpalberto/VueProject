@@ -2,6 +2,7 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "vue-toastification/dist/index.css";
+import { vue3Debounce } from 'vue-debounce'
 import "bootstrap"
 
 import { createApp } from 'vue'
@@ -12,6 +13,10 @@ import { io } from 'socket.io-client'
 import App from './App.vue'
 import router from './router'
 import Toast from "vue-toastification";
+
+
+import FieldErrorMessage from './components/global/FieldErrorMessage.vue'
+import ConfirmationDialog from './components/global/ConfirmationDialog.vue'
 
 const app = createApp(App)
 
@@ -51,5 +56,10 @@ app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
 app.provide('axiosExternal', axiousExternal)
 //app.provive('socket',io(wsConnection))
+
+app.component('FieldErrorMessage', FieldErrorMessage)
+app.component('ConfirmationDialog', ConfirmationDialog)
+
+app.directive('debounce', vue3Debounce({lock: true}))
 
 app.mount('#app')

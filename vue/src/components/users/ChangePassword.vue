@@ -60,27 +60,21 @@ const changePassword = async () => {
       <input type="password" class="form-control"
         :class="{ 'is-invalid': errors && errors.current_password }" id="inputCurrentPassword"
         :disabled="isLoading" required v-model="formData.current_password">
-      <div class="invalid-feedback" v-if="errors && errors.current_password">
-        {{ errors.current_password[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="current_password"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputNewPassword" class="form-label">New Password<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmPasswordIsValid || (errors && (errors.new_password || errors.new_password_confirmation)) }" class="form-control"
         id="inputNewPassword" :disabled="isLoading" required v-model="formData.new_password">
-      <div class="invalid-feedback" v-if="errors && errors.new_password">
-        {{ errors.new_password[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="new_password"></field-error-message>
     </div>
     <div class="mb-1">
       <label for="inputNewPasswordConfirm" class="form-label">Confirm New Password<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span></label>
       <input type="password" :class="{ 'is-invalid': !confirmPasswordIsValid || errors && errors.new_password_confirmation }" class="form-control"
         id="inputNewPasswordConfirm" :disabled="isLoading" required v-model="formData.new_password_confirmation">
-      <div class="invalid-feedback" v-if="errors && errors.new_password_confirmation">
-        {{ errors.new_password_confirmation[0] }}
-      </div>
+      <field-error-message :errors="errors" fieldName="new_password_confirmation"></field-error-message>
     </div>
     <div class="d-flex justify-content-center">
       <button type="submit" class="btn btn-primary px-5" @click="changePassword" :disabled="isLoading || !confirmPasswordIsValid">

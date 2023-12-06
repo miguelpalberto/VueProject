@@ -30,10 +30,15 @@ const login = async () => {
     toast.success('Login successful')
   }
   catch (error) {
+    if (error.response.data?.error){
+      toast.error(error.response.data.error)
+    }
+    else{
+      toast.error('Something went wrong. Please try again')
+    }
     delete axios.defaults.headers.common.Authorization
     authStore.clearUser()
     credentials.value.password = ''
-    toast.error('User credentials are invalid')
   }
   finally {
     isLoading.value = false

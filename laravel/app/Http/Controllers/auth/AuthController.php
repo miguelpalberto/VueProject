@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuthUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,18 +22,21 @@ class AuthController extends Controller
 
         request()->request->add($passportData);
 
-        $request = Request::create(env('PASSPORT_URL') . '/oauth/token', 'POST');
-        $response = Route::dispatch($request);
-        $errorCode = $response->getStatusCode();
+        $innerRequest = Request::create(env('PASSPORT_URL') . '/oauth/token', 'POST');
+        $response = Route::dispatch($innerRequest);
+        $statusCode = $response->getStatusCode();
 
-        if (
-            $errorCode == '200'
-        ) {
+        if ($statusCode == '200') {
+            $user = AuthUser::where('username', $request->username)->first();
+            if ($user && $user->blocked) {
+                return response()->json(['error' => 'The user has been blocked. Please contact the administrators.'], 403);
+            }
+
             return json_decode((string) $response->content(), true);
         } else {
             return response()->json(
-                ['msg' => 'User credentials are invalid'],
-                $errorCode
+                ['error' => 'User credentials are invalid'],
+                $statusCode
             );
         }
     }
