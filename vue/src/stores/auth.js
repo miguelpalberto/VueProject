@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
     const serverUrl = inject("serverUrl");
+    const socket = inject('socket')
     const user = ref(null)
     const router = useRouter()
     const isAuthenticated = computed(() => !!user.value)
@@ -21,6 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await axios.get("authUsers/me");
             user.value = response.data.data;
+            socket.emit('loggedIn', user.value)
         } catch (error) {
             clearUser();
             throw error;
