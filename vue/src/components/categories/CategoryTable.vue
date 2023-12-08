@@ -1,10 +1,11 @@
 <script setup>
-// import axios from 'axios'
 // import { ref, watch, watchEffect } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { ref, watch, computed } from 'vue'
+import { useCategoryStore } from '../../stores/category'
 
+const categoryStore = useCategoryStore()
 const toast = useToast()
 const props = defineProps({
     categories: {
@@ -22,6 +23,10 @@ const props = defineProps({
     showDeleteButton: {
         type: Boolean,
         default: true
+    },
+    modalId: {
+        type: String,
+        required: true
     }
 })
 
@@ -37,35 +42,43 @@ watch(
         editingCategories.value = newCategories
     }
 )
-// const emit = defineEmits([
-//     // "completeToggled",
-//     // "edit",
-//     // "deleted",
-// ])
 
-// watch(
-//   () => props.tasks,
-//   (newTasks) => {
-//     //editingTasks.value = newTasks;
-//   }
-// );
+//Edit Button related
+const isLoading = ref(false)
+const errors = ref(null)
+const isEditing = ref(false)
+const cancelEditing = () => {
+    errors.value = null
+    isEditing.value = false
+    //formData.value.name = authStore.user.name
+}
+const toggleEditing = (category) => {
+    isEditing.value = !isEditing.value
+    if (isEditing.value) {
+        editClick(category)
+    }
+}
+const save = () => {
+    errors.value = null
+    updateCategorySave.value.show()
+}
 
 const editClick = (category) => {
+    //todo
     emit('edit', category)
 }
-
 const deleteClick = (category) => {
     categoryToDelete.value = category
+    //console.log(categoryToDelete.value)
     deleteConfirmationDialog.value.show()
 }
-
 const deleteCategoryConfirmed = async (isConfirmed) => {
     if (isConfirmed) {
         try {
-            const response = await axios.delete('categories/' + categoryToDelete.value.id)
+            const response = await axios.delete('categories/' + categoryToDelete.value.id) //delete na bd
             let deletedCategory = response.data.data
             toast.info(`Category ${categoryToDeleteDescription.value} was deleted`)
-            emit('deleted', deletedCategory)
+            emit('deleted', deletedCategory) //delete no frontend (chama Categories)
         } catch (error) {
             console.log(error)
             toast.error(
@@ -74,33 +87,33 @@ const deleteCategoryConfirmed = async (isConfirmed) => {
         }
     }
 }
-//apagar:
-const updateProfileConfirmed = async (isConfirmed) => {
-    if (!isConfirmed) {
-        cancelEditing()
-    } else {
-        isLoading.value = true
-        try {
-            await authStore.updateProfile(formData.value)
-            cancelEditing()
-            toast.success('Profile updated successfully')
-        } catch (error) {
-            if (error.response.status === 422) {
-                console.log(error)
-                errors.value = error.response.data.errors
-            }
 
-            toast.error('Something went wrong please try again')
-        } finally {
-            isLoading.value = false
+const updateCategorySave = async () => {
+    //isLoading.value = true
+    try {
+        await categoryStore.updateCategory(category) //(formData.value)
+        cancelEditing()
+        toast.success('Category updated successfully')
+        emit('editedCategory', editedCategory)
+    } catch (error) {
+        if (error.response.status === 422) {
+            console.log(error)
+            errors.value = error.response.data.errors
         }
+
+        toast.error('Something went wrong please try again')
+    } finally {
+        //isLoading.value = false
     }
 }
 
 const categoryToDeleteDescription = computed(() =>
     categoryToDelete.value
-        ? `${categoryToDelete.value.name} (#${categoryToDelete.value.id})`
+        ? `\"${categoryToDelete.value.name}\" (#${categoryToDelete.value.id})`
         : ''
+)
+const categoryToDeleteDescriptionNoId = computed(() =>
+    categoryToDelete.value ? `\"${categoryToDelete.value.name}\"` : ''
 )
 </script>
 
@@ -108,7 +121,12 @@ const categoryToDeleteDescription = computed(() =>
     <confirmation-dialog
         ref="deleteConfirmationDialog"
         confirmationBtn="Delete category"
-        :msg="`Do you really want to delete category ${categoryToDeleteDescription}?`"
+        :modalId="modalId"
+        :msg="
+            showId
+                ? `Do you really want to delete category ${categoryToDeleteDescription} ?`
+                : `Do you really want to delete category ${categoryToDeleteDescriptionNoId}  ?`
+        "
         @response="deleteCategoryConfirmed"
     >
     </confirmation-dialog>
@@ -130,20 +148,45 @@ const categoryToDeleteDescription = computed(() =>
                     v-if="showCompletedButton || showEditButton || showDeleteButton"
                 >
                     <div class="d-flex justify-content-end">
-                        <button
-                            class="btn btn-xs btn-light"
-                            @click="editClick(category)"
-                            v-if="showEditButton"
-                        >
-                            <i class="bi bi-xs bi-pencil"></i>
-                        </button>
 
+
+
+                        <div v-if="showEditButton">
+                            <button
+                                class="btn btn-light"
+                                v-if="!isEditing"
+                                @click="toggleEditing(category)"
+                            >
+                                <i class="bi bi-xs bi-pencil"></i>
+                            </button>
+                        </div>
+                        <button
+                            class="btn btn-outline-success"
+                            v-if="isEditing"
+                            :disabled="isLoading"
+                            @click="save"
+                        >
+                            <span
+                                class="spinner-border spinner-border-sm mx-1"
+                                aria-hidden="true"
+                                v-if="isLoading"
+                            ></span>
+                            <span role="Save">Save</span>
+                        </button>
+                        <button
+                            class="btn btn-outline-secondary"
+                            v-if="isEditing"
+                            :disabled="isLoading"
+                            @click="cancelEditing"
+                        >
+                            Cancel
+                        </button>
                         <button
                             class="btn btn-xs btn-light"
                             @click="deleteClick(category)"
                             v-if="showDeleteButton"
                         >
-                            <i class="bi bi-xs bi-x-square-fill"></i>
+                            <i class="bi bi-xs bi-trash"></i>
                         </button>
                     </div>
                 </td>

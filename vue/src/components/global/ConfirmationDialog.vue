@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 const props = defineProps({
     cancelBtn: {
         type: String,
@@ -16,6 +16,10 @@ const props = defineProps({
     msg: {
         type: String,
         default: "",
+    },
+    modalId: {
+        type: String,
+        default: "confirmationModalId",
     }
 })
 
@@ -46,6 +50,10 @@ const cancel = () => {
     emit("response", false)
 }
 
+const modalSelector = computed(() => {
+    return "#" + props.modalId
+})
+
 // Properties/Methods that are exposed to the outside when
 // the public instance of the component is retrieved via template refs
 defineExpose({ show, hide })
@@ -55,10 +63,10 @@ defineExpose({ show, hide })
 <template>
     <!-- Button trigger to Show modal - HIDDEN -->
     <button ref="hiddenButtonToShowDialog" type="button" class="d-none" data-bs-toggle="modal"
-        data-bs-target="#confirmationModalId"></button>
+        :data-bs-target="modalSelector"></button>
 
     <!-- Modal -->
-    <div class="modal fade" id="confirmationModalId" tabindex="-1" aria-labelledby="confirmationModalLabel"
+    <div class="modal fade" :id="props.modalId" tabindex="-1" aria-labelledby="confirmationModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <!-- Button trigger to Hide modal - HIDDEN -->
@@ -73,12 +81,13 @@ defineExpose({ show, hide })
                     {{ msg }}
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" @click="clickConfirm">
+                        {{ confirmationBtn }}
+                    </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cancel">
                         {{ cancelBtn }}
                     </button>
-                    <button type="button" class="btn btn-primary" @click="clickConfirm">
-                        {{ confirmationBtn }}
-                    </button>
+
                 </div>
             </div>
         </div>

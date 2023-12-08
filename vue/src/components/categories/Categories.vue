@@ -3,40 +3,54 @@ import axios from 'axios'
 import { ref, onMounted, computed } from 'vue'
 import CategoryTable from "./CategoryTable.vue"
 import { useAuthStore } from '../../stores/auth';
+import { useCategoryStore } from '../../stores/category';
 import { useRouter } from 'vue-router'
 
 
 const authStore = useAuthStore()
+const categoryStore = useCategoryStore()
 const router = useRouter()
 
-const loadCategories = () => {
-
-  const vcardId = authStore.user.username    // todo Change later when authentication is implemented
-  axios.get('vcards/' + vcardId + '/categories')
-    .then((response) => {
-      console.log(response)//
-      categories.value = response.data.data
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+ const loadCategories = () => {
+  const vcardId = authStore.user.username
+    try {
+        categoryStore.loadCategories(vcardId)
+    }
+    catch (error) {
+        console.log(error)
+    }
 }
-const editCategory = (category) => {
-    router.push({ name: 'Category', params: { id: category.id } })
-}
+// const editCategory = (category) => {
+//     router.push({ name: 'Category', params: { id: category.id } })
+// }
 
-const deletedCategory = (deletedCategory) => {
+//Chamado pelo CategoryTable, elimina no frontend
+const deletedCategory = (deletedCategory ) => {
     let idx = categories.value.findIndex((t) => t.id === deletedCategory.id)
+    console.log(idx)
+    if (idx >= 0) {
+      categories.value.splice(idx, 1)
+    }
+}
+const editedCategory = (editedCategory ) => {
+    let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
+    console.log(idx)
     if (idx >= 0) {
       categories.value.splice(idx, 1)
     }
 }
 const debitCategories = computed(() => {
-  return categories.value.filter(t => t.type == 'D')
+  if(!categoryStore.categories){
+    return []
+  }
+  return categoryStore.categories.filter(t => t.type === 'D')
 })
 
 const creditCategories = computed(() => {
-  return categories.value.filter(t => t.type == 'C')
+  if(!categoryStore.categories){
+    return []
+  }
+  return categoryStore.categories.filter(t => t.type === 'C')
 })
 
 const props = defineProps({
@@ -46,7 +60,7 @@ const props = defineProps({
   },
 })
 
-const categories = ref([])
+const categories = ref([]) //categorias ja estao nas store
 
 onMounted(() => {//so depois de estar tudo carregado
   loadCategories()
@@ -94,16 +108,19 @@ onMounted(() => {//so depois de estar tudo carregado
   <div class="row">
     <div class="col-xs-12 col-md-6">
       <h4>Debit</h4>
+      <!-- todo show id true so se user for admin: -->
       <category-table 
+      modalId="debitTableModal" 
       :categories="debitCategories" 
-      :showId="true"
-      @edit="editCategory"
+      :showId="true" 
+      @edit="editCategory" 
       @deleted="deletedCategory">
       </category-table>
     </div>
     <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
-      <category-table 
+      <category-table
+      modalId="creditTableModal" 
       :categories="creditCategories" 
       :showId="true"     
       @edit="editCategory"
