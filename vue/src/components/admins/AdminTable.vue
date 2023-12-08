@@ -5,7 +5,7 @@ import { ref, watch, computed } from 'vue'
 
 const authStore = useAuthStore()
 
-const canViewUserDetail = (email) => {
+const canDelete = (email) => {
     if (!authStore.user) {
         return false
     }
@@ -65,7 +65,7 @@ const boolDeleteClickConfirmed = (isConfirmed) => {
                 <td class="text-end align-middle">
                     <div class="d-flex justify-content-end">
                         <button class="btn btn-xs btn-light" @click="deleteClick(user)"
-                            v-if="(canViewUserDetail(user.email))">
+                            v-if="(canDelete(user.email))">
                             <i class="bi bi-xs bi-trash"></i>
                         </button>
                     </div>

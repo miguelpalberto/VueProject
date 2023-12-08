@@ -78,7 +78,7 @@ defineExpose({ show, hide })
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    {{ msg }}
+                    <div v-html="msg" /> 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" @click="clickConfirm">
