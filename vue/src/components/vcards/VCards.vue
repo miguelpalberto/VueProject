@@ -7,15 +7,15 @@ import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
 const toast = useToast()
 
-const paginatedResult = ref([])
-const isLoading = ref(false)
-const selectedStatus = ref(statuses[0].value)
-
 const statuses = [
     { value: 'all', text: 'All' },
     { value: 'blockedOnly', text: 'Blocked only' },
     { value: 'unblockedOnly', text: 'Unblocked only' }
 ]
+
+const paginatedResult = ref([])
+const isLoading = ref(false)
+const selectedStatus = ref(statuses[0].value)
 
 const loadVCards = (page = 1, searchValue = null) => {
     isLoading.value = true
@@ -48,46 +48,40 @@ const search = (value) => {
 }
 
 const deleteVCard = (vCard) => {
-    if (confirm('Are you sure you want to delete this vCard?')) {
-        isLoading.value = true
-        axios.delete('vcards/' + vCard.phone_number)
-            .then(() => {
-                toast.success('VCard deleted')
-                const currentPage = paginatedResult.value.data.length == 1 ? paginatedResult.value.current_page - 1 : paginatedResult.value.current_page
-                loadVCards(currentPage)
-            })
-            .catch(() => {
-                toast.error('Error deleting vCard. Please try again.')
-            })
-    }
+    isLoading.value = true
+    axios.delete('vcards/' + vCard.phone_number)
+        .then(() => {
+            toast.success('VCard deleted')
+            const currentPage = paginatedResult.value.data.length == 1 ? paginatedResult.value.current_page - 1 : paginatedResult.value.current_page
+            loadVCards(currentPage)
+        })
+        .catch(() => {
+            toast.error('Error deleting vCard. Please try again.')
+        })
 }
 
 const blockVCard = (vCard) => {
-    if (confirm('Are you sure you want to block this vCard?')) {
-        isLoading.value = true
-        axios.patch('vcards/' + vCard.phone_number + '/block')
-            .then(() => {
-                toast.success('VCard blocked')
-                loadVCards(paginatedResult.value.current_page)
-            })
-            .catch(() => {
-                toast.error('Error blocking vCard. Please try again.')
-            })
-    }
+    isLoading.value = true
+    axios.patch('vcards/' + vCard.phone_number + '/block')
+        .then(() => {
+            toast.success('VCard blocked')
+            loadVCards(paginatedResult.value.current_page)
+        })
+        .catch(() => {
+            toast.error('Error blocking vCard. Please try again.')
+        })
 }
 
 const unblockVCard = (vCard) => {
-    if (confirm('Are you sure you want to unblock this vCard?')) {
-        isLoading.value = true
-        axios.patch('vcards/' + vCard.phone_number + '/unblock')
-            .then(() => {
-                toast.success('VCard unblocked')
-                loadVCards(paginatedResult.value.current_page)
-            })
-            .catch(() => {
-                toast.error('Error unblocking vCard. Please try again.')
-            })
-    }
+    isLoading.value = true
+    axios.patch('vcards/' + vCard.phone_number + '/unblock')
+        .then(() => {
+            toast.success('VCard unblocked')
+            loadVCards(paginatedResult.value.current_page)
+        })
+        .catch(() => {
+            toast.error('Error unblocking vCard. Please try again.')
+        })
 }
 
 const updateMaxDebit = (vcard, maxDebit) => {

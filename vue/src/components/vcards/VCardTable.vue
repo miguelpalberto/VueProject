@@ -18,30 +18,30 @@ const props = defineProps({
 
 const emit = defineEmits(['delete', 'block', 'unblock', 'updateMaxDebit'])
 
-const updateConfirmationDialog = ref(null)
+const confirmationDialogRef = ref(null)
 const modalMessage = ref('');
-const vCardSelected = ref(null)
+const modalButtonText = ref('');
+const currentAction = ref('')
+const selectedVCard = ref(null)
 const maxDebitOfSelectedVCard = ref(null)
-const isEditing = computed(() => {
-    return vCardSelected.value != null
-})
-
+const isEditing = ref(false)
 const isVCardSelected = (vCard) => {
-    if (!vCardSelected.value) {
+    if (!selectedVCard.value) {
         return false
     }
-    return vCardSelected.value.phone_number == vCard.phone_number
+    return selectedVCard.value.phone_number == vCard.phone_number
 }
 
 const stopEditing = () => {
     isEditing.value = false
-    vCardSelected.value = null
+    selectedVCard.value = null
     maxDebitOfSelectedVCard.value = null
     removeMask('#inputMaxDebit')
 }
 
 const startEditing = (vCard) => {
-    vCardSelected.value = vCard
+    isEditing.value = true
+    selectedVCard.value = vCard
     maxDebitOfSelectedVCard.value = vCard.max_debit
     setTimeout(() => {
         setMask('#inputMaxDebit', {
@@ -73,34 +73,81 @@ const isVCardAllowedToBeDeleted = (vCard) => {
     return vCard.balance == 0;
 };
 
+const handleConfirmation = (isConfirmed) => {
+    if (isConfirmed) {
+        switch (currentAction.value) {
+            case 'delete':
+                handleDeleteConfirmed(selectedVCard.value)
+                break;
+            case 'block':
+                handleBlockConfirmed(selectedVCard.value)
+                break;
+            case 'unblock':
+                handleUnblockConfirmed(selectedVCard.value)
+                break;
+            case 'updateMaxDebit':
+                updateMaxDebitConfirmed(selectedVCard.value)
+                break;
+            default:
+                stopEditing()
+                break;
+        }
+    }
+
+    stopEditing()
+}
 
 const handleDelete = (vCard) => {
-    emit('delete', vCard)
+    selectedVCard.value = vCard
+    modalMessage.value = `Are you sure you want to delete <b>${vCard.name}'s</b> vCard?`
+    modalButtonText.value = 'Delete'
+    currentAction.value = 'delete'
+    confirmationDialogRef.value.show()
+}
+
+const handleDeleteConfirmed = () => {
+    emit('delete', selectedVCard.value)
 }
 
 const handleBlock = (vCard) => {
+    selectedVCard.value = vCard
+    modalMessage.value = `Are you sure you want to block <b>${vCard.name}'s</b> vCard?`
+    modalButtonText.value = 'Block'
+    currentAction.value = 'block'
+    confirmationDialogRef.value.show()
+}
+
+const handleBlockConfirmed = (vCard) => {
     emit('block', vCard)
 }
 
 const handleUnblock = (vCard) => {
+    selectedVCard.value = vCard
+    modalMessage.value = `Are you sure you want to unblock <b>${vCard.name}'s</b> vCard?`
+    modalButtonText.value = 'Unblock'
+    currentAction.value = 'unblock'
+    confirmationDialogRef.value.show()
+}
+
+const handleUnblockConfirmed = (vCard) => {
     emit('unblock', vCard)
 }
 
 const updateMaxDebit = () => {
-    modalMessage.value = `Are you sure you want to update the max debit of <b>${vCardSelected.value.name}?</b>`
-    updateConfirmationDialog.value.show()
+    modalMessage.value = `Are you sure you want to update the max debit of <b>${selectedVCard.value.name}'s</b> vCard?`
+    modalButtonText.value = 'Update'
+    currentAction.value = 'updateMaxDebit'
+    confirmationDialogRef.value.show()
 }
 
 const updateMaxDebitConfirmed = () => {
-    emit('updateMaxDebit', vCardSelected.value, formatToNumber(maxDebitOfSelectedVCard.value))
-    stopEditing()
+    emit('updateMaxDebit', selectedVCard.value, formatToNumber(maxDebitOfSelectedVCard.value))
 }
 
 </script>
 
 <template>
-    <confirmation-dialog ref="updateConfirmationDialog" confirmationBtn="Update Max Debit" :msg="modalMessage"
-        @response="updateMaxDebitConfirmed" />
+    <confirmation-dialog ref="confirmationDialogRef" :confirmationBtn="modalButtonText" :msg="modalMessage" @response="handleConfirmation"/>
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -116,9 +163,9 @@ const updateMaxDebitConfirmed = () => {
             </thead>
             <tbody>
                 <tr v-if="props.vCards.length === 0">
-                    <td colspan="6" class="text-center">No vCards found</td>
+                    <td colspan="7" class="text-center">No vCards found</td>
                 </tr>
-                <tr :class="{ 'active': isEditing && !isVCardSelected(vCard) }" v-else v-for="vCard in props.vCards"
+                <tr v-else :class="{ 'active': isEditing && !isVCardSelected(vCard) }" v-for="vCard in props.vCards"
                     :key="vCard.phone_number">
                     <td class="align-middle">
                         <img :src="photoFullUrl(vCard)" class="rounded-circle img_photo" />
@@ -131,7 +178,7 @@ const updateMaxDebitConfirmed = () => {
                         <span v-if="(isEditing && !isVCardSelected(vCard)) || !isEditing">
                             {{ vCard.max_debit }}€
                         </span>
-                        <form v-else class="d-flex justify-content-center gap-1 needs-validation" style="min-width: 150px;"
+                        <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;"
                             novalidate @submit.prevent="updateMaxDebit">
                             <input id="inputMaxDebit" :disabled="isParentLoading" type="text" class="form-control"
                                 v-model="maxDebitOfSelectedVCard" />
@@ -139,7 +186,7 @@ const updateMaxDebitConfirmed = () => {
                                 :disabled="isParentLoading">
                                 <i class="bi bi-box-arrow-down"></i>
                             </button>
-                        </form>
+                        </div>
                     </td>
                     <td class="text-end align-middle">
                         <div class="d-flex justify-content-end gap-1">
