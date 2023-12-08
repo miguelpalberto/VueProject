@@ -31,8 +31,8 @@ class ChangeMaxDebitRequest extends FormRequest
         return [
             'max_debit.required' => 'Max debit is required',
             'max_debit.numeric' => 'Max debit must be a number',
-            'max_debit.min' => 'Max debit must be at least 20.0',
-            'max_debit.max' => 'Max debit must be at most 10000.0',
+            'max_debit.min' => 'Max debit must be at least 20€',
+            'max_debit.max' => 'The limit of max debit is 10000€',
         ];
     }
 }

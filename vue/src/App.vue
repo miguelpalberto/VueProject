@@ -122,6 +122,13 @@ image">
                 Administrators
               </router-link>
             </li>
+            <li class="nav-item" v-if="authStore.isAdmin">
+              <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
+                :class="{ active: $route.name === 'vcards' }" :to="{ name: 'vcards' }">
+                <i class="bi bi-list-check"></i>
+                VCards
+              </router-link>
+            </li>
           </ul>
 
           <div class="d-block d-md-none">

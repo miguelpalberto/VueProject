@@ -27,7 +27,7 @@ class VCardController extends Controller
     {
         $queryable = VCard::query()->orderBy('name', 'asc');
 
-        $filterByNameOrEmail = $request->query('search');
+        $searchFilter = $request->query('search');
         $filterByStatus = $request->query('status');
 
         if ($filterByStatus) {
@@ -37,9 +37,10 @@ class VCardController extends Controller
             }
         }
 
-        if ($filterByNameOrEmail) {
-            $queryable->where('name', 'like', "%{$filterByNameOrEmail}%")
-                ->orWhere('email', 'like', "%{$filterByNameOrEmail}%");
+        if ($searchFilter) {
+            $queryable->where('name', 'like', "%{$searchFilter}%")
+                ->orWhere('email', 'like', "%{$searchFilter}%")
+                ->orWhere('phone_number', 'like', "%{$searchFilter}%");
         }
 
         return $queryable->paginate(10);  
