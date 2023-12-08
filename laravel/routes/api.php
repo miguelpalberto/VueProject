@@ -40,7 +40,6 @@ Route::middleware('auth:api')->group(
         // AUTH USERS
         Route::get('authUsers/me', [AuthUserController::class, 'me']);
         Route::put('authUsers/me', [AuthUserController::class, 'update']);
-        Route::get('authUsers', [AuthUserController::class, 'index']);
         Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
         
         // TRANSACTIONS

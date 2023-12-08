@@ -2,10 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\VCard;
 use App\Models\AuthUser;
 use App\Models\Transaction;
-use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionPolicy
 {
@@ -16,7 +15,7 @@ class TransactionPolicy
 
     public function create(AuthUser $authUser): bool
     {
-        return true;
+        return !Auth::guest();
     }
 
     public function update(AuthUser $authUser, Transaction $transaction): bool

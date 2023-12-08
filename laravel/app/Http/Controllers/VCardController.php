@@ -22,7 +22,6 @@ class VCardController extends Controller
         $this->authorizeResource(VCard::class, 'vcard');
     }
 
-    // esta função só deve ser chamada por um administrador (falta implementar a autorização)
     public function index()
     {
         return VCard::all();
