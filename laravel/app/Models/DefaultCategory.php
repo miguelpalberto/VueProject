@@ -9,15 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DefaultCategory extends Model
 {
     use HasFactory, SoftDeletes;
+    
+    public $timestamps = false;
 
     protected $fillable = ['type, name'];
-
     protected $dates = ['deleted_at'];
-
     protected $casts = [
         'custom_options' => 'json',
         'custom_data' => 'json',
     ];
-
-
 }

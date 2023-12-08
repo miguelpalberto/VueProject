@@ -13,11 +13,6 @@ use App\Http\Requests\ChangePasswordRequest;
 
 class AuthUserController extends Controller
 {
-    public function index()
-    {
-        return AuthUser::all();
-    }
-    
     public function me(Request $request)
     {
         return new AuthUserResource($request->user());

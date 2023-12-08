@@ -23,7 +23,7 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
+            'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL,blocked,0',
             'confirmation_code' => 'required_if:type,D|string',
             'type' => 'required|in:C,D',
             'value' => 'required|decimal:0,2|min:0.01',
@@ -31,7 +31,7 @@ class TransactionRequest extends FormRequest
                 'required',
                 new PaymentReferenceValidationRule()
             ],
-            'pair_vcard' => 'sometimes|nullable|required_if:payment_type,VCARD|string|different:vcard|exists:vcards,phone_number,deleted_at,NULL',
+            'pair_vcard' => 'sometimes|nullable|required_if:payment_type,VCARD|string|different:vcard|exists:vcards,phone_number,deleted_at,NULL,blocked,0',
             'payment_type' => 'required|in:VISA,MB,IBAN,PAYPAL,MBWAY,VCARD',
             'category_id' => 'sometimes|nullable|integer|exists:categories,id',
             'description' => 'sometimes|nullable|string|max:255',
