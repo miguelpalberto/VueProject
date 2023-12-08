@@ -1,5 +1,7 @@
 <script setup>
 import { useAuthStore } from '../../stores/auth'
+import { useToast } from 'vue-toastification'
+import { ref, watch, computed } from 'vue'
 
 const authStore = useAuthStore()
 
@@ -17,14 +19,32 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'boolDeleteAdminConfirmed'])
+const deleteConfirmationDialog = ref(null)
+const selectedUser = ref(null)
 
 const deleteClick = (user) => {
-    emit('delete', user)
+    //emit('delete', user)
+    selectedUser.value = user   
+    deleteConfirmationDialog.value.show() 
+}
+const boolDeleteClickConfirmed = (isConfirmed) => {
+    if (isConfirmed) {
+        emit('boolDeleteAdminConfirmed', selectedUser.value)
+    }
+    selectedUser.value = null
 }
 </script>
 
 <template>
+    <confirmation-dialog
+    ref="deleteConfirmationDialog"
+    confirmationBtn="Delete administrator"
+    :modalId="modalId"
+    :msg=" `Do you really want to delete administrator ?`"
+    @response="boolDeleteClickConfirmed"
+>
+</confirmation-dialog>
     <table class="table">
         <thead>
             <tr>
