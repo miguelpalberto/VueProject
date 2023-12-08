@@ -17,6 +17,11 @@ use App\Http\Requests\DeleteVCardRequest;
 
 class VCardController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(VCard::class, 'vcard');
+    }
+
     // esta função só deve ser chamada por um administrador (falta implementar a autorização)
     public function index()
     {
@@ -80,7 +85,7 @@ class VCardController extends Controller
 
     public function block(VCard $vcard)
     {
-        //falta implementar a autorização
+        $this->authorize('block', $vcard);
         if ($vcard->blocked) {
             return response()->json([
                 'success' => false,
@@ -99,7 +104,7 @@ class VCardController extends Controller
 
     public function unblock(VCard $vcard)
     {
-        //falta implementar a autorização
+        $this->authorize('unblock', $vcard);
         if (!$vcard->blocked) {
             return response()->json([
                 'success' => false,
@@ -159,6 +164,8 @@ class VCardController extends Controller
 
     public function changeConfirmationCode(VCard $vcard, ChangeVCardConfirmationCodeRequest $request)
     {
+        $this->authorize('changeConfirmationCode', $vcard);
+
         if (!Hash::check($request->password, $vcard->password)) {
             return response()->json([
                 'errors' => [
@@ -192,6 +199,8 @@ class VCardController extends Controller
 
     public function deletePhoto(VCard $vcard){
         
+        $this->authorize('deletePhoto', $vcard);
+        
         if ($vcard->photo_url != null) {
             Storage::delete('public/fotos/' . $vcard->photo_url);
         }
@@ -206,6 +215,7 @@ class VCardController extends Controller
     }
 
     public function uploadPhoto(VCard $vcard, UploadPhotoRequest $request){
+        $this->authorize('uploadPhoto', $vcard);
         $validRequest = $request->validated();
 
         //remove from storage

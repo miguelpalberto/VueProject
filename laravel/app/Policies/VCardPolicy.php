@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\AuthUser;
 use App\Models\VCard;
+use App\Models\AuthUser;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Auth;
 
 class VCardPolicy
 {
@@ -13,7 +14,7 @@ class VCardPolicy
      */
     public function viewAny(AuthUser $authUser): bool
     {
-        //
+        return $authUser->user_type == 'A';
     }
 
     /**
@@ -21,7 +22,7 @@ class VCardPolicy
      */
     public function view(AuthUser $authUser, VCard $vCard): bool
     {
-        //
+        return $authUser->username == $vCard->phone_number;
     }
 
     /**
@@ -29,15 +30,7 @@ class VCardPolicy
      */
     public function create(AuthUser $authUser): bool
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(AuthUser $authUser, VCard $vCard): bool
-    {
-        //
+        return Auth::guest();
     }
 
     /**
@@ -45,28 +38,37 @@ class VCardPolicy
      */
     public function delete(AuthUser $authUser, VCard $vCard): bool
     {
-        //
+        return $authUser->user_type == 'A' || $authUser->username == $vCard->phone_number;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(AuthUser $authUser, VCard $vCard): bool
+    public function block(AuthUser $authUser, VCard $vCard): bool
     {
-        //
+        return $authUser->user_type == 'A';
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(AuthUser $authUser, VCard $vCard): bool
+    public function unblock(AuthUser $authUser, VCard $vCard): bool
     {
-        //
+        return $authUser->user_type == 'A';
     }
 
-
-    public function getVCardTransactions(AuthUser $authUser, VCard $vcard): bool
+    public function changeConfirmationCode(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->username == $vcard->phone_number;
+        return $authUser->username == $vCard->phone_number;
     }
+
+    public function deletePhoto(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->username == $vCard->phone_number;
+    }
+
+    public function uploadPhoto(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->username == $vCard->phone_number;
+    }
+
+    public function getVCardTransactions(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->username == $vCard->phone_number;
+    }
+
 }
