@@ -50,22 +50,27 @@ class VCardPolicy
 
     public function changeConfirmationCode(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->username == $vCard->phone_number;
+        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function deletePhoto(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->username == $vCard->phone_number;
+        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function uploadPhoto(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->username == $vCard->phone_number;
+        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function getVCardTransactions(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->username == $vCard->phone_number;
+        return $authUser->userType != 'A' && $authUser->username == $vCard->phone_number;
+    }
+
+    public function getVCardCategories(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
 }

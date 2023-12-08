@@ -20,6 +20,6 @@ class TransactionPolicy
 
     public function update(AuthUser $authUser, Transaction $transaction): bool
     {
-        return $authUser->username == $transaction->vcard;
+        return $authUser->userType != 'A' &&  $authUser->username == $transaction->vcard;
     }
 }

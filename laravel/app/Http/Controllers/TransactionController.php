@@ -90,6 +90,16 @@ class TransactionController extends Controller
         $vcard = VCard::find($validRequest['vcard']);
         $isDebitTransaction = $validRequest['type'] == 'D';
 
+        if ($isDebitTransaction && $request->user()->username != $vcard->phone_number) {
+            return response()->json([
+                'errors' => [
+                    'vcard' => [
+                        'You can only make debit transactions from your own vCard'
+                    ]
+                ]
+            ], 422);
+        }
+
         if ($isDebitTransaction && !Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
             return response()->json([
                 'errors' => [

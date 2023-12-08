@@ -15,7 +15,7 @@ class DefaultCategoryController extends Controller
 
     public function index(Request $request)
     {
-        $queryable = DefaultCategory::query();
+        $queryable = DefaultCategory::query()->orderBy('name', 'asc');
 
         $filterByType = $request->query('type');
         $filterByName = $request->query('name');
@@ -31,7 +31,6 @@ class DefaultCategoryController extends Controller
         if ($filterByName) {
             $queryable->where('name', 'like', '%' . $filterByName . '%');
         }
-
 
         return $queryable->get();
     }

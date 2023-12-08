@@ -32,7 +32,7 @@ Route::middleware('auth:api')->group(
     function () {
         // CATEGORIES
         Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
-        Route::apiResource('categories', CategoryController::class)->except(['show']); //G4.1, G2.1
+        Route::apiResource('categories', CategoryController::class)->except(['show', 'index']); //G4.1, G2.1
 
         // DEFAULT CATEGORIES
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
@@ -59,7 +59,6 @@ Route::middleware('auth:api')->group(
         Route::patch('vcards/{vcard}/changeConfirmationCode', [VCardController::class, 'changeConfirmationCode']);
         Route::delete('vcards/{vcard}/photo', [VCardController::class, 'deletePhoto']);
         Route::apiResource('vcards', VCardController::class)->except(['show', 'update']);
-
 
         // AUTH PASSPORT LOGOUT
         Route::post('auth/logout', [AuthController::class, 'logout']);

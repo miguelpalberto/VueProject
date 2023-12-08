@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,17 +22,18 @@ class CategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $vCard = $this->user()->username;
+
         return [
-            'vcard' => 'required|exists:vcards,phone_number,deleted_at,NULL,blocked,0',
             'type' => 'required|in:C,D',
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories')->where(function ($query) {
+                Rule::unique('categories')->where(function ($query) use ($vCard) {
                     return $query->where('type', $this->type)
-                    ->where('name', $this->name)
-                    ->where('vcard', $this->vcard);
+                    ->where('vcard', $vCard)
+                    ->where('name', $this->name);
                 })
             ]
         ];
@@ -42,8 +43,6 @@ class CategoryRequest extends FormRequest
     public function messages(): array//////
     {
         return [
-            'vcard.required' => 'The vCard is required',
-            'vcard.exists' => 'The vCard does not exist',
             'name.max' => 'The maximum character limit for the name is 255 characters',
             'name.required' => 'The name is required',
             'name.string' => 'The name must be a string',
