@@ -53,14 +53,12 @@ Route::middleware('auth:api')->group(
         
         // VCARD
         Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
-        Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
+        Route::patch('vcards/{vcard}/changeMaxDebit', [VCardController::class, 'changeMaxDebit']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);
         Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
         Route::patch('vcards/{vcard}/changeConfirmationCode', [VCardController::class, 'changeConfirmationCode']);
-        Route::get('vcards', [VCardController::class, 'index']);
-        Route::get('vcards/{vcard}', [VCardController::class, 'show']);
         Route::delete('vcards/{vcard}/photo', [VCardController::class, 'deletePhoto']);
-        Route::delete('vcards/{vcard}', [VCardController::class, 'destroy']);
+        Route::apiResource('vcards', VCardController::class)->except(['show', 'update']);
 
 
         // AUTH PASSPORT LOGOUT

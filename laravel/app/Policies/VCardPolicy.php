@@ -18,19 +18,16 @@ class VCardPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
-     */
-    public function view(AuthUser $authUser, VCard $vCard): bool
-    {
-        return $authUser->username == $vCard->phone_number;
-    }
-
-    /**
      * Determine whether the user can create models.
      */
     public function create(AuthUser $authUser): bool
     {
         return Auth::guest();
+    }
+
+    public function changeMaxDebit(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->user_type == 'A';
     }
 
     /**
