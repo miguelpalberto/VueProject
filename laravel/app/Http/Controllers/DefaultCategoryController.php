@@ -4,12 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DefaultCategoryRequest;
 use App\Models\DefaultCategory;
+use Illuminate\Http\Request;
 
 class DefaultCategoryController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        return DefaultCategory::all();
+        $this->authorizeResource(DefaultCategory::class, 'defaultCategory');
+    }
+
+    public function index(Request $request)
+    {
+        $queryable = DefaultCategory::query();
+
+        $filterByType = $request->query('type');
+        $filterByName = $request->query('name');
+
+        if ($filterByType) {
+            $types = ['D', 'C'];
+            if (in_array($filterByType, $types))
+            {
+                $queryable->where('type', $filterByType);
+            }
+        }
+
+        if ($filterByName) {
+            $queryable->where('name', 'like', '%' . $filterByName . '%');
+        }
+
+
+        return $queryable->get();
     }
 
     public function store(DefaultCategoryRequest $request)
@@ -19,8 +43,8 @@ class DefaultCategoryController extends Controller
         $defaultCategory = new DefaultCategory();
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
-        $defaultCategory->custom_options = $validRequest['custom_options'];
-        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->custom_options = $validRequest['custom_options'] ?? null;
+        $defaultCategory->custom_data = $validRequest['custom_data'] ?? null;
         $defaultCategory->save();
 
         return $defaultCategory;
@@ -32,8 +56,8 @@ class DefaultCategoryController extends Controller
 
         $defaultCategory->type = $validRequest['type'];
         $defaultCategory->name = $validRequest['name'];
-        $defaultCategory->custom_options = $validRequest['customOptions'];
-        $defaultCategory->custom_data = $validRequest['custom_data'];
+        $defaultCategory->custom_options = $validRequest['custom_options'] ?? null;
+        $defaultCategory->custom_data = $validRequest['custom_data'] ?? null;
         $defaultCategory->save();
 
         return $defaultCategory;
@@ -42,11 +66,6 @@ class DefaultCategoryController extends Controller
     public function destroy(DefaultCategory $defaultCategory)
     {
         $defaultCategory->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted default category',
-            'data' => $defaultCategory
-        ], 200);
+        return response()->noContent();
     }
 }

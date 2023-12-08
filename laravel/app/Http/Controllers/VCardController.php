@@ -199,10 +199,7 @@ class VCardController extends Controller
             $vcard->forceDelete();  // Hard delete
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted vCard'
-        ], 200);
+        return response()->noContent();
     }
 
     public function changeConfirmationCode(VCard $vcard, ChangeVCardConfirmationCodeRequest $request)
@@ -252,10 +249,7 @@ class VCardController extends Controller
         $vcard->photo_url = null;
         $vcard->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully removed photo'
-        ], 200);
+        return response()->noContent();
     }
 
     public function uploadPhoto(VCard $vcard, UploadPhotoRequest $request)

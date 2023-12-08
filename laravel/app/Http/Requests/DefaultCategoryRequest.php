@@ -28,7 +28,10 @@ class DefaultCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('name')->ignore($this->id),
+                Rule::unique('default_categories')->where(function ($query) {
+                    return $query->where('type', $this->type)
+                    ->where('name', $this->name);
+                })
             ]
         ];
     }
@@ -40,7 +43,7 @@ class DefaultCategoryRequest extends FormRequest
             'name.max' => 'The maximum character limit for the name is 255 characters',
             'name.required' => 'The name is required',
             'name.string' => 'The name must be a string',
-            'name:unique' => 'The name must be unique',
+            'name.unique' => 'The combination of the type and the name already exists',
             'type.required' => 'The transaction type is required',
             'type.in' => 'The type must be C (Credit) or D (Debit)',
         ];
