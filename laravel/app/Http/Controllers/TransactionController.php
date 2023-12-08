@@ -9,23 +9,74 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
 use App\Http\Resources\TransactionResource;
+use App\Policies\TransactionPolicy;
 
 class TransactionController extends Controller
 {
-    public function index(){
-        return Transaction::all();
+    public function __construct()
+    {
+        $this->authorizeResource(Transaction::class, 'transaction');
     }
 
-    public function getVCardTransactions(VCard $vcard){
-        
-        $paginatedResult = Transaction::where('vcard', $vcard->phone_number)
-        ->with('category')
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+    public function getVCardTransactions(VCard $vcard, Request $request){
+        $this->authorize('getVCardTransactions', $vcard);
 
-        //$paginatedResult['data'] = TransactionResource::collection($paginatedResult->data);
-        //return $paginatedResult;
+        if ($vcard->blocked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This vCard is blocked'
+            ], 400);
+        }
+
+        $queryable = Transaction::query()->where('vcard', $vcard->phone_number);
+
+        $orderBy = $request->query('orderBy');
+        $filterByType = $request->query('filterByType');
+        $filterByCategory = $request->query('filterByCategory');
+        $filterByDate = $request->query('filterByDate');
+        $filterByPaymentType = $request->query('filterByPaymentType');
+        $search = $request->query('search');
+
+        if ($orderBy) {
+            $orderAsc = $request->query('asc') != null ? 'asc' : 'desc';
+            if ($orderBy == 'date') {
+                $queryable->orderBy('created_at', $orderAsc);
+            } else if ($orderBy == 'value') {
+                $queryable->orderBy('value', $orderAsc);
+            }
+        }
+        else {
+            $queryable->orderBy('created_at', 'desc');
+        }
+
+        if ($filterByType && ($filterByType == 'D' || $filterByType == 'C')) {
+            $queryable->where('type', $filterByType);
+        }
+
+        if ($filterByPaymentType) {
+            $payment_types = ['VISA', 'MB', 'IBAN', 'PAYPAL', 'MBWAY', 'VCARD'];
+            if (in_array($filterByPaymentType, $payment_types)) {
+                $queryable->where('payment_type', $filterByPaymentType);
+            }
+        }
+
+        if ($filterByCategory) {
+            $queryable->where('category_id', $filterByCategory);
+        }
+
+        if ($filterByDate) {
+            $queryable->where('date', $filterByDate);
+        }
+
+        if ($search) {
+            $queryable->where('payment_reference', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+        
+        $paginatedResult = $queryable->paginate(10);
+
         return TransactionResource::collection($paginatedResult);
     }
 
@@ -33,9 +84,8 @@ class TransactionController extends Controller
         return $transaction;
     }
 
-    //to do: testar
     public function store(TransactionRequest $request){
-        //falta autorização
+
         $validRequest = $request->validated();
         $vcard = VCard::find($validRequest['vcard']);
         $isDebitTransaction = $validRequest['type'] == 'D';
@@ -69,8 +119,30 @@ class TransactionController extends Controller
                 ]
             ], 422);
         }
+    
+        if (isset($validRequest['category_id'])) {
+            $category = $vcard->categories->where('id', $validRequest['category_id'])->first();
 
+            if (!$category) {
+                return response()->json([
+                    'errors' => [
+                        'category_id' => [
+                            'Category was not found'
+                        ]
+                    ]
+                ], 422);
+            }
 
+            if ($category->type != $validRequest['type']) {
+                return response()->json([
+                    'errors' => [
+                        'category_id' => [
+                            'Category type must be the same as the transaction type'
+                        ]
+                    ]
+                ], 422);
+            }
+        }
         
         $transaction = DB::transaction(function () use ($validRequest, $vcard, $isDebitTransaction) {
             $utcDatetimeNow = new DateTime('now', new \DateTimeZone('UTC'));
@@ -130,5 +202,40 @@ class TransactionController extends Controller
         });
 
         return $transaction;
+    }
+
+    public function update(UpdateTransactionRequest $request, Transaction $transaction){
+        $validRequest = $request->validated();
+        
+        if (isset($validRequest['category_id'])) {
+            $category = $transaction->vCard->categories->where('id', $validRequest['category_id'])->first();
+
+            if (!$category) {
+                return response()->json([
+                    'errors' => [
+                        'category_id' => [
+                            'Category was not found'
+                        ]
+                    ]
+                ], 422);
+            }
+
+            if ($category->type != $transaction->type) {
+                return response()->json([
+                    'errors' => [
+                        'category_id' => [
+                            'Category type must be the same as the transaction type'
+                        ]
+                    ]
+                ], 422);
+            }
+        }
+
+        $transaction->category_id = $validRequest['category_id'] ?? null;
+        $transaction->description = $validRequest['description'] ?? null;
+
+        $transaction->save();
+
+        return new TransactionResource($transaction);
     }
 }

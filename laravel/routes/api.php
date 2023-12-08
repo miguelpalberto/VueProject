@@ -44,15 +44,15 @@ Route::middleware('auth:api')->group(
         Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
         
         // TRANSACTIONS
-        //Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);//descomentar
+        Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
         Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
+        Route::put('transactions/{transaction}', [TransactionController::class, 'update']);
         Route::post('transactions', [TransactionController::class, 'store']);
         
         // USERS
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
         
         // VCARD
-        Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']); //remove
         Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
         Route::put('vcards/{vcard}', [VCardController::class, 'getVCardStats']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);

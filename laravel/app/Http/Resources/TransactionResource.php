@@ -15,6 +15,7 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'payment_reference' => $this->payment_reference, 
             'type' => $this->type == 'D' ? 'Debit' : 'Credit',
             'datetime' => $this->datetime,
