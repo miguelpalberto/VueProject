@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CategoryRequest extends FormRequest
 {
@@ -22,26 +23,33 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vcard' => 'required|string|exists:vcards,phone_number,deleted_at,NULL',
-            'name' => 'required|string|max:50',
+            'vcard' => 'required|exists:vcards,phone_number,deleted_at,NULL,blocked,0',
             'type' => 'required|in:C,D',
-            'custom_options' => 'sometimes|json',
-            'custom_data' => 'sometimes|json',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories')->where(function ($query) {
+                    return $query->where('type', $this->type)
+                    ->where('name', $this->name)
+                    ->where('vcard', $this->vcard);
+                })
+            ]
         ];
     }
+
 
     public function messages(): array//////
     {
         return [
-            'name.max' => 'The maximum character limit for the name is 50 characters',
+            'vcard.required' => 'The vCard is required',
+            'vcard.exists' => 'The vCard does not exist',
+            'name.max' => 'The maximum character limit for the name is 255 characters',
             'name.required' => 'The name is required',
             'name.string' => 'The name must be a string',
+            'name.unique' => 'The combination of the type and the name already exists',
             'type.required' => 'The transaction type is required',
             'type.in' => 'The type must be C (Credit) or D (Debit)',
-            'vcard.string' => 'The vcard must be a string',
-            'vcard.exists' => 'Vcard not found on the DB',
-            'custom_options.json' => 'The custom options must be a valid JSON',
-            'custom_data.json' => 'The custom data must be a valid JSON',
         ];
     }
 }

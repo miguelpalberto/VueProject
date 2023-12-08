@@ -14,18 +14,35 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UploadPhotoRequest;
 use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
 use App\Http\Requests\DeleteVCardRequest;
+use App\Http\Requests\ChangeMaxDebitRequest;
 
 class VCardController extends Controller
 {
-    // esta função só deve ser chamada por um administrador (falta implementar a autorização)
-    public function index()
+    public function __construct()
     {
-        return VCard::all();
+        $this->authorizeResource(VCard::class, 'vcard');
     }
 
-    public function show(VCard $vcard)
+    public function index(Request $request)
     {
-        return $vcard;
+        $queryable = VCard::query()->orderBy('name', 'asc');
+
+        $filterByNameOrEmail = $request->query('search');
+        $filterByStatus = $request->query('status');
+
+        if ($filterByStatus) {
+            $statuses = ['blockedOnly', 'unblockedOnly'];
+            if (in_array($filterByStatus, $statuses)) {
+                $queryable->where('blocked', $filterByStatus == 'blockedOnly');
+            }
+        }
+
+        if ($filterByNameOrEmail) {
+            $queryable->where('name', 'like', "%{$filterByNameOrEmail}%")
+                ->orWhere('email', 'like', "%{$filterByNameOrEmail}%");
+        }
+
+        return $queryable->paginate(10);  
     }
 
     public function store(VCardRequest $request)
@@ -45,7 +62,7 @@ class VCardController extends Controller
             $newVCard->custom_options = $validRequest['custom_options'] ?? null;
             $newVCard->custom_data = $validRequest['custom_data'] ?? null;
 
-            if ($request->hasFile('photo_file')) { 
+            if ($request->hasFile('photo_file')) {
                 $path = $request->photo_file->store('public/fotos');
                 $newVCard->photo_url = basename($path);
             }
@@ -78,9 +95,25 @@ class VCardController extends Controller
         return json_decode((string) $response->content(), true);
     }
 
+    public function changeMaxDebit(ChangeMaxDebitRequest $request, VCard $vcard)
+    {
+        $this->authorize('changeMaxDebit', $vcard);
+        $validRequest = $request->validated();
+
+        $vcard->max_debit = $validRequest['max_debit'];
+
+        $vcard->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully updated vCard',
+            'data' => $vcard
+        ], 200);
+    }
+
     public function block(VCard $vcard)
     {
-        //falta implementar a autorização
+        $this->authorize('block', $vcard);
         if ($vcard->blocked) {
             return response()->json([
                 'success' => false,
@@ -99,7 +132,7 @@ class VCardController extends Controller
 
     public function unblock(VCard $vcard)
     {
-        //falta implementar a autorização
+        $this->authorize('unblock', $vcard);
         if (!$vcard->blocked) {
             return response()->json([
                 'success' => false,
@@ -118,28 +151,43 @@ class VCardController extends Controller
 
     public function destroy(VCard $vcard, DeleteVCardRequest $request)
     {
+        $user = $request->user();
+
         $validRequest = $request->validated();
+        //if user is not admin, check if password and confirmation code are correct
+        //else if user is admin, just delete the vcard
+        if ($user->user_type != 'A') {
+            if (!Hash::check($validRequest['password'], $vcard->password)) {
+                return response()->json([
+                    'errors' => [
+                        'password' => [
+                            'The password is incorrect'
+                        ]
+                    ]
+                ], 422);
+            }
 
-        if (!Hash::check($validRequest['password'], $vcard->password)) {
+            if (!Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
+                return response()->json([
+                    'errors' => [
+                        'confirmation_code' => [
+                            'The confirmation code is incorrect'
+                        ]
+                    ]
+                ], 422);
+            }
+        }
+
+        if ($vcard->balance > 0) {
             return response()->json([
                 'errors' => [
-                    'password' => [
-                        'The password is incorrect'
+                    'balance' => [
+                        'Cannot delete vCard with positive balance'
                     ]
                 ]
             ], 422);
         }
 
-        if (!Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
-            return response()->json([
-                'errors' => [
-                    'confirmation_code' => [
-                        'The confirmation code is incorrect'
-                    ]
-                ]
-            ], 422);
-        }
-        
         $hasTransactions = $vcard->transactions()->exists();
 
         if ($hasTransactions) {
@@ -151,14 +199,13 @@ class VCardController extends Controller
             $vcard->forceDelete();  // Hard delete
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted vCard'
-        ], 200);
+        return response()->noContent();
     }
 
     public function changeConfirmationCode(VCard $vcard, ChangeVCardConfirmationCodeRequest $request)
     {
+        $this->authorize('changeConfirmationCode', $vcard);
+
         if (!Hash::check($request->password, $vcard->password)) {
             return response()->json([
                 'errors' => [
@@ -190,8 +237,11 @@ class VCardController extends Controller
         ], 200);
     }
 
-    public function deletePhoto(VCard $vcard){
-        
+    public function deletePhoto(VCard $vcard)
+    {
+
+        $this->authorize('deletePhoto', $vcard);
+
         if ($vcard->photo_url != null) {
             Storage::delete('public/fotos/' . $vcard->photo_url);
         }
@@ -199,17 +249,16 @@ class VCardController extends Controller
         $vcard->photo_url = null;
         $vcard->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully removed photo'
-        ], 200);
+        return response()->noContent();
     }
 
-    public function uploadPhoto(VCard $vcard, UploadPhotoRequest $request){
+    public function uploadPhoto(VCard $vcard, UploadPhotoRequest $request)
+    {
+        $this->authorize('uploadPhoto', $vcard);
         $validRequest = $request->validated();
 
         //remove from storage
-        if ($vcard->photo_url != null) { 
+        if ($vcard->photo_url != null) {
             Storage::delete('public/fotos/' . $vcard->photo_url);
         }
 

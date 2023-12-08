@@ -2,35 +2,52 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\VCard;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\VCard;
+use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    public function index(){
-        return Category::all();
-    }
 
-    public function getVCardCategories(VCard $vcard){
-        return CategoryResource::collection($vcard->categories);
+    public function __construct()
+    {
+        $this->authorizeResource(Category::class, 'category');
+    }
+    
+    public function getVCardCategories(VCard $vcard, Request $request){
+        $this->authorize('getVCardCategories', $vcard);
+
+        $queryable = Category::query()->where('vcard', $vcard->phone_number)->orderBy('name', 'asc');
+
+        $filterByType = $request->query('type');
+        $filterByName = $request->query('name');
+
+        if ($filterByType) {
+            $types = ['D', 'C'];
+            if (in_array($filterByType, $types))
+            {
+                $queryable->where('type', $filterByType);
+            }
+        }
+
+        if ($filterByName) {
+            $queryable->where('name', 'like', '%' . $filterByName . '%');
+        }
+
+        return CategoryResource::collection($queryable->get());
     }
 
     public function store(CategoryRequest $request){
         $validRequest = $request->validated();
 
-        //check if category combination exists
-        if (Category::where('vcard', $validRequest['vcard'])->where('type', $validRequest['type'])->where('name', $validRequest['name'])->exists()) {
-            $typeToPrettyString = $validRequest['type'] === 'C' ? 'Credit' : 'Debit';
+        if ($request->user()->username != $validRequest['vcard']) {
             return response()->json([
-                'errors' => [
-                    'name' => [
-                        "The category '" . $validRequest['name'] . "' with the type '" . $typeToPrettyString . "' already exists for this vCard."
-                    ]
-                ]
-            ], 422);
+                'success' => false,
+                'message' => 'You can only create categories for your own vCard'
+            ], 403);
         }
 
         $category = new Category();
@@ -45,19 +62,8 @@ class CategoryController extends Controller
     }
 
 
-    public function update(Category $category, CategoryRequest $request){
+    public function update(Category $category, UpdateCategoryRequest $request){
         $validRequest = $request->validated();
-        
-        if (Category::where('vcard', $validRequest['vcard'])->where('type', $validRequest['type'])->where('name', $validRequest['name'])->exists()) {
-            $typeToPrettyString = $validRequest['type'] === 'C' ? 'Credit' : 'Debit';
-            return response()->json([
-                'errors' => [
-                    'name' => [
-                        "The category '" . $validRequest['name'] . "' with the type '" . $typeToPrettyString . "' already exists for this vCard."
-                    ]
-                ]
-            ], 422);
-        }
 
         $category->type = $validRequest['type'];
         $category->name = $validRequest['name'];
@@ -69,12 +75,9 @@ class CategoryController extends Controller
     }
 
     public function destroy(Category $category){
+        $category->transactions()->update(['category_id' => null]);	
         $category->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted category',
-            'data' => $category
-        ], 200);
+        return response()->noContent();
     }
 }

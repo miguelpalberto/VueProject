@@ -5,14 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class DefaultCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;//
+        return true;
     }
 
     /**
@@ -22,14 +22,17 @@ class DefaultCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $vCard = $this->user()->username;
+
         return [
             'type' => 'required|in:C,D',
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('default_categories')->where(function ($query) {
+                Rule::unique('categories')->where(function ($query) use ($vCard) {
                     return $query->where('type', $this->type)
+                    ->where('vcard', $vCard)
                     ->where('name', $this->name);
                 })
             ]

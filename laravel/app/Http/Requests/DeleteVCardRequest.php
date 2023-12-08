@@ -13,6 +13,12 @@ class DeleteVCardRequest extends FormRequest
 
     public function rules(): array
     {
+        $user = $this->user();
+
+        if ($user->user_type == 'A') {
+            return [];
+        } 
+
         return [
             'password' => 'required|string',
             'confirmation_code' => 'required|string',

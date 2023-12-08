@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(User::class, 'user');
+    }
+
     public function index(Request $request)
     {
         $queryable = User::query()->orderBy('name', 'asc');
@@ -23,7 +28,6 @@ class UserController extends Controller
         return $queryable->paginate(10);  
     }
 
-    //todo: authorization admin
     public function store(UserRequest $request)
     {
         $validRequest = $request->validated();
@@ -44,14 +48,10 @@ class UserController extends Controller
         return $user;
     }
 
-    //todo: authorization admin
     public function destroy(User $user)
     {
         $user->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Successfully deleted user'
-        ], 200);
+        return response()->noContent();
     }
 }
