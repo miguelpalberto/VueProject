@@ -23,9 +23,26 @@ class VCardController extends Controller
         $this->authorizeResource(VCard::class, 'vcard');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return VCard::all();
+        $queryable = VCard::query()->orderBy('name', 'asc');
+
+        $filterByNameOrEmail = $request->query('search');
+        $filterByStatus = $request->query('status');
+
+        if ($filterByStatus) {
+            $statuses = ['blockedOnly', 'unblockedOnly'];
+            if (in_array($filterByStatus, $statuses)) {
+                $queryable->where('blocked', $filterByStatus == 'blockedOnly');
+            }
+        }
+
+        if ($filterByNameOrEmail) {
+            $queryable->where('name', 'like', "%{$filterByNameOrEmail}%")
+                ->orWhere('email', 'like', "%{$filterByNameOrEmail}%");
+        }
+
+        return $queryable->paginate(10);  
     }
 
     public function store(VCardRequest $request)
