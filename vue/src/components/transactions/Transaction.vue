@@ -10,7 +10,7 @@ const props = defineProps({
     vcard: {
         type: String,
         default: null
-    },
+    }
 })
 
 const newTransaction = () => {
@@ -70,10 +70,6 @@ const vcard = computed(() => {
     return props.vcard ? props.vcard : authStore.user.username
 })
 
-const backUrl = computed(() => {
-    return props.vcard ? '/vcards/' + props.vcard + '/transactions' : '/transactions'
-})
-
 const categories = computed(() => {
     return allCategories.value.filter((category) => {
         return category.type == transaction.value.type
@@ -100,7 +96,6 @@ const loadCategories = () => {
         .catch((error) => {
             console.log(error)
             toast.error('Error loading categories')
-            //router.push({ name: 'transactions' })
         })
 }
 
@@ -178,9 +173,9 @@ const insertTransaction = (transaction) => {
     axios.post('transactions', transaction)
         .then(() => {
             toast.success('Transaction created')
-            if (!props.isAdmin)
+            if (!authStore.isAdmin)
                 authStore.loadUser()
-            router.push({ path: backUrl.value })
+            router.back()
         })
         .catch((error) => {
             if (error.response.status === 422) {
@@ -196,7 +191,7 @@ const insertTransaction = (transaction) => {
 
 
 const cancel = () => {
-    router.push({ name: 'transactions' })
+    router.back()
 }
 
 onMounted(() => {
