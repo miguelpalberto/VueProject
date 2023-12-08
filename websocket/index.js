@@ -21,15 +21,22 @@ io.on('connection', (socket) => {
         }
     })
 
+
     socket.on('vCardBlocked', (vCard) => {
         console.log(`vcard #${vCard.phone_number} has been blocked`)
         io.to(vCard.phone_number).emit('blocked')
+ })
+    socket.on('userBlocked', (user) => {
+        console.log(`user #${user.id} has been blocked`)
+        io.to(user.id).emit('blocked')
+
     })
 
     socket.on('userDeleted', (user) => {
         console.log(`user #${user.id} has been deleted`)
         io.to(user.id).emit('deleted')
     })
+
 
     socket.on('vcardMaxDebitChanged', (vCard) => {
         console.log(`vcard #${vCard.phone_number} max debit has been changed`)
@@ -42,6 +49,7 @@ io.on('connection', (socket) => {
             io.to(transaction.pair_vcard).emit('newCreditTransaction', transaction)
         }
         //transação de crédito feita por um administrador
+
         else{
             io.to(transaction.vcard).emit('newCreditTransaction', transaction)
         }
