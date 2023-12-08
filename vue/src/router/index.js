@@ -13,6 +13,8 @@ import ChangeConfirmationCode from '../components/users/ChangeConfirmationCode.v
 import Profile from '../components/users/Profile.vue'
 import DismissVCard from '../components/users/DismissVCard.vue'
 import Admins from '../components/admins/Admins.vue'
+import Category from '../components/categories/Category.vue'
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +64,7 @@ const router = createRouter({
             name: 'createTransaction',
             component: Transaction
         },
+
         {
             path: '/vcards/:vcard/transactions/create',
             name: 'createvCardTransaction',
@@ -89,6 +92,18 @@ const router = createRouter({
             name: 'dismissVcard',
             component: DismissVCard
         },
+        {
+            path: '/categories/create',
+            name: 'createcategory',
+            component: Category
+        },
+        {
+            path: '/categories/:id/edit',//path: '/categories/:id',
+            name: 'editCategory',
+            component: Category,
+            props: (route) => ({ id: parseInt(route.params.id) })
+        }
+        
     ]
 })
 

@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($this->id),
             ],
-            'password' => 'sometimes|required',
+            'password' => 'sometimes|required',//confirmar
         ];
     }
 

@@ -19,7 +19,8 @@ const credentials = ref({
   confirmation_code: '',
   name: '',
   email: '',
-  photo_file: null
+  photo_file: null,
+  
 })
 
 const confirmPassword = ref('')
