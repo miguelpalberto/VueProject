@@ -7,11 +7,10 @@ import { useCategoryStore } from '../../stores/category';
 import { useRouter } from 'vue-router'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
-const paginatedResult = ref([])
+//const paginatedResult = ref([])
 const isLoading = ref(false)
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
-const router = useRouter()
 const selectedType = ref(categoryStore.types[0].value)
 
  const loadCategories = async (page = 1, searchValue = null) => {
@@ -50,23 +49,11 @@ const editedFunction = (editedCategory) => {
       categories.value.splice(idx, 1)
     }
 }
-const allTypesCategories = computed(() => {
-  if(!categoryStore.categories){
-    return []
-  }
-  return categoryStore.categories
-})
-// const debitCategories = computed(() => {
+// const allTypesCategories = computed(() => {
 //   if(!categoryStore.categories){
 //     return []
 //   }
-//   return categoryStore.categories.filter(t => t.type === 'D')
-// })
-// const creditCategories = computed(() => {
-//   if(!categoryStore.categories){
-//     return []
-//   }
-//   return categoryStore.categories.filter(t => t.type === 'C')
+//   return categoryStore.categories
 // })
 
 const props = defineProps({
@@ -147,9 +134,8 @@ onMounted(() => {//so depois de estar tudo carregado
       :categories="categoryStore.paginatedCategories.data"
       :showId="false" 
       @edited="editedFunction" 
-      @deleted="deletedFunction">
-      </category-table>
-      <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
+      @deleted="deletedFunction"/>
+      <Bootstrap5Pagination :data="categoryStore.paginatedCategories" @pagination-change-page="loadCategories" />
     </div>
   </div>
     <!-- <div class="col-xs-12 col-md-6">

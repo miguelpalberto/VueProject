@@ -65,5 +65,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, updateCategory, loadCategories, deleteCategory, types, paginatedCategories};
+    return { categories, types, paginatedCategories, updateCategory, loadCategories, deleteCategory};
 })

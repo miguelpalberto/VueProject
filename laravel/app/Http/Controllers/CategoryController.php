@@ -34,7 +34,9 @@ class CategoryController extends Controller
         }
 
         if ($filterByName) {
-            $queryable->where('name', 'like', '%' . $filterByName . '%');
+            $queryable->where(function ($query) use ($filterByName){
+                $query->where('name', 'like', "%{$filterByName }%");
+            });
         }
 
         return CategoryResource::collection($queryable->get());
