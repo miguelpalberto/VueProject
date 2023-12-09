@@ -105,13 +105,13 @@ const updateProfileConfirmed = async (isConfirmed) => {
                 Change Password
             </router-link>
         </div>
-        <div class="g-col-12">
+        <div class="g-col-12" v-if="!authStore.isAdmin">
             <router-link class="btn btn-dark w-100" :class="{ disabled: isEditing }" :to="{ name: 'changeConfirmationCode' }">
                 <i class="bi bi-person-vcard"></i>
                 Change Confirmation Code
             </router-link>
         </div>
-        <div class="g-col-12">
+        <div class="g-col-12" v-if="!authStore.isAdmin">
             <router-link class="btn btn-danger w-100" :class="{ disabled: isEditing }" :to="{ name: 'dismissVcard' }">
                 Dismiss VCard
             </router-link>
