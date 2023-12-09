@@ -199,7 +199,7 @@ const clickMenuOption = () => {
             </h4>
           </div>
         </div>
-        <div class="container-fluid py-5">
+        <div class="container-fluid py-2">
           <router-view />
         </div>
       </main>

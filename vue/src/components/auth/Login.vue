@@ -48,6 +48,11 @@ const login = async () => {
 </script>
 
 <template>
+
+  <div class="container-sm" style="max-width: 450px;">
+    <div class="d-flex justify-content-center mb-4">
+      <img src="@/assets/logogta1.svg" alt="" width="230" class="d-inline-block align-text-top" />
+    </div>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="login">
     <h3 class="mt-5 mb-3">Login</h3>
     <hr>
@@ -74,5 +79,12 @@ const login = async () => {
       <router-link class="btn btn-link" to="/register">Sign up now!</router-link>
     </div>
   </form>
+</div>
+      <!-- easter egg -->
+      <div class="d-flex justify-content-end mt-3">
+        <router-link to="/easteregg" style="color: rgba(169, 169, 169, 0.7);">
+          Coming soon
+        </router-link>
+      </div>
 </template>
 
