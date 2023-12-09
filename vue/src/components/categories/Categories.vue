@@ -14,20 +14,12 @@ const categoryStore = useCategoryStore()
 const router = useRouter()
 const selectedType = ref(categoryStore.types[0].value)
 
- const loadCategories = (page = 1, searchValue = null, inputType = null) => {
+ const loadCategories = async (page = 1, searchValue = null) => {
   isLoading.value = true
-  const params = {
-        page: page
-    }
-    if (searchValue) {
-        params.name = searchValue
-    }
 
-    params.type = inputType
-
-  const vcardId = authStore.user.username
+   const vcardId = authStore.user.username
     try {
-      categories.value = categoryStore.loadCategories(vcardId, params)
+      await categoryStore.loadCategories(vcardId, page, searchValue, selectedType.value)
 
       //console.log(paginatedResult.value)
     }
@@ -152,7 +144,7 @@ onMounted(() => {//so depois de estar tudo carregado
       <category-table 
       :is-parent-loading="isLoading" 
       modalId="categoryTableModal" 
-      :categories="allTypesCategories" 
+      :categories="categoryStore.paginatedCategories.data"
       :showId="false" 
       @edited="editedFunction" 
       @deleted="deletedFunction">
