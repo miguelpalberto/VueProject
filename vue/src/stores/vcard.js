@@ -74,10 +74,14 @@ export const useVCardStore = defineStore('vcard', () => {
     const updateMaxDebit = async (vCard, maxDebit) => {
         maxDebit = maxDebit.toFixed(2)
         await axios.patch('vcards/' + vCard.phone_number + '/changeMaxDebit', { max_debit: maxDebit })
-        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
-        if (idx >= 0) {
-            paginatedVCards.value.data[idx].max_debit = maxDebit
-        }
+            .then(() => {
+                const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+                if (idx >= 0) {
+                    paginatedVCards.value.data[idx].max_debit = maxDebit
+                }
+                socket.emit('vcardMaxDebitChanged', vCard)
+            })
+
     }
 
     const resetValues = () => {
@@ -109,6 +113,14 @@ export const useVCardStore = defineStore('vcard', () => {
             if (idx >= 0) {
                 await load(computeQueryPage())
             }
+        }
+    })
+
+    socket.on('vcardMaxDebitChanged', async (vCard) => {
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        toast.info('vCard ' + vCard.phone_number + ' max debit has been changed.')
+        if (idx >= 0) {
+            paginatedVCards.value.data[idx].max_debit = vCard.max_debit
         }
     })
 
