@@ -19,6 +19,23 @@ export const useCategoryStore = defineStore('category', () => {
             throw error;
         }
     }
+    const loadCategoriesD = async (vcard, params) => {
+        try {
+            const response = await axios.get(`vcards/${vcard}/categoriesd`, { params });
+            categories.value = response.data.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+    const loadCategoriesC = async (vcard, params) => {
+        try {
+            const response = await axios.get(`vcards/${vcard}/categoriesc`, { params });
+            categories.value = response.data.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
     const deleteCategory = (category) => {
         let idx = categories.value.findIndex((t) => t.id === category.id)
@@ -36,5 +53,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, updateCategory, loadCategories, deleteCategory};
+    return { categories, updateCategory, loadCategories, deleteCategory, loadCategoriesD, loadCategoriesC};
 })

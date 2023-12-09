@@ -22,7 +22,53 @@ class CategoryController extends Controller
 
         $queryable = Category::query()->where('vcard', $vcard->phone_number)->orderBy('name', 'asc');
 
-        $filterByType = $request->query('type');
+        // $filterByType = $request->query('type');
+        // $filterByName = $request->query('name');
+
+        // if ($filterByType) {
+        //     $types = ['D', 'C'];
+        //     if (in_array($filterByType, $types))
+        //     {
+        //         $queryable->where('type', $filterByType);
+        //     }
+        // }
+
+        // if ($filterByName) {
+        //     $queryable->where('name', 'like', '%' . $filterByName . '%');
+        // }
+
+        return CategoryResource::collection($queryable->get());
+    }
+    public function getVCardCategoriesD(VCard $vcard, Request $request){
+        $this->authorize('getVCardCategories', $vcard);
+
+        $queryable = Category::query()->where('vcard', $vcard->phone_number)->orderBy('name', 'asc');
+
+        //$filterByType = $request->query('type');
+        $filterByType = 'D';
+        $filterByName = $request->query('name');
+
+        if ($filterByType) {
+            $types = ['D', 'C'];
+            if (in_array($filterByType, $types))
+            {
+                $queryable->where('type', $filterByType);
+            }
+        }
+
+        if ($filterByName) {
+            $queryable->where('name', 'like', '%' . $filterByName . '%');
+        }
+
+        return CategoryResource::collection($queryable->get());
+    }
+    public function getVCardCategoriesC(VCard $vcard, Request $request){
+        $this->authorize('getVCardCategories', $vcard);
+
+        $queryable = Category::query()->where('vcard', $vcard->phone_number)->orderBy('name', 'asc');
+
+        //$filterByType = $request->query('type');
+        $filterByType = 'C';
         $filterByName = $request->query('name');
 
         if ($filterByType) {

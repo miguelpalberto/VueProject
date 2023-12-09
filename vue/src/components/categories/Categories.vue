@@ -13,7 +13,7 @@ const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
 
- const loadCategories = (page = 1, searchValue = null) => {
+ const loadCategories = (page = 1, searchValue = null, loadFunction = 0) => {
   isLoading.value = true
   const params = {
         page: page
@@ -25,7 +25,15 @@ const router = useRouter()
     try {
       //console.log("vcardid: " + vcardId)
       //console.log("params: " + params + params.page + params.search)
+      if(loadFunction === 1){
+        paginatedResult.value = categoryStore.loadCategoriesD(vcardId, params)
+      }
+      else if(loadFunction === 2){
+        paginatedResult.value = categoryStore.loadCategoriesC(vcardId, params)
+      }
+      else{
       paginatedResult.value = categoryStore.loadCategories(vcardId, params)
+    }
       console.log(paginatedResult.value)
     }
     catch (error) {
@@ -35,12 +43,16 @@ const router = useRouter()
         isLoading.value = false
     }
 }
+
 // const editCategory = (category) => {
 //     router.push({ name: 'Category', params: { id: category.id } })
 // }
 
-const search = (value) => {
-  loadCategories(1, value)
+const searchd = (value) => {
+  loadCategories(1, value, 1)
+}
+const searchc = (value) => {
+  loadCategories(1, value, 2)
 }
 
 //Chamado pelo CategoryTable, elimina no frontend
@@ -129,7 +141,7 @@ onMounted(() => {//so depois de estar tudo carregado
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label"></label>
-            <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
+            <input id="inputSearch" class="form-control" v-debounce:300ms="searchd" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
       </div>
@@ -150,7 +162,7 @@ onMounted(() => {//so depois de estar tudo carregado
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch2" class="form-label"></label>
-            <input id="inputSearch2" class="form-control" v-debounce:300ms="search" type="text"
+            <input id="inputSearch2" class="form-control" v-debounce:300ms="searchc" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
       </div>
