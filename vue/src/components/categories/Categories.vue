@@ -19,7 +19,7 @@ const router = useRouter()
         page: page
     }
     if (searchValue) {
-        params.search = searchValue
+        params.name = searchValue
     }
   const vcardId = authStore.user.username
     try {
