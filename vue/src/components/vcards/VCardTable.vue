@@ -165,7 +165,7 @@ const updateMaxDebitConfirmed = () => {
                 <tr v-if="props.vCards.length === 0">
                     <td colspan="7" class="text-center">No vCards found</td>
                 </tr>
-                <tr v-else :class="{ 'active': isEditing && !isVCardSelected(vCard) }" v-for="vCard in props.vCards"
+                <tr v-else :class="{ 'disabled': isEditing && !isVCardSelected(vCard) }" v-for="vCard in props.vCards"
                     :key="vCard.phone_number">
                     <td class="align-middle">
                         <img :src="photoFullUrl(vCard)" class="rounded-circle img_photo" />
@@ -178,8 +178,7 @@ const updateMaxDebitConfirmed = () => {
                         <span v-if="(isEditing && !isVCardSelected(vCard)) || !isEditing">
                             {{ vCard.max_debit }}€
                         </span>
-                        <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;"
-                            novalidate @submit.prevent="updateMaxDebit">
+                        <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
                             <input id="inputMaxDebit" :disabled="isParentLoading" type="text" class="form-control"
                                 v-model="maxDebitOfSelectedVCard" />
                             <button type="button" class="btn btn-success" @click="updateMaxDebit(vCard)"
@@ -239,7 +238,7 @@ const updateMaxDebitConfirmed = () => {
     opacity: 0.5;
 }
 
-tr.active {
+tr.disabled {
     opacity: 50%;
 }
 </style>

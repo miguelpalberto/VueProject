@@ -3,38 +3,70 @@ import axios from 'axios'
 import { ref, onMounted, computed } from 'vue'
 import CategoryTable from "./CategoryTable.vue"
 import { useAuthStore } from '../../stores/auth';
+import { useCategoryStore } from '../../stores/category';
+import { useRouter } from 'vue-router'
+import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
-
+const paginatedResult = ref([])
+const isLoading = ref(false)
 const authStore = useAuthStore()
+const categoryStore = useCategoryStore()
+const router = useRouter()
 
-const loadCategories = () => {
-
-  const vcardId = authStore.user.username    // todo Change later when authentication is implemented
-  axios.get('vcards/' + vcardId + '/categories')
-    .then((response) => {
-      console.log(response)//
-      categories.value = response.data.data
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+ const loadCategories = (page = 1, searchValue = null) => {
+  isLoading.value = true
+  const params = {
+        page: page
+    }
+    if (searchValue) {
+        params.search = searchValue
+    }
+  const vcardId = authStore.user.username
+    try {
+      //console.log("vcardid: " + vcardId)
+      //console.log("params: " + params + params.page + params.search)
+      paginatedResult.value = categoryStore.loadCategories(vcardId, params)
+      console.log(paginatedResult.value)
+    }
+    catch (error) {
+        console.log(error)
+    }
+    finally {
+        isLoading.value = false
+    }
 }
-const editCategory = (category) => {
-    router.push({ name: 'Category', params: { id: category.id } })
+// const editCategory = (category) => {
+//     router.push({ name: 'Category', params: { id: category.id } })
+// }
+
+const search = (value) => {
+  loadCategories(1, value)
 }
 
-const deletedCategory = (deletedCategory) => {
-    let idx = categories.value.findIndex((t) => t.id === deletedCategory.id)
+//Chamado pelo CategoryTable, elimina no frontend
+const deletedFunction = (deletedCategory) => {
+    categoryStore.deleteCategory(deletedCategory)
+}
+
+const editedFunction = (editedCategory) => {
+    let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
+    console.log(idx)
     if (idx >= 0) {
       categories.value.splice(idx, 1)
     }
 }
 const debitCategories = computed(() => {
-  return categories.value.filter(t => t.type == 'D')
+  if(!categoryStore.categories){
+    return []
+  }
+  return categoryStore.categories.filter(t => t.type === 'D')
 })
 
 const creditCategories = computed(() => {
-  return categories.value.filter(t => t.type == 'C')
+  if(!categoryStore.categories){
+    return []
+  }
+  return categoryStore.categories.filter(t => t.type === 'C')
 })
 
 const props = defineProps({
@@ -44,7 +76,7 @@ const props = defineProps({
   },
 })
 
-const categories = ref([])
+const categories = ref([]) //categorias ja estao nas store
 
 onMounted(() => {//so depois de estar tudo carregado
   loadCategories()
@@ -53,6 +85,7 @@ onMounted(() => {//so depois de estar tudo carregado
 </script>
 
 <template>
+
   <div class="d-flex justify-content-between">
     <div class="mx-2">
       <h3 class="mt-4">{{ categoriesTitle }}</h3>
@@ -63,7 +96,8 @@ onMounted(() => {//so depois de estar tudo carregado
   </div>
   <hr>
   <router-link class="btn btn-success btn-sm" to="/categories/create">
-    <i class="bi bi-send-plus"></i> New Category
+    <i class="bi bi-send-plus"></i> 
+    <span>New Category</span>
   </router-link>
   <hr>
   <div class="mb-3 d-flex justify-content-between flex-wrap">
@@ -92,21 +126,44 @@ onMounted(() => {//so depois de estar tudo carregado
   <div class="row">
     <div class="col-xs-12 col-md-6">
       <h4>Debit</h4>
+      <div class="mb-1 row">
+        <div class="col-xs-12 col-md-9">
+            <label for="inputSearch" class="form-label"></label>
+            <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
+                placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
+        </div>
+      </div>
+      <!-- todo show id true so se user for admin: -->
       <category-table 
+      :is-parent-loading="isLoading" 
+      :categoriesdebit="paginatedResult.data" 
+      modalId="debitTableModal" 
       :categories="debitCategories" 
-      :showId="true"
-      @edit="editCategory"
-      @deleted="deletedCategory">
+      :showId="false" 
+      @edited="editedFunction" 
+      @deleted="deletedFunction">
       </category-table>
+      <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
     </div>
     <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
-      <category-table 
+      <div class="mb-1 row">
+        <div class="col-xs-12 col-md-9">
+            <label for="inputSearch2" class="form-label"></label>
+            <input id="inputSearch2" class="form-control" v-debounce:300ms="search" type="text"
+                placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
+        </div>
+      </div>
+      <category-table
+      :is-parent-loading="isLoading" 
+      :categoriescredit="paginatedResult.data" 
+      modalId="creditTableModal" 
       :categories="creditCategories" 
-      :showId="true"     
-      @edit="editCategory"
-      @deleted="deletedCategory">
+      :showId="false"     
+      @edited="editedFunction"
+      @deleted="deletedFunction">
     </category-table>
+    <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
     </div>
   </div>
 
@@ -122,7 +179,5 @@ onMounted(() => {//so depois de estar tudo carregado
   margin-top: 0.35rem;
 }
 
-.btn-addcategory{
-  margin-top: 1.85rem;
-}
+
 </style>

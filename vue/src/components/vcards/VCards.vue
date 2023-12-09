@@ -108,14 +108,17 @@ onMounted(() => {
                 placeholder="Search by phone number, name or email" aria-label="Search" />
         </div>
         <div class="col-xs-12 col-md-3">
-            <label for="inputSearch" class="form-label">Status</label>
-            <select id="inputStatus" v-model="selectedStatus" class="form-select" @change="loadVCards()">
+            <label for="inputSearch" style="font-size: 15px;" class="form-label">Status</label>
+            <select id="inputStatus" style="font-size: 15px;" v-model="selectedStatus" class="form-select" @change="loadVCards()">
                 <option v-for="status in vCardStore.statuses" :key="status.value" :value="status.value">{{ status.text }}</option>
             </select>
         </div>
     </div>
-    <v-card-table :is-parent-loading="isLoading" :v-cards="vCardStore.paginatedVCards.data" @delete="deleteVCard" @block="blockVCard"
-        @unblock="unblockVCard" @update-max-debit="updateMaxDebit"></v-card-table>
+    <v-card-table :is-parent-loading="isLoading"
+      :v-cards="vCardStore.paginatedVCards.data"
+      @delete="deleteVCard" @block="blockVCard"
+      @unblock="unblockVCard"
+      @update-max-debit="updateMaxDebit" />
     <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" />
 </template>
 

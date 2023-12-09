@@ -1,11 +1,13 @@
 <script setup>
-// import axios from 'axios'
 // import { ref, watch, watchEffect } from 'vue'
 import axios from 'axios'
-import { useToast } from "vue-toastification"
-import { ref, watch, computed } from "vue"
+import { useToast } from 'vue-toastification'
+import { ref, watch, computed } from 'vue'
+import { useCategoryStore } from '../../stores/category'
+import { useAuthStore } from '../../stores/auth'
 
-
+const authStore = useAuthStore()
+const categoryStore = useCategoryStore()
 const toast = useToast()
 const props = defineProps({
     categories: {
@@ -23,13 +25,17 @@ const props = defineProps({
     showDeleteButton: {
         type: Boolean,
         default: true
+    },
+    modalId: {
+        type: String,
+        required: true
     }
 })
 
-const emit = defineEmits(['edit', 'deleted'])
+const emit = defineEmits(['edit', 'deleted', 'save'])
 
 const editingCategories = ref(props.categories)
-const categoryToDelete = ref(null)
+const selectedCategory = ref(null)
 const deleteConfirmationDialog = ref(null)
 
 watch(
@@ -38,44 +44,103 @@ watch(
         editingCategories.value = newCategories
     }
 )
-// const emit = defineEmits([
-//     // "completeToggled",
-//     // "edit",
-//     // "deleted",
-// ])
 
-// watch(
-//   () => props.tasks,
-//   (newTasks) => {
-//     //editingTasks.value = newTasks;
-//   }
-// );
+//Edit Button related
+const isLoading = ref(false)
+const errors = ref(null)
+const isEditing = ref(false)
+const nameOfSelectedCategory = ref(null)
+
+
+const isCategorySelected = (category) => {
+    if (!selectedCategory.value) {
+        return false
+    }
+    return selectedCategory.value.id == category.id
+}
+
+
+const stopEditing = () => {
+    isEditing.value = false
+    selectedCategory.value = null
+    nameOfSelectedCategory.value = null
+}
+
+const startEditing = (category) => {
+    isEditing.value = true
+    selectedCategory.value = category
+    nameOfSelectedCategory.value = category.name
+}
+
+const toggleEditing = (category) => {
+    if (isEditing.value) {
+        stopEditing()
+    } else {
+        startEditing(category)
+    }
+}
+
+const save = () => {
+    errors.value = null
+    updateCategorySave.value.show()
+}
 
 const editClick = (category) => {
+    //todo
     emit('edit', category)
 }
-
 const deleteClick = (category) => {
-    categoryToDelete.value = category
+    selectedCategory.value = category
+    //console.log(categoryToDelete.value)
     deleteConfirmationDialog.value.show()
 }
+const boolDeleteCategoryConfirmed = async (isConfirmed) => {
+    isLoading.value = true
+    if (isConfirmed) {
+        try {
+            await axios.delete('categories/' + selectedCategory.value.id) 
+            toast.info(`Category ${categoryToDeleteDescriptionNoId.value} was deleted`)
+            emit('deleted', selectedCategory.value)
+        } catch (error) {
+            toast.error(
+                `It was not possible to delete Category ${categoryToDeleteDescriptionNoId.value}!`
+            )
+        }
+        finally{
+            selectedCategory.value = null
+            isLoading.value = false
+        }
+    }
+}
 
-const deleteCategoryConfirmed = async () => {
+const updateCategorySave = async () => {
     try {
-        const response = await axios.delete('categories/' + categoryToDelete.value.id)
-        let deletedCategory = response.data.data
-        toast.info(`Category ${categoryToDeleteDescription.value} was deleted`)
-        emit('deleted', deletedCategory)
+        isLoading.value = true
+        selectedCategory.value.name = nameOfSelectedCategory.value
+        await categoryStore.updateCategory(selectedCategory.value) //(formData.value)
+        stopEditing()
+        toast.success('Category updated successfully')
+        //await categoryStore.loadCategories(authStore.user.username)
+        emit('edited', selectedCategory.value)
     } catch (error) {
-        console.log(error)
-        toast.error(`It was not possible to delete Category ${categoryToDeleteDescription.value}!`)
+        if (error.response.status == 422) {
+            toast.error(error.response.data.errors.name[0])
+        } else {
+            toast.error('Error updating category. Please try again.')
+        }
+    }
+    finally {
+        isLoading.value = false
     }
 }
 
 const categoryToDeleteDescription = computed(() =>
-    categoryToDelete.value
-        ? `#${categoryToDelete.value.id} (${categoryToDelete.value.description})`
+    selectedCategory.value
+        ? `\"${selectedCategory.value.name}\" (#${selectedCategory.value.id})`
         : ''
+)
+const categoryToDeleteDescriptionNoId = computed(() =>
+    selectedCategory.value ? `\"${selectedCategory.value.name}\"` : ''
 )
 </script>
 
@@ -83,58 +148,70 @@ const categoryToDeleteDescription = computed(() =>
     <confirmation-dialog
         ref="deleteConfirmationDialog"
         confirmationBtn="Delete category"
-        :msg="`Do you really want to delete the category ${categoryToDeleteDescription}?`"
-        @confirmed="deleteCategoryConfirmed"
+        :modalId="modalId"
+        :msg="
+            `Do you really want to delete category ${categoryToDeleteDescriptionNoId}?`
+        "
+        @response="boolDeleteCategoryConfirmed"
     >
     </confirmation-dialog>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th v-if="showId">#</th>
-                <th>Name</th>
-                <th v-if="showCompletedButton || showEditButton || showDeleteButton"></th>
-            </tr>
-        </thead>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="align-middle" v-if="showId">#</th>
+                    <th class="align-middle">Name</th>
+                    <th class="align-middle" v-if="showCompletedButton || showEditButton || showDeleteButton"></th>
+                </tr>
+            </thead>
         <tbody>
-            <tr v-for="category in props.categories" :key="category.id">
+            <tr :class="{ 'deactive': isEditing && !isCategorySelected(category) }" v-for="category in props.categories" :key="category.id">
                 <td v-if="showId">{{ category.id }}</td>
-                <td>{{ category.name }}</td>
-                <td
-                    class="text-end"
-                    v-if="showCompletedButton || showEditButton || showDeleteButton"
-                >
-                    <div class="d-flex justify-content-end">
-                        <button
-                            class="btn btn-xs btn-light"
-                            @click="editClick(category)"
-                            v-if="showEditButton"
+                <td class="align-middle">
+                    <span class="text-bg" v-if="(isEditing && !isCategorySelected(category)) || !isEditing">
+                        {{ category.name }}
+                    </span>
+                    <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
+                        <input id="inputName" :disabled="isParentLoading" type="text" class="form-control"
+                        v-model="nameOfSelectedCategory" />
+                        <button type="button" class="btn btn-success" @click="updateCategorySave(category)"
+                        :disabled="isParentLoading">
+                        <i class="bi bi-box-arrow-down"></i>
+                    </button>
+                </div>              
+            </td>
+            <td
+            class="text-end"
+            v-if="showCompletedButton || showEditButton || showDeleteButton"
+            >
+                <div class="d-flex justify-content-end gap-1">
+                    <button
+                    class="btn btn-light"
+                    :disabled="isLoading || (isEditing && !isCategorySelected(category))"
+                    @click="toggleEditing(category)">
+                        <i class="bi" :class="{
+                            'bi-x-circle': ((isEditing && isCategorySelected(category))),
+                            'bi-pencil-square': ((isEditing && !isCategorySelected(category)) || !isEditing)
+                        }"></i>
+                    </button>
+                    <button
+                        class="btn btn-xs btn-light"
+                        @click="deleteClick(category)"
+                        :disabled="isEditing"
                         >
-                            <i class="bi bi-xs bi-pencil"></i>
-                        </button>
-
-                        <button
-                            class="btn btn-xs btn-light"
-                            @click="deleteClick(category)"
-                            v-if="showDeleteButton"
-                        >
-                            <i class="bi bi-xs bi-x-square-fill"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        <i class="bi bi-xs bi-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
 </template>
 
 <style scoped>
 .completed {
     text-decoration: line-through;
-}
-
-button {
-    margin-left: 3px;
-    margin-right: 3px;
 }
 .tables-container {
     display: flex;
@@ -146,8 +223,19 @@ button {
     margin: 0 10px; /* Adjust the margin as needed */
 }
 
+.bi {
+    margin: 0 !important;
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;
+}
+tr.deactive {
+    opacity: 50%;
+}
+
+span.text-bg{
+    font-size: 15px;
 }
 </style>

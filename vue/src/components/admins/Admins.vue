@@ -35,9 +35,11 @@ const search = (value) => {
     loadUsers(1, value)
 }
 
+
 const deleteUser = (user) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-        axios
+    //if (confirm('Are you sure you want to delete this user?')) {
+
+        const response = axios
             .delete('users/' + user.id)
             .then((response) => {
                 toast.success('User deleted')
@@ -47,7 +49,7 @@ const deleteUser = (user) => {
                 console.log(error)
                 toast.error('Error deleting user')
             })
-    }
+    //}
 }
 
 onMounted(() => {
@@ -61,16 +63,6 @@ onMounted(() => {
     <div class="mb-1">
         <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search" aria-label="Search" />
     </div>
-    <admin-table :users="users.data" :showId="false" @delete="deleteUser"></admin-table>
+    <admin-table :users="users.data" :showId="false" @boolDeleteAdminConfirmed="deleteUser"></admin-table>
     <Bootstrap5Pagination :data="users" @pagination-change-page="loadUsers" />
 </template>
-
-<style scoped>
-.filter-div {
-    min-width: 12rem;
-}
-
-.total-filtro {
-    margin-top: 2.3rem;
-}
-</style>
