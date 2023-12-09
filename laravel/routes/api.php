@@ -58,7 +58,7 @@ Route::middleware('auth:api')->group(
         Route::patch('vcards/{vcard}/unblock', [VCardController::class, 'unblock']);
         Route::patch('vcards/{vcard}/changeConfirmationCode', [VCardController::class, 'changeConfirmationCode']);
         Route::delete('vcards/{vcard}/photo', [VCardController::class, 'deletePhoto']);
-        Route::apiResource('vcards', VCardController::class)->except(['show', 'update']);
+        Route::apiResource('vcards', VCardController::class)->except(['show', 'update', 'store']);
 
         // AUTH PASSPORT LOGOUT
         Route::post('auth/logout', [AuthController::class, 'logout']);
