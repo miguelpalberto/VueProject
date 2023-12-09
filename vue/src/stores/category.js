@@ -2,23 +2,52 @@ import axios from 'axios'
 import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 
 export const useCategoryStore = defineStore('category', () => {
-    const categories = ref([])
+    const socket = inject('socket')
+    const paginatedCategories = ref([])
+    const categories = computed(() => paginatedCategories.value.data ?? [])
+    const toast = useToast()
+    //const categories = ref([])
+    const types = [
+        { value: 'all', text: 'All' },
+        { value: 'D', text: 'Debit only' },
+        { value: 'C', text: 'Credit only' }
+    ]
 
-
-    const loadCategories = async (vcard, params) => {
+    const loadCategories = async (vcard, page = 1, searchValue = null, selectedType = { value: 'all' }) => {
         try {
+            // const params = {
+            //     page: page
+            // }
+            // if (params.type && params.type !== 'all' && types.some((s) => s.value === params.type)) {
+            //     params.type = selectedStatus
+            // }
             //console.log("params: " + params + params.page + params.search)
+
+            const params = {
+                page: page
+            }
+    
+            if (selectedType && selectedType !== 'all' && types.some((s) => s.value === selectedType)) {
+                params.type = selectedType
+            }
+    
+            //check if searchValue is not null and not empty
+            if (searchValue) {
+                params.name = searchValue
+            }
+
             const response = await axios.get(`vcards/${vcard}/categories`, { params });
-            console.log("response.data: " + response.data) 
-            console.log("response.data.data: " + response.data.data) 
-            categories.value = response.data.data;
+            //categories.value = response.data.data;
+            paginatedCategories.value = response.data;
         } catch (error) {
             throw error;
         }
     }
+
 
     const deleteCategory = (category) => {
         let idx = categories.value.findIndex((t) => t.id === category.id)
@@ -36,5 +65,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, updateCategory, loadCategories, deleteCategory};
+    return { categories, types, paginatedCategories, updateCategory, loadCategories, deleteCategory};
 })

@@ -99,14 +99,16 @@ onMounted(() => {
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
-                placeholder="Search by phone number, name or email" aria-label="Search" />
+                placeholder="Search by phone number, name or email" aria-label="Search" style="font-size: 14px;"/>
         </div>
         <div class="col-xs-12 col-md-3">
-            <label for="inputSearch" style="font-size: 15px;" class="form-label">Status</label>
-            <select id="inputStatus" style="font-size: 15px;" v-model="vCardStore.selectedStatus" class="form-select"
+
+            <label for="inputSearch" style="font-size: 14px;" class="form-label">Status</label>
+            <select id="inputStatus" style="font-size: 14px;" v-model="vCardStore.selectedStatus" class="form-select"
                 @change="loadVCards()">
                 <option v-for="status in vCardStore.statuses" :key="status.value" :value="status.value">{{ status.text }}
                 </option>
+
             </select>
         </div>
     </div>

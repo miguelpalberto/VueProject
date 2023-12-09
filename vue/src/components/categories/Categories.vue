@@ -7,41 +7,35 @@ import { useCategoryStore } from '../../stores/category';
 import { useRouter } from 'vue-router'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
-const paginatedResult = ref([])
+//const paginatedResult = ref([])
 const isLoading = ref(false)
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
-const router = useRouter()
+const selectedType = ref(categoryStore.types[0].value)
 
- const loadCategories = (page = 1, searchValue = null) => {
+ const loadCategories = async (page = 1, searchValue = null) => {
   isLoading.value = true
-  const params = {
-        page: page
-    }
-    if (searchValue) {
-        params.search = searchValue
-    }
-  const vcardId = authStore.user.username
+
+   const vcardId = authStore.user.username
     try {
-      //console.log("vcardid: " + vcardId)
-      //console.log("params: " + params + params.page + params.search)
-      paginatedResult.value = categoryStore.loadCategories(vcardId, params)
-      console.log(paginatedResult.value)
+      await categoryStore.loadCategories(vcardId, page, searchValue, selectedType.value)
+
+      //console.log(paginatedResult.value)
     }
     catch (error) {
-        console.log(error)
+      toast.error('Error loading Categories. Please try again.')//console.log(error)
     }
     finally {
         isLoading.value = false
     }
 }
+ const search = (value) => {
+    loadCategories(1, value)
+ }
+
 // const editCategory = (category) => {
 //     router.push({ name: 'Category', params: { id: category.id } })
 // }
-
-const search = (value) => {
-  loadCategories(1, value)
-}
 
 //Chamado pelo CategoryTable, elimina no frontend
 const deletedFunction = (deletedCategory) => {
@@ -55,19 +49,12 @@ const editedFunction = (editedCategory) => {
       categories.value.splice(idx, 1)
     }
 }
-const debitCategories = computed(() => {
-  if(!categoryStore.categories){
-    return []
-  }
-  return categoryStore.categories.filter(t => t.type === 'D')
-})
-
-const creditCategories = computed(() => {
-  if(!categoryStore.categories){
-    return []
-  }
-  return categoryStore.categories.filter(t => t.type === 'C')
-})
+// const allTypesCategories = computed(() => {
+//   if(!categoryStore.categories){
+//     return []
+//   }
+//   return categoryStore.categories
+// })
 
 const props = defineProps({
   categoriesTitle: {
@@ -123,34 +110,40 @@ onMounted(() => {//so depois de estar tudo carregado
         ><i class="bi bi-xs bi-plus-circle"></i>&nbsp; Add Task</button>
     </div> -->
   </div>
+  <div class="container">
   <div class="row">
-    <div class="col-xs-12 col-md-6">
-      <h4>Debit</h4>
+    <div class="col-xs-12 col-md-8 mx-auto">
+      <!-- <h4>Debit</h4> -->
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
-            <label for="inputSearch" class="form-label"></label>
+            <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
+        <div class="col-xs-12 col-md-3">
+          <label for="inputSearch" class="form-label">Type</label>
+          <select id="inputType" style="font-size: 14px;" v-model="selectedType" class="form-select" @change="loadCategories()">
+              <option v-for="type in categoryStore.types" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+      </div>
       </div>
       <!-- todo show id true so se user for admin: -->
       <category-table 
       :is-parent-loading="isLoading" 
-      :categoriesdebit="paginatedResult.data" 
-      modalId="debitTableModal" 
-      :categories="debitCategories" 
+      modalId="categoryTableModal" 
+      :categories="categoryStore.paginatedCategories.data"
       :showId="false" 
       @edited="editedFunction" 
-      @deleted="deletedFunction">
-      </category-table>
-      <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
+      @deleted="deletedFunction"/>
+      <Bootstrap5Pagination :data="categoryStore.paginatedCategories" @pagination-change-page="loadCategories" />
     </div>
-    <div class="col-xs-12 col-md-6">
+  </div>
+    <!-- <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch2" class="form-label"></label>
-            <input id="inputSearch2" class="form-control" v-debounce:300ms="search" type="text"
+            <input id="inputSearch2" class="form-control" v-debounce:300ms="searchc" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
       </div>
@@ -164,7 +157,7 @@ onMounted(() => {//so depois de estar tudo carregado
       @deleted="deletedFunction">
     </category-table>
     <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
-    </div>
+    </div> -->
   </div>
 
 </template>

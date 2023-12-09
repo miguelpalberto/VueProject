@@ -161,6 +161,7 @@ const categoryToDeleteDescriptionNoId = computed(() =>
                 <tr>
                     <th class="align-middle" v-if="showId">#</th>
                     <th class="align-middle">Name</th>
+                    <th class="align-middle">Type</th>
                     <th class="align-middle" v-if="showCompletedButton || showEditButton || showDeleteButton"></th>
                 </tr>
             </thead>
@@ -179,6 +180,9 @@ const categoryToDeleteDescriptionNoId = computed(() =>
                         <i class="bi bi-box-arrow-down"></i>
                     </button>
                 </div>              
+            </td>
+            <td class="align-middle" :style="{ color: category.type === 'D' ? 'darkred' : (category.type === 'C' ? 'darkgreen' : 'black') }">
+                {{ category.type === 'D' ? 'Debit' : (category.type === 'C' ? 'Credit' : 'Unknown') }}
             </td>
             <td
             class="text-end"
