@@ -114,8 +114,11 @@ onMounted(() => {
             </select>
         </div>
     </div>
-    <v-card-table :is-parent-loading="isLoading" :v-cards="vCardStore.paginatedVCards.data" @delete="deleteVCard" @block="blockVCard"
-        @unblock="unblockVCard" @update-max-debit="updateMaxDebit"></v-card-table>
+    <v-card-table :is-parent-loading="isLoading"
+      :v-cards="vCardStore.paginatedVCards.data"
+      @delete="deleteVCard" @block="blockVCard"
+      @unblock="unblockVCard"
+      @update-max-debit="updateMaxDebit" />
     <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" />
 </template>
 
