@@ -7,18 +7,16 @@ import { useCategoryStore } from '../../stores/category';
 import { useRouter } from 'vue-router'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
-//const paginatedResult = ref([])
 const isLoading = ref(false)
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
-const selectedType = ref(categoryStore.types[0].value)
 
- const loadCategories = async (page = 1, searchValue = null) => {
+ const loadCategories = async (page = 1) => {
   isLoading.value = true
 
    const vcardId = authStore.user.username
     try {
-      await categoryStore.loadCategories(vcardId, page, searchValue, selectedType.value)
+      await categoryStore.loadCategories(vcardId, page)
 
       //console.log(paginatedResult.value)
     }
@@ -30,31 +28,23 @@ const selectedType = ref(categoryStore.types[0].value)
     }
 }
  const search = (value) => {
-    loadCategories(1, value)
+    categoryStore.searchValue = value
+    loadCategories(1)
  }
-
-// const editCategory = (category) => {
-//     router.push({ name: 'Category', params: { id: category.id } })
-// }
 
 //Chamado pelo CategoryTable, elimina no frontend
 const deletedFunction = (deletedCategory) => {
     categoryStore.deleteCategory(deletedCategory)
 }
 
-const editedFunction = (editedCategory) => {
-    let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
-    console.log(idx)
-    if (idx >= 0) {
-      categories.value.splice(idx, 1)
-    }
-}
-// const allTypesCategories = computed(() => {
-//   if(!categoryStore.categories){
-//     return []
-//   }
-//   return categoryStore.categories
-// })
+// const editedFunction = (editedCategory) => {
+//     let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
+//     console.log(idx)
+//     if (idx >= 0) {
+//       categories.value.splice(idx, 1)
+//     }
+// }
+
 
 const props = defineProps({
   categoriesTitle: {
@@ -122,7 +112,7 @@ onMounted(() => {//so depois de estar tudo carregado
         </div>
         <div class="col-xs-12 col-md-3">
           <label for="inputSearch" class="form-label">Type</label>
-          <select id="inputType" style="font-size: 14px;" v-model="selectedType" class="form-select" @change="loadCategories()">
+          <select id="inputType" style="font-size: 14px;" v-model="categoryStore.selectedType" class="form-select" @change="loadCategories()">
               <option v-for="type in categoryStore.types" :key="type.value" :value="type.value">{{ type.text }}</option>
           </select>
       </div>

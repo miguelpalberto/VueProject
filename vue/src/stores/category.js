@@ -16,8 +16,10 @@ export const useCategoryStore = defineStore('category', () => {
         { value: 'D', text: 'Debit only' },
         { value: 'C', text: 'Credit only' }
     ]
+    const searchValue = ref(null)
+    const selectedType = ref(types[0].value)
 
-    const loadCategories = async (vcard, page = 1, searchValue = null, selectedType = { value: 'all' }) => {
+    const loadCategories = async (vcard, page = 1) => {
         try {
             // const params = {
             //     page: page
@@ -31,13 +33,13 @@ export const useCategoryStore = defineStore('category', () => {
                 page: page
             }
     
-            if (selectedType && selectedType !== 'all' && types.some((s) => s.value === selectedType)) {
-                params.type = selectedType
+            if (selectedType.value && selectedType.value !== 'all' && types.some((s) => s.value === selectedType.value)) {
+                params.type = selectedType.value
             }
     
             //check if searchValue is not null and not empty
-            if (searchValue) {
-                params.name = searchValue
+            if (searchValue.value) {
+                params.name = searchValue.value
             }
 
             const response = await axios.get(`vcards/${vcard}/categories`, { params });
@@ -65,5 +67,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, types, paginatedCategories, updateCategory, loadCategories, deleteCategory};
+    return { categories, types, paginatedCategories, updateCategory, loadCategories, deleteCategory, selectedType, searchValue};
 })

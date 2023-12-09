@@ -39,7 +39,7 @@ class CategoryController extends Controller
             });
         }
 
-        return CategoryResource::collection($queryable->get());
+        return CategoryResource::collection($queryable->paginate(10));
     }
 
     public function store(CategoryRequest $request){
