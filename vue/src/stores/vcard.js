@@ -51,6 +51,7 @@ export const useVCardStore = defineStore('vcard', () => {
 
     const unblock = async (vCard) => {
         await axios.patch('vcards/' + vCard.phone_number + '/unblock')
+        socket.emit('vCardUnblocked', vCard)
         await load(paginatedVCards.value.current_page)
     }
 
@@ -60,6 +61,14 @@ export const useVCardStore = defineStore('vcard', () => {
         if (idx >= 0) {
             paginatedVCards.value.data[idx].blocked = true
             toast.info('vCard ' + vCard.phone_number + ' has been blocked.')
+        }
+    })
+    
+    socket.on('vCardUnblocked', async (vCard) => {
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        if (idx >= 0) {
+            paginatedVCards.value.data[idx].blocked = false
+            toast.info('vCard ' + vCard.phone_number + ' has been unblocked.')
         }
     })
 

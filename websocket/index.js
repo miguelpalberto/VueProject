@@ -30,6 +30,11 @@ io.on('connection', (socket) => {
         socket.to("administrators").emit('vCardBlocked', vCard)
     })
 
+    socket.on('vCardUnblocked', (vCard) => {
+        console.log(`vcard #${vCard.phone_number} has been unblocked`)
+        socket.to("administrators").emit('vCardUnblocked', vCard)
+    })
+
     socket.on('userDeleted', (user) => {
         console.log(`user #${user.id} has been deleted`)
         io.to(user.id).emit('userDeleted', user)
