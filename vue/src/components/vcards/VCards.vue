@@ -105,7 +105,7 @@ onMounted(() => {
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
-                placeholder="Search by phone number, name or email" aria-label="Search" style="font-size: 15px;/>
+                placeholder="Search by phone number, name or email" aria-label="Search" style="font-size: 15px;"/>
         </div>
         <div class="col-xs-12 col-md-3">
             <label for="inputSearch" class="form-label">Status</label>
