@@ -3,11 +3,13 @@ import { ref, computed, inject } from 'vue'
 import { defineStore } from 'pinia'
 import avatarNoneUrl from "@/assets/avatar-none.png";
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
 
 export const useAuthStore = defineStore('auth', () => {
     const serverUrl = inject("serverUrl");
     const socket = inject('socket')
     const user = ref(null)
+    const toast = useToast()
     const router = useRouter()
     const isAuthenticated = computed(() => !!user.value)
     const userName = computed(() => user.value?.name ?? "Anonymous")
@@ -47,6 +49,13 @@ export const useAuthStore = defineStore('auth', () => {
             router.push({ name: 'login' })
         }
     }
+
+    socket.on('vCardBlocked', async (vCard) => {
+        if (isAuthenticated.value && user.value.username == vCard.phone_number) {
+            toast.error('Your vCard has been blocked. Please contact an administrator.')
+            await logout()
+        }
+    })
 
     function clearUser() {
         user.value = null;

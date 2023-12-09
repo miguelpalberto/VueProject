@@ -4,8 +4,9 @@ import { ref, onMounted } from 'vue'
 import VCardTable from './VCardTable.vue'
 import { useToast } from 'vue-toastification'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
+import { useVCardStore } from '../../stores/vcard'
 
-const toast = useToast()
+const vCardStore = useVCardStore()
 
 const statuses = [
     { value: 'all', text: 'All' },
@@ -15,73 +16,68 @@ const statuses = [
 
 const paginatedResult = ref([])
 const isLoading = ref(false)
+const toast = useToast()
 const selectedStatus = ref(statuses[0].value)
 
-const loadVCards = (page = 1, searchValue = null) => {
+const loadVCards = async (page = 1, searchValue = null) => {
     isLoading.value = true
-    const params = {
-        page: page
+    try{
+        await vCardStore.load(page, searchValue, selectedStatus.value)
     }
-
-    if (selectedStatus.value != 'all') {
-        params.status = selectedStatus.value
+    catch(error){
+        toast.error('Error loading vCards. Please try again.')
     }
-
-    if (searchValue) {
-        params.search = searchValue
+    finally{
+        isLoading.value = false
     }
-
-    axios.get('vcards', { params })
-        .then((response) => {
-            paginatedResult.value = response.data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-        .finally(() => {
-            isLoading.value = false
-        })
 }
 
 const search = (value) => {
     loadVCards(1, value)
 }
 
-const deleteVCard = (vCard) => {
-    isLoading.value = true
-    axios.delete('vcards/' + vCard.phone_number)
-        .then(() => {
-            toast.success('VCard deleted')
-            const currentPage = paginatedResult.value.data.length == 1 ? paginatedResult.value.current_page - 1 : paginatedResult.value.current_page
-            loadVCards(currentPage)
-        })
-        .catch(() => {
-            toast.error('Error deleting vCard. Please try again.')
-        })
+const deleteVCard = async (vCard) => {
+    try{
+        isLoading.value = true
+        await vCardStore.remove(vCard)
+        toast.success('VCard deleted')
+    }
+    catch(error){
+        toast.error('Error deleting vCard. Please try again.')
+    }
+    finally{
+        isLoading.value = false
+    }
 }
 
-const blockVCard = (vCard) => {
-    isLoading.value = true
-    axios.patch('vcards/' + vCard.phone_number + '/block')
-        .then(() => {
-            toast.success('VCard blocked')
-            loadVCards(paginatedResult.value.current_page)
-        })
-        .catch(() => {
-            toast.error('Error blocking vCard. Please try again.')
-        })
+const blockVCard = async (vCard) => {
+    try{
+        isLoading.value = true
+        await vCardStore.block(vCard)
+        toast.success('VCard blocked')
+    }
+    catch(error){
+        console.log(error)
+        toast.error('Error blocking vCard. Please try again.')
+    }
+    finally{
+        isLoading.value = false
+    }
 }
 
-const unblockVCard = (vCard) => {
-    isLoading.value = true
-    axios.patch('vcards/' + vCard.phone_number + '/unblock')
-        .then(() => {
-            toast.success('VCard unblocked')
-            loadVCards(paginatedResult.value.current_page)
-        })
-        .catch(() => {
-            toast.error('Error unblocking vCard. Please try again.')
-        })
+const unblockVCard = async (vCard) => {
+    try{
+        isLoading.value = true
+        await vCardStore.unblock(vCard)
+        toast.success('VCard unblocked')
+    }
+    catch(error){
+        console.log(error)
+        toast.error('Error unblocking vCard. Please try again.')
+    }
+    finally{
+        isLoading.value = false
+    }
 }
 
 const updateMaxDebit = (vcard, maxDebit) => {
@@ -115,7 +111,7 @@ onMounted(() => {
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
-                placeholder="Search by name or email" aria-label="Search" />
+                placeholder="Search by phone number, name or email" aria-label="Search" />
         </div>
         <div class="col-xs-12 col-md-3">
             <label for="inputSearch" class="form-label">Status</label>
@@ -124,9 +120,9 @@ onMounted(() => {
             </select>
         </div>
     </div>
-    <v-card-table :is-parent-loading="isLoading" :v-cards="paginatedResult.data" @delete="deleteVCard" @block="blockVCard"
+    <v-card-table :is-parent-loading="isLoading" :v-cards="vCardStore.paginatedVCards.data" @delete="deleteVCard" @block="blockVCard"
         @unblock="unblockVCard" @update-max-debit="updateMaxDebit"></v-card-table>
-    <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadVCards" />
+    <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" />
 </template>
 
 <style scoped>

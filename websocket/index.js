@@ -14,44 +14,44 @@ io.on('connection', (socket) => {
     console.log(`client ${socket.id} has connected`);
 
     socket.on('loggedIn', (user) => {
-        console.log(`user #${user.id} has logged in`)
-        socket.join(user.id)
-        if (user.type == "A") {
+        console.log(`${user.username} has logged in`)
+        console.log(user)
+        socket.join(user.username)
+        if (user.isAdmin) {
+            console.log(`${user.username} is an administrator`)
             socket.join("administrators")
         }
+        console.log(socket.rooms)
     })
-
 
     socket.on('vCardBlocked', (vCard) => {
         console.log(`vcard #${vCard.phone_number} has been blocked`)
-        io.to(vCard.phone_number).emit('blocked')
- })
-    socket.on('userBlocked', (user) => {
-        console.log(`user #${user.id} has been blocked`)
-        io.to(user.id).emit('blocked')
-
+        io.to(vCard.phone_number).emit('vCardBlocked', vCard)
+        socket.to("administrators").emit('vCardBlocked', vCard)
     })
 
     socket.on('userDeleted', (user) => {
         console.log(`user #${user.id} has been deleted`)
-        io.to(user.id).emit('deleted')
+        io.to(user.id).emit('userDeleted', user)
+        socket.to("administrators").emit('userDeleted', user)
     })
-
 
     socket.on('vcardMaxDebitChanged', (vCard) => {
         console.log(`vcard #${vCard.phone_number} max debit has been changed`)
-        io.to(vCard.phone_number).emit('deleted')
+        io.to(vCard.phone_number).emit('vcardMaxDebitChanged')
+        socket.to("administrators").emit('vcardMaxDebitChanged', vCard)
     })
 
-    socket.on('newCreditTransaction', (transaction) => {
+    socket.on('newTransaction', (transaction) => {
         //transação normal de vcard para vcard
         if (transaction.type == "D" && transaction.payment_type == "VCARD") {
-            io.to(transaction.pair_vcard).emit('newCreditTransaction', transaction)
+            io.to(transaction.pair_vcard).emit('newTransaction', transaction)
         }
         //transação de crédito feita por um administrador
-
-        else{
-            io.to(transaction.vcard).emit('newCreditTransaction', transaction)
+        if (transaction.type == "C") {
+            io.to(transaction.vcard).emit('newTransaction', transaction)
         }
+
+        socket.to("administrators").emit('newTransaction', transaction)
     })
 })

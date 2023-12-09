@@ -70,7 +70,9 @@ const register = async () => {
     formData.append('confirmation_code', credentials.value.confirmation_code)
     formData.append('name', credentials.value.name)
     formData.append('email', credentials.value.email)
-    formData.append('photo_file', credentials.value.photo_file)
+    if (credentials.value.photo_file){
+      formData.append('photo_file', credentials.value.photo_file)
+    }
     const response = await axios.post('/vcards', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
