@@ -50,8 +50,7 @@ const clickMenuOption = () => {
           <li class="nav-item dropdown" v-if="authStore.isAuthenticated">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
-              <img :src="authStore.userPhotoUrl" class="rounded-circle z-depth-0 avatar-img" alt="avatar
-image">
+              <img :src="authStore.userPhotoUrl" class="rounded-circle z-depth-0 avatar-img" alt="avatarimage">
               <span class="avatar-text">{{ authStore.userName }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
@@ -200,7 +199,7 @@ image">
             </h4>
           </div>
         </div>
-        <div class="container-fluid py-5">
+        <div class="container-fluid py-2">
           <router-view />
         </div>
       </main>

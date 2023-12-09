@@ -15,6 +15,7 @@ import DismissVCard from '../components/users/DismissVCard.vue'
 import Admins from '../components/admins/Admins.vue'
 import Category from '../components/categories/Category.vue'
 import VCards from '../components/vcards/VCards.vue'
+import Easteregg from '../components/auth/Easteregg.vue'
 
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: Register
+        },
+        {
+            path: '/easteregg',
+            name: 'easteregg',
+            component: Easteregg
         },
         {
             path: '/profile',
@@ -78,11 +84,6 @@ const router = createRouter({
             component: Transaction,
             props: (route) => ({ id: parseInt(route.params.id) })
         },
-        {
-            path: '/categories',
-            name: 'categories',
-            component: Categories
-        },
         { 
             path: '/admins',
             name: 'admins',
@@ -94,12 +95,17 @@ const router = createRouter({
             component: DismissVCard
         },
         {
+            path: '/categories',
+            name: 'categories',
+            component: Categories
+        },
+        {
             path: '/categories/create',
             name: 'createcategory',
             component: Category
         },
         {
-            path: '/categories/:id/edit',//path: '/categories/:id',
+            path: '/categories/:id',//path: '/categories/:id/edit',
             name: 'editCategory',
             component: Category,
             props: (route) => ({ id: parseInt(route.params.id) })
@@ -112,7 +118,7 @@ const router = createRouter({
     ]
 })
 
-const publicRouteNames = ['login', 'register', 'home']
+const publicRouteNames = ['login', 'register', 'home', 'easteregg']
 const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction', 'dismissVcard']
 const adminOnlyRouteNames = ['createvCardTransaction', 'admins', 'vcards']
 

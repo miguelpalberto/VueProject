@@ -115,17 +115,23 @@ onMounted(() => {
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
-                placeholder="Search by name or email" aria-label="Search" />
+                placeholder="Search by name or email" aria-label="Search" style="font-size: 15px;" />
         </div>
         <div class="col-xs-12 col-md-3">
             <label for="inputSearch" class="form-label">Status</label>
-            <select id="inputStatus" v-model="selectedStatus" class="form-select" @change="loadVCards()">
+            <select id="inputStatus" style="font-size: 15px;" v-model="selectedStatus" class="form-select" @change="loadVCards() ">
                 <option v-for="status in statuses" :key="status.value" :value="status.value">{{ status.text }}</option>
             </select>
         </div>
     </div>
-    <v-card-table :is-parent-loading="isLoading" :v-cards="paginatedResult.data" @delete="deleteVCard" @block="blockVCard"
-        @unblock="unblockVCard" @update-max-debit="updateMaxDebit"></v-card-table>
+    <v-card-table 
+    :is-parent-loading="isLoading" 
+    :v-cards="paginatedResult.data" 
+    @delete="deleteVCard" 
+    @block="blockVCard" 
+    @unblock="unblockVCard" 
+    @update-max-debit="updateMaxDebit">
+    </v-card-table>
     <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadVCards" />
 </template>
 

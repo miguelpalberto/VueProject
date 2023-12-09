@@ -99,6 +99,7 @@ const register = async () => {
 </script>
 
 <template>
+  <div class="container-sm" style="max-width: 450px;">
   <form class="row g-2 needs-validation" novalidate @submit.prevent="register">
     <h3 class="mt-5 mb-3">Register</h3>
     <hr>
@@ -165,6 +166,7 @@ const register = async () => {
       </button>
     </div>
   </form>
+</div>
 </template>
 
 
