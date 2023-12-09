@@ -158,16 +158,16 @@ const categoryToDeleteDescriptionNoId = computed(() =>
         <table class="table">
             <thead>
                 <tr>
-                    <th v-if="showId">#</th>
-                    <th>Name</th>
-                    <th v-if="showCompletedButton || showEditButton || showDeleteButton"></th>
+                    <th class="align-middle" v-if="showId">#</th>
+                    <th class="align-middle">Name</th>
+                    <th class="align-middle" v-if="showCompletedButton || showEditButton || showDeleteButton"></th>
                 </tr>
             </thead>
         <tbody>
             <tr :class="{ 'deactive': isEditing && !isCategorySelected(category) }" v-for="category in props.categories" :key="category.id">
                 <td v-if="showId">{{ category.id }}</td>
                 <td class="align-middle">
-                    <span v-if="(isEditing && !isCategorySelected(category)) || !isEditing">
+                    <span class="text-bg" v-if="(isEditing && !isCategorySelected(category)) || !isEditing">
                         {{ category.name }}
                     </span>
                     <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
@@ -232,5 +232,9 @@ const categoryToDeleteDescriptionNoId = computed(() =>
 }
 tr.deactive {
     opacity: 50%;
+}
+
+span.text-bg{
+    font-size: 15px;
 }
 </style>

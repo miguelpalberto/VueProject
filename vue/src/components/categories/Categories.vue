@@ -76,7 +76,8 @@ onMounted(() => {//so depois de estar tudo carregado
   </div>
   <hr>
   <router-link class="btn btn-success btn-sm" to="/categories/create">
-    <i class="bi bi-send-plus"></i> New Category
+    <i class="bi bi-send-plus"></i> 
+    <span>New Category</span>
   </router-link>
   <hr>
   <div class="mb-3 d-flex justify-content-between flex-wrap">
@@ -138,7 +139,5 @@ onMounted(() => {//so depois de estar tudo carregado
   margin-top: 0.35rem;
 }
 
-.btn-addcategory{
-  margin-top: 1.85rem;
-}
+
 </style>
