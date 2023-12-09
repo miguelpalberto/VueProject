@@ -22,8 +22,8 @@ export const useVCardStore = defineStore('vcard', () => {
             page: page
         }
 
-        if (selectedStatus && selectedStatus !== 'all' && statuses.includes((x) => x.value == selectedStatus.value)) {
-            params.status = selectedStatus.value
+        if (selectedStatus && selectedStatus !== 'all' && statuses.some((s) => s.value === selectedStatus)) {
+            params.status = selectedStatus
         }
 
         //check if searchValue is not null and not empty

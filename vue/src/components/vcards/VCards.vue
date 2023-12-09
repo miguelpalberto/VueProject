@@ -8,16 +8,10 @@ import { useVCardStore } from '../../stores/vcard'
 
 const vCardStore = useVCardStore()
 
-const statuses = [
-    { value: 'all', text: 'All' },
-    { value: 'blockedOnly', text: 'Blocked only' },
-    { value: 'unblockedOnly', text: 'Unblocked only' }
-]
-
 const paginatedResult = ref([])
 const isLoading = ref(false)
 const toast = useToast()
-const selectedStatus = ref(statuses[0].value)
+const selectedStatus = ref(vCardStore.statuses[0].value)
 
 const loadVCards = async (page = 1, searchValue = null) => {
     isLoading.value = true
@@ -116,7 +110,7 @@ onMounted(() => {
         <div class="col-xs-12 col-md-3">
             <label for="inputSearch" class="form-label">Status</label>
             <select id="inputStatus" v-model="selectedStatus" class="form-select" @change="loadVCards()">
-                <option v-for="status in statuses" :key="status.value" :value="status.value">{{ status.text }}</option>
+                <option v-for="status in vCardStore.statuses" :key="status.value" :value="status.value">{{ status.text }}</option>
             </select>
         </div>
     </div>
