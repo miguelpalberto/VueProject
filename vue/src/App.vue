@@ -1,15 +1,14 @@
 <script setup>
 import { useToast } from 'vue-toastification'
-import { inject } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 
-const socket = inject('socket')
 const toast = useToast()
 const authStore = useAuthStore()
 
 const logout = async () => {
   authStore.logout()
+  toast.success('Logout successful')
   clickMenuOption()
 }
 
@@ -198,10 +197,13 @@ const clickMenuOption = () => {
 
       <main class="ms-sm-auto px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
         <div class="d-flex justify-content-center">
-          <div class="alert alert-light" role="alert">
-            <h4 v-if="authStore.isAuthenticated && !authStore.isAdmin">
+          <div class="alert alert-light" role="alert" v-if="authStore.isAuthenticated && !authStore.isAdmin">
+            <h4>
               Current Balance: {{ authStore.user.balance }}€
             </h4>
+            <p class="text-center">
+              Max Debit: {{ authStore.user.max_debit }}€
+            </p>
           </div>
         </div>
         <div class="container-fluid py-2">

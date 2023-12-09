@@ -39,9 +39,11 @@ class VCardController extends Controller
         }
 
         if ($searchFilter) {
-            $queryable->where('name', 'like', "%{$searchFilter}%")
-                ->orWhere('email', 'like', "%{$searchFilter}%")
-                ->orWhere('phone_number', 'like', "%{$searchFilter}%");
+            $queryable->where(function ($query) use ($searchFilter) {
+                $query->where('phone_number', 'like', "%{$searchFilter}%")
+                ->orWhere('name', 'like', "%{$searchFilter}%")
+                ->orWhere('email', 'like', "%{$searchFilter}%");
+            });
         }
 
         $vCards = $queryable->paginate(10);
