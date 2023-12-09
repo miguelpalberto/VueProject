@@ -40,7 +40,7 @@ class VCardRequest extends FormRequest
             'confirmation_code' => 'required|string|size:4', //mudar para o enunciado
             'custom_options' => 'sometimes|json',
             'custom_data' => 'sometimes|json',
-            'photo_file' =>         'sometimes|image|max:4096' // maxsize = 4Mb
+            'photo_file' =>  'sometimes|image|max:4096' // maxsize = 4Mb
         ];
     }
 

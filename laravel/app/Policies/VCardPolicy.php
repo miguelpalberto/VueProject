@@ -20,9 +20,9 @@ class VCardPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(AuthUser $authUser): bool
+    public function create(?AuthUser $authUser): bool
     {
-        return Auth::guest();
+        return $authUser == null;
     }
 
     public function changeMaxDebit(AuthUser $authUser, VCard $vCard): bool
