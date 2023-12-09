@@ -1,13 +1,11 @@
 import axios from 'axios'
-import { ref, computed, inject } from 'vue'
+import { ref, inject } from 'vue'
 import { defineStore } from 'pinia'
 import { useToast } from 'vue-toastification'
 
 export const useVCardStore = defineStore('vcard', () => {
-    //use paginatedVCards.value.data to access the vcards
     const socket = inject('socket')
     const paginatedVCards = ref([])
-    const vCards = computed(() => paginatedVCards.value.data ?? [])
     const toast = useToast()
 
     const statuses = [
@@ -16,19 +14,22 @@ export const useVCardStore = defineStore('vcard', () => {
         { value: 'unblockedOnly', text: 'Unblocked only' }
     ]
 
+    const searchValue = ref(null)
+    const selectedStatus = ref(statuses[0].value)
+
     //async of loadVCards
-    const load = async (page = 1, searchValue = null, selectedStatus = { value: 'all' }) => {
+    const load = async (page = 1) => {
         const params = {
             page: page
         }
 
-        if (selectedStatus && selectedStatus !== 'all' && statuses.some((s) => s.value === selectedStatus)) {
-            params.status = selectedStatus
+        if (selectedStatus.value && selectedStatus.value !== 'all' && statuses.some((s) => s.value === selectedStatus.value)) {
+            params.status = selectedStatus.value
         }
 
         //check if searchValue is not null and not empty
-        if (searchValue) {
-            params.search = searchValue
+        if (searchValue.value) {
+            params.search = searchValue.value
         }
 
         const response = await axios.get("vcards", { params });
@@ -38,39 +39,86 @@ export const useVCardStore = defineStore('vcard', () => {
     const remove = async (vCard) => {
         await axios.delete('vcards/' + vCard.phone_number)
             .then(async () => {
-                const newPage = paginatedVCards.value.data.length == 1 ? paginatedVCards.value.current_page - 1 : paginatedVCards.value.current_page
-                await load(newPage)
+                const publishUser = {
+                    username: vCard.phone_number,
+                    isAdmin: false
+                }
+                socket.emit('userDeleted', publishUser)
+                await load(computeQueryPage())
             })
     }
 
     const block = async (vCard) => {
         await axios.patch('vcards/' + vCard.phone_number + '/block')
-        socket.emit('vCardBlocked', vCard)
-        await load(paginatedVCards.value.current_page)
+            .then(async () => {
+                updateStatus(vCard, true)
+                socket.emit('vCardBlocked', vCard)
+            })
     }
 
     const unblock = async (vCard) => {
         await axios.patch('vcards/' + vCard.phone_number + '/unblock')
-        socket.emit('vCardUnblocked', vCard)
-        await load(paginatedVCards.value.current_page)
+            .then(async () => {
+                updateStatus(vCard, false)
+                socket.emit('vCardUnblocked', vCard)
+            })
     }
 
-    
-    socket.on('vCardBlocked', async (vCard) => {
+    const updateStatus = async (vCard, isBlocked) => {
         const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        if (idx >= 0) {
+            paginatedVCards.value.data[idx].blocked = isBlocked
+        }
+    }
+
+    const updateMaxDebit = async (vCard, maxDebit) => {
+        maxDebit = maxDebit.toFixed(2)
+        await axios.patch('vcards/' + vCard.phone_number + '/changeMaxDebit', { max_debit: maxDebit })
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        if (idx >= 0) {
+            paginatedVCards.value.data[idx].max_debit = maxDebit
+        }
+    }
+
+    const resetValues = () => {
+        searchValue.value = null
+        selectedStatus.value = statuses[0].value
+        paginatedVCards.value = []
+    }
+
+    socket.on('vCardBlocked', (vCard) => {
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        toast.info('vCard ' + vCard.phone_number + ' has been blocked.')
         if (idx >= 0) {
             paginatedVCards.value.data[idx].blocked = true
-            toast.info('vCard ' + vCard.phone_number + ' has been blocked.')
-        }
-    })
-    
-    socket.on('vCardUnblocked', async (vCard) => {
-        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
-        if (idx >= 0) {
-            paginatedVCards.value.data[idx].blocked = false
-            toast.info('vCard ' + vCard.phone_number + ' has been unblocked.')
         }
     })
 
-    return { statuses, paginatedVCards, load, remove, block, unblock };
+    socket.on('vCardUnblocked', (vCard) => {
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
+        toast.info('vCard ' + vCard.phone_number + ' has been unblocked.')
+        if (idx >= 0) {
+            paginatedVCards.value.data[idx].blocked = false
+        }
+    })
+
+    socket.on('userDeleted', async (deletedUser) => {
+        if (!deletedUser.isAdmin) {
+            toast.info('vCard ' + deletedUser.username + ' has been deleted.')
+            const idx = paginatedVCards.value.data.findIndex((v) => v.phone_number === deletedUser.username)
+            if (idx >= 0) {
+                await load(computeQueryPage())
+            }
+        }
+    })
+
+    const computeQueryPage = () => {
+        if (paginatedVCards.value.current_page == 1) {
+            return 1;
+        }
+
+        return paginatedVCards.value.data.length == 1 ? paginatedVCards.value.current_page - 1 : paginatedVCards.value.current_page
+    }
+
+    return { statuses, selectedStatus, searchValue, paginatedVCards, load, remove, block, unblock, updateMaxDebit, resetValues };
 })

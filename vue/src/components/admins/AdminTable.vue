@@ -1,7 +1,6 @@
 <script setup>
 import { useAuthStore } from '../../stores/auth'
-import { useToast } from 'vue-toastification'
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const authStore = useAuthStore()
 
@@ -19,18 +18,24 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['delete', 'boolDeleteAdminConfirmed'])
+const emit = defineEmits(['delete'])
 const deleteConfirmationDialog = ref(null)
 const selectedUser = ref(null)
 
+const modalMessage = computed(() => {
+    if (!selectedUser.value) {
+        return ''
+    }
+    return `Are you sure you want to delete <b>${selectedUser.value.name}</b>?`
+})
+
 const deleteClick = (user) => {
-    //emit('delete', user)
     selectedUser.value = user   
     deleteConfirmationDialog.value.show() 
 }
-const boolDeleteClickConfirmed = (isConfirmed) => {
+const deleteConfirmed = (isConfirmed) => {
     if (isConfirmed) {
-        emit('boolDeleteAdminConfirmed', selectedUser.value)
+        emit('delete', selectedUser.value)
     }
     selectedUser.value = null
 }
@@ -40,9 +45,8 @@ const boolDeleteClickConfirmed = (isConfirmed) => {
     <confirmation-dialog
     ref="deleteConfirmationDialog"
     confirmationBtn="Delete administrator"
-    :modalId="modalId"
-    :msg=" `Do you really want to delete administrator ?`"
-    @response="boolDeleteClickConfirmed"
+    :msg="modalMessage"
+    @response="deleteConfirmed"
 >
 </confirmation-dialog>
     <table class="table">

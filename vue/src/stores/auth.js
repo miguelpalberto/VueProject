@@ -4,13 +4,19 @@ import { defineStore } from 'pinia'
 import avatarNoneUrl from "@/assets/avatar-none.png";
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { useAdminStore } from './admin';
+import { useVCardStore } from './vcard';
 
 export const useAuthStore = defineStore('auth', () => {
     const serverUrl = inject("serverUrl");
     const socket = inject('socket')
-    const user = ref(null)
+
     const toast = useToast()
     const router = useRouter()
+    const adminStore = useAdminStore()
+    const vCardStore = useVCardStore()
+
+    const user = ref(null)
     const isAuthenticated = computed(() => !!user.value)
     const userName = computed(() => user.value?.name ?? "Anonymous")
     const isAdmin = computed(() => user.value?.isAdmin ?? false)
@@ -44,15 +50,16 @@ export const useAuthStore = defineStore('auth', () => {
             console.log(error)
         } finally {
             clearUser()
+            resetStores()
             delete axios.defaults.headers.common.Authorization
             sessionStorage.removeItem('token')
             router.push({ name: 'login' })
         }
     }
 
-    socket.on('vCardBlocked', async (vCard) => {
-        if (isAuthenticated.value && user.value.username == vCard.phone_number) {
-            toast.error('Your vCard has been blocked. Please contact an administrator.')
+    socket.on('requestUserLogout', async (event) => {
+        if (isAuthenticated.value) {
+            toast.error(event.message)
             await logout()
         }
     })
@@ -60,5 +67,11 @@ export const useAuthStore = defineStore('auth', () => {
     function clearUser() {
         user.value = null;
     }
+
+    function resetStores() {
+        adminStore.resetValues()
+        vCardStore.resetValues()
+    }
+
     return { isAuthenticated, isAdmin, user, userName, userPhotoUrl, loadUser, clearUser, updateProfile, logout };
 })
