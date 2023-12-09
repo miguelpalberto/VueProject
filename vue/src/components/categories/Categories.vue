@@ -13,7 +13,7 @@ const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
 
- const loadCategories = (page = 1, searchValue = null, loadFunction = 0) => {
+ const loadCategories = (page = 1, searchValue = null) => {
   isLoading.value = true
   const params = {
         page: page
@@ -23,17 +23,8 @@ const router = useRouter()
     }
   const vcardId = authStore.user.username
     try {
-      //console.log("vcardid: " + vcardId)
-      //console.log("params: " + params + params.page + params.search)
-      if(loadFunction === 1){
-        paginatedResult.value = categoryStore.loadCategoriesD(vcardId, params)
-      }
-      else if(loadFunction === 2){
-        paginatedResult.value = categoryStore.loadCategoriesC(vcardId, params)
-      }
-      else{
       paginatedResult.value = categoryStore.loadCategories(vcardId, params)
-    }
+
       console.log(paginatedResult.value)
     }
     catch (error) {
@@ -43,17 +34,13 @@ const router = useRouter()
         isLoading.value = false
     }
 }
+ const search = (value) => {
+    loadCategories(1, value)
+ }
 
 // const editCategory = (category) => {
 //     router.push({ name: 'Category', params: { id: category.id } })
 // }
-
-const searchd = (value) => {
-  loadCategories(1, value, 1)
-}
-const searchc = (value) => {
-  loadCategories(1, value, 2)
-}
 
 //Chamado pelo CategoryTable, elimina no frontend
 const deletedFunction = (deletedCategory) => {
@@ -67,19 +54,24 @@ const editedFunction = (editedCategory) => {
       categories.value.splice(idx, 1)
     }
 }
-const debitCategories = computed(() => {
+const allTypesCategories = computed(() => {
   if(!categoryStore.categories){
     return []
   }
-  return categoryStore.categories.filter(t => t.type === 'D')
+  return categoryStore.categories
 })
-
-const creditCategories = computed(() => {
-  if(!categoryStore.categories){
-    return []
-  }
-  return categoryStore.categories.filter(t => t.type === 'C')
-})
+// const debitCategories = computed(() => {
+//   if(!categoryStore.categories){
+//     return []
+//   }
+//   return categoryStore.categories.filter(t => t.type === 'D')
+// })
+// const creditCategories = computed(() => {
+//   if(!categoryStore.categories){
+//     return []
+//   }
+//   return categoryStore.categories.filter(t => t.type === 'C')
+// })
 
 const props = defineProps({
   categoriesTitle: {
@@ -135,29 +127,30 @@ onMounted(() => {//so depois de estar tudo carregado
         ><i class="bi bi-xs bi-plus-circle"></i>&nbsp; Add Task</button>
     </div> -->
   </div>
+  <div class="container">
   <div class="row">
-    <div class="col-xs-12 col-md-6">
-      <h4>Debit</h4>
+    <div class="col-xs-12 col-md-8 mx-auto">
+      <!-- <h4>Debit</h4> -->
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label"></label>
-            <input id="inputSearch" class="form-control" v-debounce:300ms="searchd" type="text"
+            <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
       </div>
       <!-- todo show id true so se user for admin: -->
       <category-table 
       :is-parent-loading="isLoading" 
-      :categoriesdebit="paginatedResult.data" 
-      modalId="debitTableModal" 
-      :categories="debitCategories" 
+      modalId="categoryTableModal" 
+      :categories="allTypesCategories" 
       :showId="false" 
       @edited="editedFunction" 
       @deleted="deletedFunction">
       </category-table>
       <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
     </div>
-    <div class="col-xs-12 col-md-6">
+  </div>
+    <!-- <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
@@ -176,7 +169,7 @@ onMounted(() => {//so depois de estar tudo carregado
       @deleted="deletedFunction">
     </category-table>
     <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
-    </div>
+    </div> -->
   </div>
 
 </template>
