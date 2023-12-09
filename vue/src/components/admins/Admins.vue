@@ -66,13 +66,3 @@ onMounted(() => {
     <admin-table :users="users.data" :showId="false" @boolDeleteAdminConfirmed="deleteUser"></admin-table>
     <Bootstrap5Pagination :data="users" @pagination-change-page="loadUsers" />
 </template>
-
-<style scoped>
-.filter-div {
-    min-width: 12rem;
-}
-
-.total-filtro {
-    margin-top: 2.3rem;
-}
-</style>

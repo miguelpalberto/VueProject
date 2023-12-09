@@ -17,6 +17,13 @@ export const useCategoryStore = defineStore('category', () => {
         }
     }
 
+    const deleteCategory = (category) => {
+        let idx = categories.value.findIndex((t) => t.id === category.id)
+        if (idx >= 0) {
+            categories.value.splice(idx, 1)
+        }
+    }
+
     const updateCategory = async (category) => {
         try{
             await axios.put(`categories/${category.id}`, category)
@@ -26,5 +33,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, updateCategory, loadCategories};
+    return { categories, updateCategory, loadCategories, deleteCategory};
 })

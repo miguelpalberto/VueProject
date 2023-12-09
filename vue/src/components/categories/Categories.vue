@@ -25,14 +25,11 @@ const router = useRouter()
 // }
 
 //Chamado pelo CategoryTable, elimina no frontend
-const deletedCategory = (deletedCategory ) => {
-    let idx = categories.value.findIndex((t) => t.id === deletedCategory.id)
-    console.log(idx)
-    if (idx >= 0) {
-      categories.value.splice(idx, 1)
-    }
+const deletedFunction = (deletedCategory) => {
+    categoryStore.deleteCategory(deletedCategory)
 }
-const editedCategory = (editedCategory ) => {
+
+const editedFunction = (editedCategory ) => {
     let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
     console.log(idx)
     if (idx >= 0) {
@@ -112,9 +109,9 @@ onMounted(() => {//so depois de estar tudo carregado
       <category-table 
       modalId="debitTableModal" 
       :categories="debitCategories" 
-      :showId="true" 
-      @edit="editCategory" 
-      @deleted="deletedCategory">
+      :showId="false" 
+      @edit="editedFunction" 
+      @deleted="deletedFunction">
       </category-table>
     </div>
     <div class="col-xs-12 col-md-6">
@@ -122,9 +119,9 @@ onMounted(() => {//so depois de estar tudo carregado
       <category-table
       modalId="creditTableModal" 
       :categories="creditCategories" 
-      :showId="true"     
-      @edit="editCategory"
-      @deleted="deletedCategory">
+      :showId="false"     
+      @edit="editedFunction"
+      @deleted="deletedFunction">
     </category-table>
     </div>
   </div>
