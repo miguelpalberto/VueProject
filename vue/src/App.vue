@@ -1,13 +1,18 @@
 <script setup>
+import { useToast } from 'vue-toastification'
+import { inject } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 
+const socket = inject('socket')
+const toast = useToast()
 const authStore = useAuthStore()
 
 const logout = async () => {
   authStore.logout()
   clickMenuOption()
 }
+
 
 const clickMenuOption = () => {
   const domReference = document.getElementById('buttonSidebarExpandId')
