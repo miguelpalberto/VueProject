@@ -120,7 +120,8 @@ const updateCategorySave = async () => {
         await categoryStore.updateCategory(selectedCategory.value) //(formData.value)
         stopEditing()
         toast.success('Category updated successfully')
-        await categoryStore.loadCategories(authStore.user.username)
+        //await categoryStore.loadCategories(authStore.user.username)
+        emit('edited', selectedCategory.value)
     } catch (error) {
         if (error.response.status == 422) {
             toast.error(error.response.data.errors.name[0])

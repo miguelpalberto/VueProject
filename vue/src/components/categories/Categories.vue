@@ -29,7 +29,7 @@ const deletedFunction = (deletedCategory) => {
     categoryStore.deleteCategory(deletedCategory)
 }
 
-const editedFunction = (editedCategory ) => {
+const editedFunction = (editedCategory) => {
     let idx = categories.value.findIndex((t) => t.id === editedCategory.id)
     console.log(idx)
     if (idx >= 0) {
@@ -111,7 +111,7 @@ onMounted(() => {//so depois de estar tudo carregado
       modalId="debitTableModal" 
       :categories="debitCategories" 
       :showId="false" 
-      @edit="editedFunction" 
+      @edited="editedFunction" 
       @deleted="deletedFunction">
       </category-table>
     </div>
@@ -121,7 +121,7 @@ onMounted(() => {//so depois de estar tudo carregado
       modalId="creditTableModal" 
       :categories="creditCategories" 
       :showId="false"     
-      @edit="editedFunction"
+      @edited="editedFunction"
       @deleted="deletedFunction">
     </category-table>
     </div>
