@@ -111,6 +111,11 @@ const router = createRouter({
             props: (route) => ({ id: parseInt(route.params.id) })
         },
         {
+            path: '/defaultCategories',
+            name: 'defaultCategories',
+            //component: defaultcategories
+        },
+        {
             path: '/vcards',
             name: 'vcards',
             component: VCards
