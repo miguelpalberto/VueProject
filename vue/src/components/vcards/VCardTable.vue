@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, computed } from "vue";
+import { inject, ref } from "vue";
 import avatarNoneUrl from '@/assets/avatar-none.png'
 import { setMask, removeMask, formatToNumber } from 'simple-mask-money'
 

@@ -21,18 +21,29 @@ io.on('connection', (socket) => {
             console.log(`${user.username} is an administrator`)
             socket.join("administrators")
         }
-        console.log(socket.rooms)
+        socket.to(user.username).emit('requestUserLogout', {
+            message: "Your account has been logged in on another device. Please contact an administrator for more information."
+        })
     })
 
     socket.on('vCardBlocked', (vCard) => {
         console.log(`vcard #${vCard.phone_number} has been blocked`)
-        io.to(vCard.phone_number).emit('vCardBlocked', vCard)
+        io.to(vCard.phone_number).emit('requestUserLogout', {
+            message: "Your vCard has been blocked. Please contact an administrator for more information."
+        })
         socket.to("administrators").emit('vCardBlocked', vCard)
     })
 
+    socket.on('vCardUnblocked', (vCard) => {
+        console.log(`vcard #${vCard.phone_number} has been unblocked`)
+        socket.to("administrators").emit('vCardUnblocked', vCard)
+    })
+
     socket.on('userDeleted', (user) => {
-        console.log(`user #${user.id} has been deleted`)
-        io.to(user.id).emit('userDeleted', user)
+        console.log(`user #${user.username} has been deleted`)
+        io.to(user.username).emit('requestUserLogout', {
+            message: "Your account has been deleted. Please contact an administrator for more information."
+        })
         socket.to("administrators").emit('userDeleted', user)
     })
 

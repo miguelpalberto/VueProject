@@ -1,59 +1,48 @@
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import AdminTable from './AdminTable.vue'
 import { useToast } from 'vue-toastification'
-import { useRouter } from 'vue-router'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
+import { useAdminStore } from '../../stores/admin'
 
-const router = useRouter()
 const toast = useToast()
+const adminStore = useAdminStore()
+const isLoading = ref(false)
 
-const users = ref([])
-
-const loadUsers = (page = 1, searchValue = null) => {
-
-    const params = {
-        page: page
-    }
-
-    if (searchValue) {
-        params.search = searchValue
-    }
-
-    axios
-        .get('users', { params })
-        .then((response) => {
-            users.value = response.data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+const search = async (value) => {
+    adminStore.searchValue = value
+    await loadUsers(1)
 }
 
-const search = (value) => {
-    loadUsers(1, value)
+const loadUsers = async (page = 1) => {
+    isLoading.value = true
+    try {
+        await adminStore.load(page)
+    }
+    catch (error) {
+        toast.error('Error loading admins. Please try again.')
+    }
+    finally {
+        isLoading.value = false
+    }
 }
-
 
 const deleteUser = (user) => {
-    //if (confirm('Are you sure you want to delete this user?')) {
-
-        const response = axios
-            .delete('users/' + user.id)
-            .then((response) => {
-                toast.success('User deleted')
-                loadUsers()
-            })
-            .catch((error) => {
-                console.log(error)
-                toast.error('Error deleting user')
-            })
-    //}
+    try {
+        isLoading.value = true
+        adminStore.remove(user)
+        toast.success('Admin deleted')
+    }
+    catch (error) {
+        toast.error('Error deleting admin. Please try again.')
+    }
+    finally {
+        isLoading.value = false
+    }
 }
 
-onMounted(() => {
-    loadUsers()
+onMounted(async () => {
+    await loadUsers()
 })
 </script>
 
@@ -63,6 +52,6 @@ onMounted(() => {
     <div class="mb-1">
         <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search" aria-label="Search" />
     </div>
-    <admin-table :users="users.data" :showId="false" @boolDeleteAdminConfirmed="deleteUser"></admin-table>
-    <Bootstrap5Pagination :data="users" @pagination-change-page="loadUsers" />
+    <admin-table :users="adminStore.paginatedAdmins.data" @delete="deleteUser"></admin-table>
+    <Bootstrap5Pagination :data="adminStore.paginatedAdmins" @pagination-change-page="loadUsers" />
 </template>

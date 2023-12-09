@@ -9,12 +9,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VCardRequest;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\VCardResource;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\UploadPhotoRequest;
-use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
 use App\Http\Requests\DeleteVCardRequest;
+use App\Http\Requests\UploadPhotoRequest;
 use App\Http\Requests\ChangeMaxDebitRequest;
+use App\Http\Requests\ChangeVCardConfirmationCodeRequest;
 
 class VCardController extends Controller
 {
@@ -43,7 +44,9 @@ class VCardController extends Controller
                 ->orWhere('phone_number', 'like', "%{$searchFilter}%");
         }
 
-        return $queryable->paginate(10);  
+        $vCards = $queryable->paginate(10);
+        
+        return VCardResource::collection($vCards);
     }
 
     public function store(VCardRequest $request)
