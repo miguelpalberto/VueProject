@@ -26,11 +26,46 @@ export const useAuthStore = defineStore('auth', () => {
             : avatarNoneUrl
     );
 
+    const login = async (credentials) => {
+        try {
+            await axios.post('/auth/login', credentials)
+                .then(async (response) => {
+                    axios.defaults.headers.common.Authorization = `Bearer ${response.data.access_token}`
+                    sessionStorage.setItem('token', response.data.access_token)
+                    await loadUser()
+                })
+        }
+        catch (error) {
+            delete axios.defaults.headers.common.Authorization
+            clearUser()
+            throw error;
+        }
+    }
+
+    const register = async (formData) => {
+        try {
+            await axios.post('/vcards', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then(async (response) => {
+                axios.defaults.headers.common.Authorization = `Bearer ${response.data.access_token}`
+                sessionStorage.setItem('token', response.data.access_token)
+                await loadUser()
+            })
+        }
+        catch (error) {
+            delete axios.defaults.headers.common.Authorization
+            throw error;
+        }
+    }
+
     const loadUser = async () => {
         try {
             const response = await axios.get("authUsers/me");
             user.value = response.data.data;
-            socket.emit('loggedIn', user.value)
+            socket.emit('loggedIn', response.data.data)
         } catch (error) {
             clearUser();
             throw error;
@@ -64,6 +99,13 @@ export const useAuthStore = defineStore('auth', () => {
         }
     })
 
+    socket.on('maxDebitChanged', async (vCard) => {
+        if (isAuthenticated.value) {
+            toast.info('Your vCard max debit has been changed to ' + vCard.max_debit + '€')
+            user.value.max_debit = vCard.max_debit
+        }
+    })
+
     function clearUser() {
         user.value = null;
     }
@@ -73,5 +115,5 @@ export const useAuthStore = defineStore('auth', () => {
         vCardStore.resetValues()
     }
 
-    return { isAuthenticated, isAdmin, user, userName, userPhotoUrl, loadUser, clearUser, updateProfile, logout };
+    return { isAuthenticated, isAdmin, user, userName, userPhotoUrl, login, loadUser, clearUser, updateProfile, logout, register };
 })

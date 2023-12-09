@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
 import { useToast } from "vue-toastification";
@@ -63,46 +62,41 @@ const register = async () => {
   isLoading.value = true
   errors.value = {}
 
-  let formData = new FormData()
-  formData.append('phone_number', credentials.value.phone_number)
-  formData.append('password', credentials.value.password)
-  formData.append('confirmation_code', credentials.value.confirmation_code)
-  formData.append('name', credentials.value.name)
-  formData.append('email', credentials.value.email)
-  if (credentials.value.photo_file) {
-    formData.append('photo_file', credentials.value.photo_file)
-  }
-  
-  axios.post('/vcards', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
+  try {
+    let formData = new FormData()
+    formData.append('phone_number', credentials.value.phone_number)
+    formData.append('password', credentials.value.password)
+    formData.append('confirmation_code', credentials.value.confirmation_code)
+    formData.append('name', credentials.value.name)
+    formData.append('email', credentials.value.email)
+    if (credentials.value.photo_file) {
+      formData.append('photo_file', credentials.value.photo_file)
     }
-  })
-    .then(async (response) => {
-      axios.defaults.headers.common.Authorization = `Bearer ${response.data.access_token}`
-      sessionStorage.setItem('token', response.data.access_token)
-      await authStore.loadUser()
-      toast.success('Registration successful')
-      router.push({ name: 'home' })
-    })
-    .error((error) => {
-      if (error.response.status === 422) {
-        errors.value = error.response.data.errors
-      }
-      else {
-        toast.error('An error occurred while registering')
-      }
-    })
-    .finally(() => {
-      axios.defaults.headers.common.ContentType = 'application/json'
-      isLoading.value = false
-    })
+
+    await authStore.register(formData)
+      .then(() => {
+        toast.success('Registration successful')
+        router.push({ name: 'home' })
+      })
+  }
+  catch (error) {
+    console.log(error)
+    if (error.response?.status === 422) {
+      errors.value = error.response.data.errors
+    }
+    else {
+      toast.error('An error occurred while registering')
+    }
+  }
+  finally {
+    isLoading.value = false
+  }
 }
 
 </script>
 
 <template>
-  <div class="container-sm" style="max-width: 450px;">
+  <div class="container-sm mb-5" style="max-width: 450px;">
     <form class="row g-2 needs-validation" novalidate @submit.prevent="register">
       <h3 class="mt-5 mb-3">Register</h3>
       <hr>
@@ -164,8 +158,8 @@ const register = async () => {
           id="inputConfirmPassword" :disabled="isLoading" required v-model="confirmPassword">
         <field-error-message :errors="errors" fieldName="confirmPassword"></field-error-message>
       </div>
-      <div class="mt-2 d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary px-5" @click="register" :disabled="isLoading">
+      <div class="mt-4 d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary px-5" @click="register" :disabled="isLoading || !confirmPasswordIsValid || !confirmConfirmationCodeIsValid">
           <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isLoading"></span>
           <span role="register">Register</span>
         </button>

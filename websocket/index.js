@@ -15,7 +15,6 @@ io.on('connection', (socket) => {
 
     socket.on('loggedIn', (user) => {
         console.log(`${user.username} has logged in`)
-        console.log(user)
         socket.join(user.username)
         if (user.isAdmin) {
             console.log(`${user.username} is an administrator`)
@@ -49,7 +48,7 @@ io.on('connection', (socket) => {
 
     socket.on('vcardMaxDebitChanged', (vCard) => {
         console.log(`vcard #${vCard.phone_number} max debit has been changed`)
-        io.to(vCard.phone_number).emit('vcardMaxDebitChanged')
+        io.to(vCard.phone_number).emit('maxDebitChanged', vCard)
         socket.to("administrators").emit('vcardMaxDebitChanged', vCard)
     })
 
