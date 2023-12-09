@@ -8,9 +8,12 @@ export const useCategoryStore = defineStore('category', () => {
     const categories = ref([])
 
 
-    const loadCategories = async (vcard) => {
+    const loadCategories = async (vcard, params) => {
         try {
-            const response = await axios.get(`vcards/${vcard}/categories`);
+            //console.log("params: " + params + params.page + params.search)
+            const response = await axios.get(`vcards/${vcard}/categories`, { params });
+            console.log("response.data: " + response.data) 
+            console.log("response.data.data: " + response.data.data) 
             categories.value = response.data.data;
         } catch (error) {
             throw error;

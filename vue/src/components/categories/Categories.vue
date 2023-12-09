@@ -5,24 +5,43 @@ import CategoryTable from "./CategoryTable.vue"
 import { useAuthStore } from '../../stores/auth';
 import { useCategoryStore } from '../../stores/category';
 import { useRouter } from 'vue-router'
+import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
-
+const paginatedResult = ref([])
+const isLoading = ref(false)
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
 
- const loadCategories = () => {
+ const loadCategories = (page = 1, searchValue = null) => {
+  isLoading.value = true
+  const params = {
+        page: page
+    }
+    if (searchValue) {
+        params.search = searchValue
+    }
   const vcardId = authStore.user.username
     try {
-        categoryStore.loadCategories(vcardId)
+      //console.log("vcardid: " + vcardId)
+      //console.log("params: " + params + params.page + params.search)
+      paginatedResult.value = categoryStore.loadCategories(vcardId, params)
+      console.log(paginatedResult.value)
     }
     catch (error) {
         console.log(error)
+    }
+    finally {
+        isLoading.value = false
     }
 }
 // const editCategory = (category) => {
 //     router.push({ name: 'Category', params: { id: category.id } })
 // }
+
+const search = (value) => {
+  loadCategories(1, value)
+}
 
 //Chamado pelo CategoryTable, elimina no frontend
 const deletedFunction = (deletedCategory) => {
@@ -66,6 +85,7 @@ onMounted(() => {//so depois de estar tudo carregado
 </script>
 
 <template>
+
   <div class="d-flex justify-content-between">
     <div class="mx-2">
       <h3 class="mt-4">{{ categoriesTitle }}</h3>
@@ -106,24 +126,44 @@ onMounted(() => {//so depois de estar tudo carregado
   <div class="row">
     <div class="col-xs-12 col-md-6">
       <h4>Debit</h4>
+      <div class="mb-1 row">
+        <div class="col-xs-12 col-md-9">
+            <label for="inputSearch" class="form-label"></label>
+            <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
+                placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
+        </div>
+      </div>
       <!-- todo show id true so se user for admin: -->
       <category-table 
+      :is-parent-loading="isLoading" 
+      :categoriesdebit="paginatedResult.data" 
       modalId="debitTableModal" 
       :categories="debitCategories" 
       :showId="false" 
       @edited="editedFunction" 
       @deleted="deletedFunction">
       </category-table>
+      <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
     </div>
     <div class="col-xs-12 col-md-6">
       <h4>Credit</h4>
+      <div class="mb-1 row">
+        <div class="col-xs-12 col-md-9">
+            <label for="inputSearch2" class="form-label"></label>
+            <input id="inputSearch2" class="form-control" v-debounce:300ms="search" type="text"
+                placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
+        </div>
+      </div>
       <category-table
+      :is-parent-loading="isLoading" 
+      :categoriescredit="paginatedResult.data" 
       modalId="creditTableModal" 
       :categories="creditCategories" 
       :showId="false"     
       @edited="editedFunction"
       @deleted="deletedFunction">
     </category-table>
+    <Bootstrap5Pagination :data="paginatedResult" @pagination-change-page="loadCategories" />
     </div>
   </div>
 
