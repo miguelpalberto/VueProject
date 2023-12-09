@@ -6,30 +6,24 @@ import { useRouter } from 'vue-router'
 
 export const useCategoryStore = defineStore('category', () => {
     const categories = ref([])
-
+    const types = [
+        { value: 'all', text: 'All' },
+        { value: 'D', text: 'Debit only' },
+        { value: 'C', text: 'Credit only' }
+    ]
 
     const loadCategories = async (vcard, params) => {
         try {
+            // const params = {
+            //     page: page
+            // }
+            // if (params.type && params.type !== 'all' && types.some((s) => s.value === params.type)) {
+            //     params.type = selectedStatus
+            // }
             //console.log("params: " + params + params.page + params.search)
             const response = await axios.get(`vcards/${vcard}/categories`, { params });
             //console.log("response.data: " + response.data) 
             //console.log("response.data.data: " + response.data.data) 
-            categories.value = response.data.data;
-        } catch (error) {
-            throw error;
-        }
-    }
-    const loadCategoriesD = async (vcard, params) => {
-        try {
-            const response = await axios.get(`vcards/${vcard}/categoriesd`, { params });
-            categories.value = response.data.data;
-        } catch (error) {
-            throw error;
-        }
-    }
-    const loadCategoriesC = async (vcard, params) => {
-        try {
-            const response = await axios.get(`vcards/${vcard}/categoriesc`, { params });
             categories.value = response.data.data;
         } catch (error) {
             throw error;
@@ -53,5 +47,5 @@ export const useCategoryStore = defineStore('category', () => {
 
     }
 
-    return { categories, updateCategory, loadCategories, deleteCategory, loadCategoriesD, loadCategoriesC};
+    return { categories, updateCategory, loadCategories, deleteCategory, types};
 })

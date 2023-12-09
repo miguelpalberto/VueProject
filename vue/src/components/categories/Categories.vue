@@ -12,8 +12,9 @@ const isLoading = ref(false)
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
+const selectedType = ref(categoryStore.types[0].value)
 
- const loadCategories = (page = 1, searchValue = null) => {
+ const loadCategories = (page = 1, searchValue = null, inputType = null) => {
   isLoading.value = true
   const params = {
         page: page
@@ -21,14 +22,17 @@ const router = useRouter()
     if (searchValue) {
         params.name = searchValue
     }
+
+    params.type = inputType
+
   const vcardId = authStore.user.username
     try {
-      paginatedResult.value = categoryStore.loadCategories(vcardId, params)
+      categories.value = categoryStore.loadCategories(vcardId, params)
 
-      console.log(paginatedResult.value)
+      //console.log(paginatedResult.value)
     }
     catch (error) {
-        console.log(error)
+      toast.error('Error loading Categories. Please try again.')//console.log(error)
     }
     finally {
         isLoading.value = false
@@ -133,10 +137,16 @@ onMounted(() => {//so depois de estar tudo carregado
       <!-- <h4>Debit</h4> -->
       <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
-            <label for="inputSearch" class="form-label"></label>
+            <label for="inputSearch" class="form-label">Search</label>
             <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
                 placeholder="Search by name" aria-label="Search" style="font-size: 14px;"/>
         </div>
+        <div class="col-xs-12 col-md-3">
+          <label for="inputSearch" class="form-label">Type</label>
+          <select id="inputType" style="font-size: 14px;" v-model="selectedType" class="form-select" @change="loadCategories()">
+              <option v-for="type in categoryStore.types" :key="type.value" :value="type.value">{{ type.text }}</option>
+          </select>
+      </div>
       </div>
       <!-- todo show id true so se user for admin: -->
       <category-table 
