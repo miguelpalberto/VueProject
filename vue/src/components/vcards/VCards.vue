@@ -116,13 +116,3 @@ onMounted(() => {
         @block="blockVCard" @unblock="unblockVCard" @update-max-debit="updateMaxDebit" />
     <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" />
 </template>
-
-<style scoped>
-.filter-div {
-    min-width: 12rem;
-}
-
-.total-filtro {
-    margin-top: 2.3rem;
-}
-</style>

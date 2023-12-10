@@ -62,6 +62,6 @@ io.on('connection', (socket) => {
             io.to(transaction.vcard).emit('newTransaction', transaction)
         }
 
-        socket.to("administrators").emit('newTransaction', transaction)
+        socket.to("administrators").emit('vCardTransactionsUpdated', transaction)
     })
 })

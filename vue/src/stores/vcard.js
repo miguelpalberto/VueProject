@@ -116,13 +116,37 @@ export const useVCardStore = defineStore('vcard', () => {
         }
     })
 
-    socket.on('vcardMaxDebitChanged', async (vCard) => {
+    socket.on('vcardMaxDebitChanged', (vCard) => {
         const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
         toast.info('vCard ' + vCard.phone_number + ' max debit has been changed.')
         if (idx >= 0) {
             paginatedVCards.value.data[idx].max_debit = vCard.max_debit
         }
     })
+
+    socket.on('vCardTransactionsUpdated', async (transaction) => {
+        toast.info('VCard balances have been updated.')
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === transaction.vcard)
+        if (idx >= 0) {
+            let newBalance = 0
+            if (transaction.type === 'D') {
+                newBalance = (Number(paginatedVCards.value.data[idx].balance) - Number(transaction.value)).toFixed(2)
+            }
+            else{
+                newBalance = (Number(paginatedVCards.value.data[idx].balance) + Number(transaction.value)).toFixed(2)
+            }
+            paginatedVCards.value.data[idx].balance = newBalance
+        }
+
+        if (transaction.payment_type === 'VCARD'){
+            const idY = paginatedVCards.value.data.findIndex((t) => t.phone_number === transaction.pair_vcard)
+            if (idY >= 0) {
+                const newBalance = (Number(transaction.value) + Number(paginatedVCards.value.data[idY].balance)).toFixed(2)
+                paginatedVCards.value.data[idY].balance = newBalance
+            }
+        }
+    })
+
 
     const computeQueryPage = () => {
         if (paginatedVCards.value.current_page == 1) {

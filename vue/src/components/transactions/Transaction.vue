@@ -4,6 +4,8 @@ import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
 import { useToast } from "vue-toastification";
+import { useTransactionStore } from '../../stores/transaction';
+import { useCategoryStore } from '../../stores/category'
 import TransactionDetail from "./TransactionDetail.vue"
 
 const props = defineProps({
@@ -30,8 +32,11 @@ const newTransaction = () => {
 
 const axiosExternal = inject('axiosExternal')
 
-const router = useRouter()
+const socket = inject('socket')
+const transactionStore = useTransactionStore()
+const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
+const router = useRouter()
 const toast = useToast()
 
 const allCategories = ref([])
@@ -88,17 +93,6 @@ const externalApiRequest = computed(() => {
     }
 })
 
-const loadCategories = () => {
-    axios.get('vcards/' + vcard.value + '/categories')
-        .then((response) => {
-            allCategories.value = response.data.data
-        })
-        .catch((error) => {
-            console.log(error)
-            toast.error('Error loading categories')
-        })
-}
-
 const save = () => {
     isLoading.value = true
     delete errors.value
@@ -143,6 +137,27 @@ const generateExternalErrors = (message) => {
     }
 }
 
+const insertTransaction = (transaction) => {
+    axios.post('transactions', transaction)
+        .then(() => {
+            toast.success('Transaction created')
+            socket.emit('newTransaction', transaction)
+            if (!authStore.isAdmin)
+                authStore.loadUser()
+            router.back()
+        })
+        .catch((error) => {
+            if (error.response.status === 422) {
+                errors.value = error.response.data.errors
+            }
+
+            toast.error('Error creating transaction')
+        })
+        .finally(() => {
+            isLoading.value = false
+        })
+}
+
 const validateInsert = () => {
     let isValid = true
 
@@ -169,35 +184,16 @@ const validateInsert = () => {
     return isValid
 }
 
-const insertTransaction = (transaction) => {
-    axios.post('transactions', transaction)
-        .then(() => {
-            toast.success('Transaction created')
-            if (!authStore.isAdmin)
-                authStore.loadUser()
-            router.back()
-        })
-        .catch((error) => {
-            if (error.response.status === 422) {
-                errors.value = error.response.data.errors
-            }
-
-            toast.error('Error creating transaction')
-        })
-        .finally(() => {
-            isLoading.value = false
-        })
-}
 
 
 const cancel = () => {
     router.back()
 }
 
-onMounted(() => {
+onMounted(async () => {
     transaction.value = newTransaction()
     if (!authStore.isAdmin){
-        loadCategories()
+        allCategories.value = await categoryStore.getCategories(authStore.user.username)
     }
 })
 

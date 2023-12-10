@@ -5,32 +5,33 @@ const props = defineProps({
     default: () => [],
   },
 })
+
 </script>
 <template>
   <div class="table-responsive">
-
     <table class="table">
       <thead>
         <tr>
           <th>Payment Reference</th>
           <th>Value</th>
           <th>New Balance</th>
-          <th>Category</th>
-          <th>Type</th>
+          <th>Payment Type</th>
           <th>Date</th>
-          <th>Method</th>
+          <th>Category</th>
           <th>Description</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="transaction in transactions" :key="transaction.id">
+        <tr v-if="transactions.length === 0">
+          <td colspan="7" class="text-center">No Transactions found</td>
+        </tr>
+        <tr v-else v-for="transaction in props.transactions" :key="transaction.id">
           <td>{{ transaction.payment_reference }}</td>
-          <td>{{ transaction.value }}</td>
-          <td>{{ transaction.new_balance }}</td>
-          <td>{{ transaction.category_id }}</td>
-          <td>{{ transaction.type }}</td>
-          <td>{{ transaction.datetime }}</td>
+          <td :class="[transaction.numericValue > 0 ? 'text-success' : 'text-danger']">{{ transaction.value }}</td>
+          <td>{{ transaction.new_balance }}€</td>
           <td>{{ transaction.payment_type }}</td>
+          <td>{{ transaction.datetime }}</td>
+          <td>{{ transaction.category_id }}</td>
           <td>{{ transaction.description }}</td>
         </tr>
       </tbody>

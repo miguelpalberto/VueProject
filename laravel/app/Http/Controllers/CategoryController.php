@@ -24,6 +24,7 @@ class CategoryController extends Controller
 
         $filterByType = $request->query('type');
         $filterByName = $request->query('name');
+        $dontPaginate = $request->query('dontPaginate');
 
         if ($filterByType) {
             $types = ['D', 'C'];
@@ -37,6 +38,10 @@ class CategoryController extends Controller
             $queryable->where(function ($query) use ($filterByName){
                 $query->where('name', 'like', "%{$filterByName }%");
             });
+        }
+
+        if ($dontPaginate) {
+            return CategoryResource::collection($queryable->get());
         }
 
         return CategoryResource::collection($queryable->paginate(10));
