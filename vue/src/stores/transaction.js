@@ -62,13 +62,30 @@ export const useTransactionStore = defineStore('transaction', () => {
         paginatedTransactions.value = response.data;
     }
 
+    const update = async (request) => {
+        await axios.put(`/transactions/${request.id}`, {
+            description: request.description,
+            category_id: request.category_id
+        })
+
+        const idx = paginatedTransactions.value.data.findIndex((t) => t.id === request.id)
+        if (idx > -1) {
+            console.log(request)
+            paginatedTransactions.value.data[idx].description = request.description
+            paginatedTransactions.value.data[idx].category_id = request.category_id
+            paginatedTransactions.value.data[idx].category = request.category
+        }
+    }
+
     socket.on('newTransaction', (transaction) => {
         toast.success('You received a new transaction!')
         load(authStore.user.username)
         authStore.user.balance = (Number(transaction.value) + Number(authStore.user.balance)).toFixed(2)
     })
 
-    return { searchValue, selectedDate, selectedPaymentType, selectedType,
-             selectedCategory, paymentTypes, types, paginatedTransactions,
-             load };
+    return {
+        searchValue, selectedDate, selectedPaymentType, selectedType,
+        selectedCategory, paymentTypes, types, paginatedTransactions,
+        load, update
+    };
 })

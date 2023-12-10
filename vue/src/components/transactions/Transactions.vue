@@ -13,6 +13,7 @@ const categoryStore = useCategoryStore()
 const toast = useToast()
 const isLoading = ref(false)
 const categories = ref([])
+const errors = ref({})
 
 const typeCategories = computed(() => {
   if (transactionStore.selectedType === transactionStore.types[0].value) {
@@ -82,8 +83,27 @@ const resetCategory = () => {
   loadTransactions(1)
 }
 
-
 const inputMaxDate = new Date().toISOString().split("T")[0]
+
+
+const updateTransaction = async (updateRequest) => {
+    try {
+        isLoading.value = true
+        await transactionStore.update(updateRequest)
+        toast.success('Transaction updated')
+    }
+    catch (error) {
+        console.log(error)
+        if (error.response.status == 422) {
+            errors.value = error.response.data.errors
+        } else {
+            toast.error('Something went wrong. Please try again.')
+        }
+    }
+    finally {
+        isLoading.value = false
+    }
+}
 
 onMounted(async () => {
   await loadTransactions()
@@ -140,7 +160,7 @@ onMounted(async () => {
     <div class="col-xs-12 col-md-6">
       <label for="inputCategory" style="font-size: 14px;" class="form-label">Type</label>
       <div class="input-group input-group-sm">
-        <select :disabled="!transactionStore.selectedType || isLoading" id="inputType" style="font-size: 14px;"
+        <select :disabled="!transactionStore.selectedType || isLoading" id="inputCategory" style="font-size: 14px;"
           v-model="transactionStore.selectedCategory" class="form-select" @change="loadTransactions()">
           <option v-for="category in typeCategories" :key="category.id" :value="category.id">
             {{ category.name }}
@@ -170,7 +190,7 @@ onMounted(async () => {
         placeholder="Search by payment reference or description" aria-label="Search" style="font-size: 14px;" />
     </div>
   </div>
-  <transaction-table :transactions="transactionStore.paginatedTransactions.data"></transaction-table>
+  <transaction-table :transactions="transactionStore.paginatedTransactions.data" :categories="categories" :isParentLoading="isLoading" :errors="errors" @update="updateTransaction" ></transaction-table>
   <Bootstrap5Pagination :data="transactionStore.paginatedTransactions" @pagination-change-page="loadTransactions" />
 </template>
   
@@ -178,4 +198,5 @@ onMounted(async () => {
 .bi {
   margin: 0 !important;
 }
+
 </style>

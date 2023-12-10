@@ -72,6 +72,7 @@ const unblockVCard = async (vCard) => {
 
 const updateMaxDebit = async (vcard, maxDebit) => {
     try {
+        isLoading.value = true
         await vCardStore.updateMaxDebit(vcard, maxDebit)
         toast.success('Max debit updated')
     }
