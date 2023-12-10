@@ -71,11 +71,11 @@ const startEditing = (vCard) => {
   descriptionOfSelectedTransaction.value = vCard.description
 }
 
-const toggleEditingTransaction = (vCard) => {
+const toggleEditingTransaction = (transaction) => {
   if (isEditing.value) {
     stopEditing()
   } else {
-    startEditing(vCard)
+    startEditing(transaction)
   }
 }
 
