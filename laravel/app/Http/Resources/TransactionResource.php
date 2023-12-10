@@ -20,6 +20,7 @@ class TransactionResource extends JsonResource
             'type' => $this->type == 'D' ? 'Debit' : 'Credit',
             'datetime' => $this->datetime,
             'value' => $this->type == 'C' ? '+' . $this->value . ' €' : '-' . $this->value . ' €',
+            'numericValue' => $this->type == 'C' ? $this->value : -$this->value,
             'new_balance' => $this->new_balance,
             'payment_type' => $this->payment_type,
             'category_id' => $this->category ? $this->category->name : '',
