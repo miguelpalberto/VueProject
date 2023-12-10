@@ -30,26 +30,13 @@ class TransactionController extends Controller
             ], 400);
         }
 
-        $queryable = Transaction::query()->where('vcard', $vcard->phone_number);
+        $queryable = Transaction::query()->where('vcard', $vcard->phone_number)->orderBy('datetime', 'desc');
 
-        $orderBy = $request->query('orderBy');
-        $filterByType = $request->query('filterByType');
-        $filterByCategory = $request->query('filterByCategory');
-        $filterByDate = $request->query('filterByDate');
-        $filterByPaymentType = $request->query('filterByPaymentType');
-        $search = $request->query('search');
-
-        if ($orderBy) {
-            $orderAsc = $request->query('asc') != null ? 'asc' : 'desc';
-            if ($orderBy == 'date') {
-                $queryable->orderBy('created_at', $orderAsc);
-            } else if ($orderBy == 'value') {
-                $queryable->orderBy('value', $orderAsc);
-            }
-        }
-        else {
-            $queryable->orderBy('created_at', 'desc');
-        }
+        $filterByType = $request->query('type');
+        $filterByCategory = $request->query('category');
+        $filterByDate = $request->query('date');
+        $filterByPaymentType = $request->query('paymentType');
+        $searchFilter = $request->query('search');
 
         if ($filterByType && ($filterByType == 'D' || $filterByType == 'C')) {
             $queryable->where('type', $filterByType);
@@ -63,16 +50,22 @@ class TransactionController extends Controller
         }
 
         if ($filterByCategory) {
-            $queryable->where('category_id', $filterByCategory);
+            if ($filterByCategory == 'uncategorized'){
+                $queryable->whereNull('category_id');
+            } else {
+                $queryable->where('category_id', $filterByCategory);
+            }
         }
 
         if ($filterByDate) {
             $queryable->where('date', $filterByDate);
         }
 
-        if ($search) {
-            $queryable->where('payment_reference', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+        if ($searchFilter) {
+            $queryable->where(function ($query) use ($searchFilter) {
+                $query->where('payment_reference', 'like', "%{$searchFilter}%")
+                ->orWhere('description', 'like', "%{$searchFilter}%");
+            });
         }
         
         $paginatedResult = $queryable->paginate(10);
