@@ -23,7 +23,9 @@ class TransactionResource extends JsonResource
             'numericValue' => $this->type == 'C' ? $this->value : -$this->value,
             'new_balance' => $this->new_balance,
             'payment_type' => $this->payment_type,
-            'category_id' => $this->category ? $this->category->name : '',
+            'category' => $this->category ? $this->category->name : '',
+            'category_id' => $this->category_id,
+            'description' => $this->description,
         ];
     }
 }

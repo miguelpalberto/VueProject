@@ -13,7 +13,7 @@ const props = defineProps({
     vCards: {
         type: Array,
         default: () => []
-    }
+    },
 })
 
 const emit = defineEmits(['delete', 'block', 'unblock', 'updateMaxDebit'])
@@ -207,9 +207,6 @@ const updateMaxDebitConfirmed = () => {
                             v-if="vCard.blocked" disabled>
                             <i class="bi bi-send text-secondary"></i>
                             </button>
-
-
-                            
                             <button class="btn btn-xs btn-light" @click="handleBlock(vCard)"
                                 :disabled="isParentLoading || isEditing" v-if="!vCard.blocked">
                                 <i class="bi bi-lock-fill text-danger"></i>
