@@ -63,5 +63,8 @@ watch(
 </script>
 
 <template>
-    <user-detail :user="user" @save="save" @cancel="cancel"></user-detail>
+    <admin-detail 
+    :user="user" 
+    @save="save" 
+    @cancel="cancel"/>
 </template>
