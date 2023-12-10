@@ -2,11 +2,13 @@ import axios from 'axios'
 import { ref, inject } from 'vue'
 import { defineStore } from 'pinia'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from './auth'
 
 export const useTransactionStore = defineStore('transaction', () => {
     const socket = inject('socket')
     const paginatedTransactions = ref([])
     const toast = useToast()
+    const authStore = useAuthStore()
 
     const paymentTypes = [
         { value: null, text: 'All' },
@@ -60,13 +62,11 @@ export const useTransactionStore = defineStore('transaction', () => {
         paginatedTransactions.value = response.data;
     }
 
-    const computeQueryPage = () => {
-        if (paginatedTransactions.value.current_page == 1) {
-            return 1;
-        }
-
-        return paginatedTransactions.value.data.length == 1 ? paginatedTransactions.value.current_page - 1 : paginatedTransactions.value.current_page
-    }
+    socket.on('newTransaction', (transaction) => {
+        toast.success('You received a new transaction!')
+        load(authStore.user.username)
+        authStore.user.balance = (Number(transaction.value) + Number(authStore.user.balance)).toFixed(2)
+    })
 
     return { searchValue, selectedDate, selectedPaymentType, selectedType,
              selectedCategory, paymentTypes, types, paginatedTransactions,
