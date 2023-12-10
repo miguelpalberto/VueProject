@@ -28,11 +28,17 @@ class DefaultCategoryController extends Controller
             }
         }
 
+        // if ($filterByName) {
+        //     $queryable->where('name', 'like', '%' . $filterByName . '%');
+        // }
         if ($filterByName) {
-            $queryable->where('name', 'like', '%' . $filterByName . '%');
+            $queryable->where(function ($query) use ($filterByName){
+                $query->where('name', 'like', "%{$filterByName }%");
+            });
         }
 
-        return $queryable->get();
+        //return $queryable->get();
+        return $queryable->paginate(10);
     }
 
     public function store(DefaultCategoryRequest $request)

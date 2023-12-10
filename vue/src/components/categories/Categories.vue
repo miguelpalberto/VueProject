@@ -1,10 +1,8 @@
 <script setup>
-import axios from 'axios'
 import { ref, onMounted, computed } from 'vue'
 import CategoryTable from "./CategoryTable.vue"
 import { useAuthStore } from '../../stores/auth';
 import { useCategoryStore } from '../../stores/category';
-import { useRouter } from 'vue-router'
 import { Bootstrap5Pagination } from 'laravel-vue-pagination'
 
 const isLoading = ref(false)

@@ -16,6 +16,7 @@ import Admins from '../components/admins/Admins.vue'
 import Category from '../components/categories/Category.vue'
 import VCards from '../components/vcards/VCards.vue'
 import Easteregg from '../components/auth/Easteregg.vue'
+import DefaultCategory from '../components/defaultCategories/DefaultCats.vue'
 
 
 const router = createRouter({
@@ -109,6 +110,11 @@ const router = createRouter({
             name: 'editCategory',
             component: Category,
             props: (route) => ({ id: parseInt(route.params.id) })
+        },
+        {
+            path: '/defaultCategories',
+            name: 'defaultCategories',
+            component: DefaultCategory
         },
         {
             path: '/vcards',

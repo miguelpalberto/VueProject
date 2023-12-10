@@ -114,22 +114,29 @@ const clickMenuOption = () => {
             <li class="nav-item" v-if="!authStore.isAdmin">
               <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
                 :class="{ active: $route.name === 'categories' }" :to="{ name: 'categories' }">
-                <i class="bi bi-list-check"></i>
+                <i class="bi bi-list-task"></i>
                 Categories
               </router-link>
             </li>
             <li class="nav-item" v-if="authStore.isAdmin">
               <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
                 :class="{ active: $route.name === 'admins' }" :to="{ name: 'admins' }">
-                <i class="bi bi-list-check"></i>
+                <i class="bi bi-person-lines-fill"></i>
                 Administrators
               </router-link>
             </li>
             <li class="nav-item" v-if="authStore.isAdmin">
               <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
                 :class="{ active: $route.name === 'vcards' }" :to="{ name: 'vcards' }">
-                <i class="bi bi-list-check"></i>
+                <i class="bi bi-card-list"></i>
                 VCards
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="authStore.isAdmin">
+              <router-link class="nav-link w-100 me-3" @click="clickMenuOption"
+                :class="{ active: $route.name === 'defaultCategories' }" :to="{ name: 'defaultCategories' }">
+                <i class="bi bi-list-task"></i>
+                Default Categories
               </router-link>
             </li>
           </ul>

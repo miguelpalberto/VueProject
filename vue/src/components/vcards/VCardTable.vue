@@ -202,13 +202,21 @@ const updateMaxDebitConfirmed = () => {
                                 v-if="!vCard.blocked">
                                 <i class="bi bi-send-fill text-success"></i>
                             </router-link>
+                            <button
+                            class="btn btn-xs btn-light"
+                            v-if="vCard.blocked" disabled>
+                            <i class="bi bi-send text-secondary"></i>
+                            </button>
+
+
+                            
                             <button class="btn btn-xs btn-light" @click="handleBlock(vCard)"
                                 :disabled="isParentLoading || isEditing" v-if="!vCard.blocked">
                                 <i class="bi bi-lock-fill text-danger"></i>
                             </button>
                             <button class="btn btn-xs btn-light" @click="handleUnblock(vCard)"
                                 :disabled="isParentLoading || isEditing" v-if="vCard.blocked">
-                                <i class="bi bi-unlock-fill text-success"></i>
+                                <i class="bi bi-unlock-fill text-primary"></i>
                             </button>
                             <button class="btn btn-xs btn-light" @click="handleDelete(vCard)"
                                 :disabled="isParentLoading || !isVCardAllowedToBeDeleted(vCard) || isEditing">
