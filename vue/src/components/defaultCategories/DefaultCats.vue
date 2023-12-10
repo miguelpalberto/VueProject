@@ -81,7 +81,7 @@ onMounted(() => {
       </div>
       </div>
 
-      <category-table 
+      <default-cat-table 
       :is-parent-loading="isLoading" 
       modalId="defaultCategoryTableModal" 
       :categories="defaultCatStore.paginatedCategories.data"

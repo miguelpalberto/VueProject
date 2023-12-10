@@ -93,7 +93,7 @@ const boolDeleteCategoryConfirmed = async (isConfirmed) => {
     isLoading.value = true
     if (isConfirmed) {
         try {
-            await axios.delete('categories/' + selectedCategory.value.id) 
+            await axios.delete('defaultCategories/' + selectedCategory.value.id) 
             toast.info(`Default Category ${categoryToDeleteDescriptionNoId.value} was deleted`)
             emit('deleted', selectedCategory.value)
         } catch (error) {

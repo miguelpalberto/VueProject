@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
     <div class="mb-5 d-flex">
       <button :disabled="isParentLoading" type="button" class="btn btn-primary px-5" @click="save">
         <span class="spinner-border spinner-border-sm mx-1" aria-hidden="true" v-if="isParentLoading"></span>
-        <span role="save">Save</span>
+        <span role="save">Send</span>
       </button>
       <button :disabled="isParentLoading" type="button" class="btn btn-light px-5" @click="cancel">
         Cancel
