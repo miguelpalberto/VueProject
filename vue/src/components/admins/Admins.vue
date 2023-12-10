@@ -47,8 +47,14 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h3 class="mt-5 mb-3">Admins</h3>
+    <h3 class="mt-5 mb-3">Administrators</h3>
     <hr />
+    <router-link class="btn btn-success btn-sm" to="/users/create">
+        <i class="bi bi-send-plus"></i> 
+        <span>New Administrator Account</span>
+      </router-link>
+      
+      <hr>
     <div class="mb-1">
         <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search" aria-label="Search" />
     </div>
