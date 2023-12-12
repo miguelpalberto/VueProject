@@ -75,7 +75,8 @@ const cancel = () => {
 </script>
 
 <template>
-
+  <br>
+  <br>
   <h3 class="mb-2">{{ categoryTitle }}</h3>
   <hr>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
