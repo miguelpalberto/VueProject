@@ -52,6 +52,7 @@ Route::middleware('auth:api')->group(
         Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
         
         // VCARD
+        Route::get('vcards/{vcard}/statistics/balance', [VCardController::class, 'getVCardBalanceStatistics']);
         Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
         Route::patch('vcards/{vcard}/changeMaxDebit', [VCardController::class, 'changeMaxDebit']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);

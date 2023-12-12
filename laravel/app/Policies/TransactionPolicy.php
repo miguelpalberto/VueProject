@@ -15,11 +15,11 @@ class TransactionPolicy
 
     public function create(AuthUser $authUser): bool
     {
-        return !Auth::guest();
+        return !Auth::guest() && $authUser->blocked == false;
     }
 
     public function update(AuthUser $authUser, Transaction $transaction): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $transaction->vcard;
+        return  $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $transaction->vcard;
     }
 }

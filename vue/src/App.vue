@@ -204,13 +204,14 @@ const clickMenuOption = () => {
 
       <main class="ms-sm-auto px-md-4" :class="authStore.isAuthenticated ? 'col-md-9 col-lg-10' : 'col-md-12 col-lg-12'">
         <div class="d-flex justify-content-center">
-          <div class="alert alert-light" role="alert" v-if="authStore.isAuthenticated && !authStore.isAdmin">
-            <h4>
-              Current Balance: {{ authStore.user.balance }}€
-            </h4>
-            <p class="text-center">
+          <div class="card text-center mt-3 text-bg-light" v-if="authStore.isAuthenticated && !authStore.isAdmin">
+            <div class="card-body">
+              <h5 class="card-title">Current Balance</h5>
+              <p class="card-text" style="font-size:20px">{{ authStore.user.balance }}€</p>
+            </div>
+            <div class="card-footer">
               Max Debit: {{ authStore.user.max_debit }}€
-            </p>
+            </div>
           </div>
         </div>
         <div class="container-fluid py-2">
