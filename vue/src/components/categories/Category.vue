@@ -64,8 +64,9 @@ const save = () => {
     axios.post('categories', category.value)
     .then(() => {
         toast.success('Category created')
-            if (!props.isAdmin)
-                authStore.loadUser()
+            if (!props.isAdmin){
+                authStore.loadUser()}
+            isLoading.value = false
             router.push({ path: backUrl.value })
     })
     .catch((error) => {
@@ -77,6 +78,10 @@ const save = () => {
         isLoading.value = false
         toast.error('Error creating category' )
     })
+    .finally(() => {
+         isLoading.value = false
+     })
+    
 }
 
 const validateInsert = () => {

@@ -30,9 +30,6 @@ const props = defineProps({
     },
 })
 
-const backUrl = computed(() => {
-    return '/defaultCategories'
-})
 
 const loadCategory = (id) => {
     if (!id || (id < 0)) {
@@ -59,18 +56,19 @@ const save = () => {
     axios.post('defaultCategories', category.value)
     .then(() => {
         toast.success('Default Category created')
-            if (!props.isAdmin)
-                authStore.loadUser()
-            router.push({ path: backUrl.value })
+        router.push({ name: 'defaultCategories' })
     })
     .catch((error) => {
         console.log(error)
          if (error.response.status === 422) {
                 errors.value = error.response.data.errors
          }
-        isLoading.value = false
+        //isLoading.value = false
         toast.error('Error creating Default Category' )
     })
+     .finally(() => {
+         isLoading.value = false //leave it here (even if doubled)
+     })
 }
 
 const validateInsert = () => {
@@ -112,7 +110,7 @@ const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'upda
 
 </script>
 <template>
-    <category-detail
+    <default-cat-detail
         :is-parent-loading="isLoading"
         :category="category"
         :operationType="operation"

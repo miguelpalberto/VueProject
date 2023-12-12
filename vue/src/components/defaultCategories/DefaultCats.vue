@@ -55,7 +55,7 @@ onMounted(() => {
     </div>
   </div>
   <hr>
-  <router-link class="btn btn-success btn-sm" to="/categories/create">
+  <router-link class="btn btn-success btn-sm" to="/defaultCategories/create">
     <i class="bi bi-send-plus"></i> 
     <span>New Default Category</span>
   </router-link>
