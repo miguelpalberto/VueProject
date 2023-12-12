@@ -32,7 +32,6 @@ watch(
   }
 )
 
-
 const save = () => {
   emit('save', editingAdministrator.value)
 }
@@ -40,13 +39,12 @@ const save = () => {
 const cancel = () => {
   emit('cancel', editingAdministrator.value)
 }
-
-
 </script>
 
 <template>
-  
-  <h3 class="mb-2">{{ categoryTitle }}</h3>
+  <br>
+  <br>
+  <h3 class="mb-2">{{ 'New Administrator' }}</h3>
   <hr>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
 

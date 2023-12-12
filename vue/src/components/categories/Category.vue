@@ -120,6 +120,7 @@ watch(() => props.id,
 const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
 
 </script>
+
 <template>
     <category-detail
         :is-parent-loading="isLoading"

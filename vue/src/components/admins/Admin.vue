@@ -46,33 +46,6 @@ const loadUser = (id) => {
     }
 }
 
-const save = () => {
-    isLoading.value = true
-
-    if (!validateInsert()) {
-        isLoading.value = false
-        return
-    }
-
-    axios.post('users', admin.value)
-        .then((response) => {
-            //console.dir(response.data.data)
-            isLoading.value = false
-            router.push({ path: backUrl.value })
-        })
-        .catch((error) => {
-        console.log(error)
-         if (error.response.status === 422) {
-                errors.value = error.response.data.errors
-         }
-        isLoading.value = false
-        toast.error('Error creating administrator' )
-    })
-    .finally(() => {
-         isLoading.value = false
-     })
-}
-
 const validateInsert = () => {
     let isValid = true
     //console.log('validating')
@@ -111,6 +84,33 @@ const validateInsert = () => {
     return isValid
 }
 
+const save = () => {
+    isLoading.value = true
+
+    if (!validateInsert()) {
+        isLoading.value = false
+        return
+    }
+
+    axios.post('users', admin.value)
+        .then((response) => {
+            //console.dir(response.data.data)
+            isLoading.value = false
+            router.push({ path: backUrl.value })
+        })
+        .catch((error) => {
+        console.log(error)
+         if (error.response.status === 422) {
+                errors.value = error.response.data.errors
+         }
+        isLoading.value = false
+        toast.error('Error creating administrator' )
+    })
+    .finally(() => {
+         isLoading.value = false
+     })
+}
+
 const cancel = () => {
     // Replace this code to navigate back
     //loadUser(props.id)
@@ -131,6 +131,7 @@ watch(
 <template>
     <admin-detail 
         :admin="admin" 
+        :errors="errors"
         @save="save" 
         @cancel="cancel"
     />

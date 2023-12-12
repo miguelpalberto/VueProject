@@ -61,43 +61,18 @@ onMounted(() => {//so depois de estar tudo carregado
 
 <template>
 
-  <div class="d-flex justify-content-between">
-    <div class="mx-2">
-      <h3 class="mt-4">{{ categoriesTitle }}</h3>
-    </div>
-    <div class="mx-2 total-filtro">
-      <!-- <h5 class="mt-4">Total: {{ totalTasks }}</h5> -->
-    </div>
-  </div>
+  <!-- <div class="d-flex justify-content-between"> -->
+    <!-- <div class="mx-2"> -->
+      <h3 class="mt-5 mb-3">{{ categoriesTitle }}</h3>
+    <!-- </div> -->
+  <!-- </div> -->
   <hr>
   <router-link class="btn btn-success btn-sm" to="/categories/create">
     <i class="bi bi-send-plus"></i> 
     <span>New Category</span>
   </router-link>
   <hr>
-  <div class="mb-3 d-flex justify-content-between flex-wrap">
-
-    <!-- <div class="mx-2 mt-2 flex-grow-1 filter-div">
-      <label for="selectCompleted" class="form-label">Filter by transaction type:</label>
-      <select
-          class="form-select"
-          id="selectCompleted"
-          v-model="filterByCompleted"
-          >
-          <option value="-1">Any</option>
-          <option value="0">Pending Tasks</option>
-          <option value="1">Completed Tasks</option>
-        </select>
-    </div>
-
-        <div class="mx-2 mt-2">
-      <button
-      type="button"
-        class="btn btn-success px-4 btn-addtask"
-        @click="addTask"
-        ><i class="bi bi-xs bi-plus-circle"></i>&nbsp; Add Task</button>
-    </div> -->
-  </div>
+  
   <div class="container">
   <div class="row">
     <div class="col-xs-12 col-md-8 mx-auto">
