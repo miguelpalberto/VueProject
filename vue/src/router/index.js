@@ -13,10 +13,12 @@ import ChangeConfirmationCode from '../components/users/ChangeConfirmationCode.v
 import Profile from '../components/users/Profile.vue'
 import DismissVCard from '../components/users/DismissVCard.vue'
 import Admins from '../components/admins/Admins.vue'
+import Admin from '../components/admins/Admin.vue'
 import Category from '../components/categories/Category.vue'
 import VCards from '../components/vcards/VCards.vue'
 import Easteregg from '../components/auth/Easteregg.vue'
-import DefaultCategory from '../components/defaultCategories/DefaultCats.vue'
+import DefaultCategories from '../components/defaultCategories/DefaultCats.vue'
+import DefaultCategory from '../components/defaultCategories/DefaultCat.vue'
 
 
 const router = createRouter({
@@ -86,9 +88,14 @@ const router = createRouter({
             props: (route) => ({ id: parseInt(route.params.id) })
         },
         { 
-            path: '/admins',
+            path: '/users',
             name: 'admins',
             component: Admins
+        },
+        { 
+            path: '/users/create',
+            name: 'createAdmin',
+            component: Admin
         },
         { 
             path: '/dismissVcard',
@@ -114,7 +121,18 @@ const router = createRouter({
         {
             path: '/defaultCategories',
             name: 'defaultCategories',
+            component: DefaultCategories
+        },
+        {
+            path: '/defaultCategories/create',
+            name: 'createDefaultCategory',
             component: DefaultCategory
+        },
+        {
+            path: '/defaultCategories/:id',
+            name: 'editDefaultCategory',
+            component: DefaultCategory,
+            props: (route) => ({ id: parseInt(route.params.id) })
         },
         {
             path: '/vcards',
