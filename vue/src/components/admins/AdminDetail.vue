@@ -1,12 +1,12 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
     isParentLoading: {
       type: Boolean,
       required: true,
     },
-    administrator: {
+    admin: {
       type: Object,
       required: true
     },
@@ -23,25 +23,29 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel'])
 
-const editingCategory = ref(props.category)
+const editingAdministrator = ref(props.admin)
 
-const categoryTitle = computed(() => {
-  return 'New Administrator Account'
-})
+watch(
+  () => props.admin,
+  (newUser) => {
+    editingAdministrator.value = newUser
+  }
+)
+
 
 const save = () => {
-  emit('save', editingCategory.value)
+  emit('save', editingAdministrator.value)
 }
 
 const cancel = () => {
-  emit('cancel', editingCategory.value)
+  emit('cancel', editingAdministrator.value)
 }
 
 
 </script>
 
 <template>
-
+  
   <h3 class="mb-2">{{ categoryTitle }}</h3>
   <hr>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="save">
@@ -72,15 +76,12 @@ const cancel = () => {
       <label for="inputPassword" class="form-label">Password<span class="text-danger">*</span>
         &nbsp;<span class="text-muted">(required)</span>
       </label>
-      <input type="text" class="form-control" :class="{ 'is-invalid': errors && errors.password }" min="0"
+      <input type="password" class="form-control" :class="{ 'is-invalid': errors && errors.password }" min="0"
         :disabled="isParentLoading" id="inputPassword" required v-model="editingAdministrator.password">
       <div class="invalid-feedback" v-if="errors && errors.password">
         {{ errors.password[0] }}
       </div>
-    </div>
-
-
-
+    </div> 
 
     <div class="mb-5 d-flex">
       <button :disabled="isParentLoading" type="button" class="btn btn-primary px-5" @click="save">
