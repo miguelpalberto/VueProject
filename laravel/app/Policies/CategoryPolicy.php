@@ -11,9 +11,9 @@ class CategoryPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(AuthUser $authUser): bool
+    public function create(?AuthUser $authUser): bool
     {
-        return !Auth::guest() && $authUser->user_type != 'A';
+        return !Auth::guest() && $authUser->user_type != 'A' && $authUser->blocked == false;
     }
 
     /**
@@ -21,7 +21,7 @@ class CategoryPolicy
      */
     public function update(AuthUser $authUser, Category $category): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $category->vcard;
+        return $authUser->userType != 'A' &&  $authUser->username == $category->vcard && $authUser->blocked == false;
     }
 
     /**
@@ -29,6 +29,6 @@ class CategoryPolicy
      */
     public function delete(AuthUser $authUser, Category $category): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $category->vcard;
+        return $authUser->userType != 'A' &&  $authUser->username == $category->vcard && $authUser->blocked == false;
     }
 }
