@@ -35,7 +35,7 @@ class VCardPolicy
      */
     public function delete(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->user_type == 'A' || $authUser->username == $vCard->phone_number;
+        return $authUser->user_type == 'A' || ($authUser->blocked == false && $authUser->username == $vCard->phone_number);
     }
 
     public function block(AuthUser $authUser, VCard $vCard): bool
@@ -50,27 +50,32 @@ class VCardPolicy
 
     public function changeConfirmationCode(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
+        return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function deletePhoto(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
+        return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function uploadPhoto(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
+        return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
     public function getVCardTransactions(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->userType != 'A' && $authUser->username == $vCard->phone_number;
+        return $authUser->blocked == false && $authUser->userType != 'A' && $authUser->username == $vCard->phone_number;
     }
 
     public function getVCardCategories(AuthUser $authUser, VCard $vCard): bool
     {
-        return $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
+        return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
+    }
+    
+    public function getVCardBalanceStatistics(AuthUser $authUser, VCard $vCard): bool
+    {
+        return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
 
 }

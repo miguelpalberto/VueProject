@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use stdClass;
 use App\Models\VCard;
 use Illuminate\Http\Request;
 use App\Models\DefaultCategory;
@@ -41,13 +42,13 @@ class VCardController extends Controller
         if ($searchFilter) {
             $queryable->where(function ($query) use ($searchFilter) {
                 $query->where('phone_number', 'like', "%{$searchFilter}%")
-                ->orWhere('name', 'like', "%{$searchFilter}%")
-                ->orWhere('email', 'like', "%{$searchFilter}%");
+                    ->orWhere('name', 'like', "%{$searchFilter}%")
+                    ->orWhere('email', 'like', "%{$searchFilter}%");
             });
         }
 
         $vCards = $queryable->paginate(10);
-        
+
         return VCardResource::collection($vCards);
     }
 
@@ -281,18 +282,40 @@ class VCardController extends Controller
         ], 200);
     }
 
-    //ESTATISTICAS
-    //Ver biblioteca vue-chartjs
 
-    //todo - incompleto
-    //Para User apenas (nao admin):
-    public function getVCardStats(VCard $vcard)
+    public function getVCardBalanceStatistics(VCard $vcard, Request $request)
     {
-        //ver media dinheiro gasto por mes (no presente ano) (bar chart)
-        $sql = "SELECT SUM([value]) FROM transactions WHERE [type] = 'D' AND vcard = @vcardNumber   AND YEAR([date]) = YEAR(CURRENT_DATE()) GROUP BY MONTH([date]) ORDER BY MONTH([date]);"; //todo fiqeui aqui
+        $this->authorize('getVCardBalanceStatistics', $vcard);
 
+        $filterByRange = $request->query('range');
 
-        //ver % dinheiro gasto por categoria (pie chart)
-        $sql2 = "SELECT SUM(t.[value]) FROM transactions t JOIN categories c ON c.vcard=t.vcard WHERE t.[type] = 'D' AND t.vcard = @vcardNumber GROUP BY c.name ORDER BY c.name;";
+        //get just balances and datetimes 
+        $ranges = ['30days', '60days', 'year', 'all'];
+
+        $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
+
+        if ($filterByRange) {
+            if (in_array($filterByRange, $ranges)) {
+                if ($filterByRange == '30days') {
+                    $queryable->where('date', '>=', now()->subDays(30));
+                } else if ($filterByRange == '60days') {
+                    $queryable->where('date', '>=', now()->subDays(60));
+                } else if ($filterByRange == 'year') {
+                    $queryable->where('date', '>=', now()->subYear());
+                }
+            }
+        } else {
+            $queryable->where('date', '>=', now()->subDays(30));
+        }
+
+        $chartData = new stdClass();
+        $chartData->labels = [];
+        $chartData->data = [];
+        foreach ($queryable->get() as $transaction) {
+            $chartData->labels[] = $transaction->datetime;
+            $chartData->data[] = $transaction->new_balance;
+        }
+
+        return $chartData;
     }
 }

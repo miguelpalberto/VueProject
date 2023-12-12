@@ -23,13 +23,6 @@ class TransactionController extends Controller
     public function getVCardTransactions(VCard $vcard, Request $request){
         $this->authorize('getVCardTransactions', $vcard);
 
-        if ($vcard->blocked) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This vCard is blocked'
-            ], 400);
-        }
-
         $queryable = Transaction::query()->where('vcard', $vcard->phone_number)->orderBy('datetime', 'desc');
 
         $filterByType = $request->query('type');
