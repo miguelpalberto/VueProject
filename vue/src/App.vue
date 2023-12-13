@@ -2,6 +2,7 @@
 import { useToast } from 'vue-toastification'
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from './stores/auth'
+import SupportChatRoom from './components/supportChatRoom/SupportChatRoom.vue'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -217,6 +218,7 @@ const clickMenuOption = () => {
         <div class="container-fluid py-2">
           <router-view />
         </div>
+        <support-chat-room v-if="authStore.isAuthenticated" />
       </main>
     </div>
   </div>
