@@ -290,15 +290,15 @@ class VCardController extends Controller
         $filterByRange = $request->query('range');
 
         //get just balances and datetimes 
-        $ranges = ['30days', '60days', 'year', 'all'];
+        $ranges = ['30', '60', 'year', 'all'];
 
         $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
 
         if ($filterByRange) {
             if (in_array($filterByRange, $ranges)) {
-                if ($filterByRange == '30days') {
+                if ($filterByRange == '30') {
                     $queryable->where('date', '>=', now()->subDays(30));
-                } else if ($filterByRange == '60days') {
+                } else if ($filterByRange == '60') {
                     $queryable->where('date', '>=', now()->subDays(60));
                 } else if ($filterByRange == 'year') {
                     $queryable->where('date', '>=', now()->subYear());
@@ -314,6 +314,46 @@ class VCardController extends Controller
         foreach ($queryable->get() as $transaction) {
             $chartData->labels[] = $transaction->datetime;
             $chartData->data[] = $transaction->new_balance;
+        }
+
+        return $chartData;
+    }
+
+
+    public function getVCardTransactionsStatistics(VCard $vcard, Request $request)
+    {
+        $this->authorize('getVCardTransactionsStatistics', $vcard);
+
+        $filterByRange = $request->query('range');
+
+        //get just balances and datetimes 
+        $ranges = ['30', '60', 'year', 'all'];
+
+        $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
+
+        if ($filterByRange) {
+            if (in_array($filterByRange, $ranges)) {
+                if ($filterByRange == '30') {
+                    $queryable->where('date', '>=', now()->subDays(30));
+                } else if ($filterByRange == '60') {
+                    $queryable->where('date', '>=', now()->subDays(60));
+                } else if ($filterByRange == 'year') {
+                    $queryable->where('date', '>=', now()->subYear());
+                }
+            }
+        } else {
+            $queryable->where('date', '>=', now()->subDays(30));
+        }
+
+        $chartData = new stdClass();
+        $chartData->labels = [];
+        $chartData->data = [];
+        foreach ($queryable->get() as $transaction) {
+            $chartData->labels[] = $transaction->datetime;
+            // Check if transaction type is 'D' (debit) and apply the '-' prefix
+            $value = ($transaction->type === 'D') ? ($transaction->value * -1) : $transaction->value;
+            
+            $chartData->data[] = $value;
         }
 
         return $chartData;

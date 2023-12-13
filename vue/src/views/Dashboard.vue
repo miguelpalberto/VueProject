@@ -5,7 +5,7 @@ import BalanceLineChart from '../components/vcards/statistics/BalanceLineChart.v
 <template>
   <div class="container">
     <div style="max-height: 400px;">
-      <h3>Your balance fluctuation</h3>
+      <h3>Your Statistics</h3>
       <BalanceLineChart />
     </div>
   </div>
