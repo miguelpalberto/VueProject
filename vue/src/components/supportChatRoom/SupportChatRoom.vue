@@ -34,11 +34,10 @@ const sendMessage = () => {
                     }"></i>
                     <button v-else type="button" class="btn btn-light position-relative"
                         style="padding: 2px;pointer-events: none;">
-                        <i class="bi bi-chat-dots-fill"
-                            :class="{
-                                'text-success': supportChatroomStore.isInRoom,
-                                'text-danger': supportChatroomStore.isInRoom && supportChatroomStore.isChatOver
-                            }"></i>
+                        <i class="bi bi-chat-dots-fill" :class="{
+                            'text-success': supportChatroomStore.isInRoom,
+                            'text-danger': supportChatroomStore.isInRoom && supportChatroomStore.isChatOver
+                        }"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ supportChatroomStore.availableRoomsCount }}
                             <span class="visually-hidden">vCards in dire need of help</span>
@@ -109,24 +108,28 @@ const sendMessage = () => {
                 </div>
             </div>
             <div v-else class="card-content" :class="{ 'd-none': isMinimized }">
-                <div class="support-chatroom-content" v-if="!supportChatroomStore.isInRoom">
-                    <ul v-if="!supportChatroomStore.areThereAvailableRooms">
-                        <li>
-                            <div class="text-center">
-                                <b>No vCard help requests</b>
-                            </div>
-                        </li>
-                    </ul>
-                    <ul v-else>
-                        <li v-for="availableRoom in supportChatroomStore.availableRooms" :key="availableRoom.name">
-                            <div class="d-flex justify-content-between flex-row align-items-center">
-                                <b>{{ availableRoom.vcard.username }} is requesting help</b>
-                                <button class="btn btn-dark btn-sm" @click="supportChatroomStore.joinRoom(availableRoom)">
-                                    Join
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
+                <div class="support-chatroom-content d-flex flex-column justify-content-between"
+                    v-if="!supportChatroomStore.isInRoom">
+                    <div class="support-chatroom-chat">
+                        <div class="text-center" v-if="!supportChatroomStore.areThereAvailableRooms">
+                            <b>No vCard help requests</b>
+                        </div>
+                        <ul v-else style="list-style: none;padding: 0px;margin: 0px;">
+                            <li class="mb-2" v-for="availableRoom in supportChatroomStore.availableRooms"
+                                :key="availableRoom.name">
+                                <div class="d-flex justify-content-between flex-row align-items-center">
+                                    <b style="font-size: 12px;">
+                                        <span class="text-primary">({{new Date(availableRoom.timeCreated).toLocaleString('pt-PT') }}):</span>
+                                        {{ availableRoom.vcard.name }} ({{ availableRoom.vcard.username }}) is requesting help!</b>
+                                    <button class="btn btn-dark btn-sm"
+                                        @click="supportChatroomStore.joinRoom(availableRoom)">
+                                        Join
+                                    </button>
+                                </div>
+                                <hr>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div v-else class="support-chatroom-content d-flex flex-column justify-content-between">
                     <div class="support-chatroom-chat">
