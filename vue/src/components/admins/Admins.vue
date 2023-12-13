@@ -55,9 +55,15 @@ onMounted(async () => {
       </router-link>
       
       <hr>
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-md-12 mx-auto">
     <div class="mb-1">
         <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search" aria-label="Search" />
     </div>
     <admin-table :users="adminStore.paginatedAdmins.data" @delete="deleteUser"></admin-table>
     <Bootstrap5Pagination :data="adminStore.paginatedAdmins" @pagination-change-page="loadUsers" />
+</div>
+</div>
+</div>
 </template>

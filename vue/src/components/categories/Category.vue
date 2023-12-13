@@ -24,8 +24,6 @@ const newCategory = () => {
 const isLoading = ref(false)
 const category = ref(newCategory())
 const errors = ref({})
-
-
 const props = defineProps({
     id: {
         type: Number,
@@ -33,7 +31,7 @@ const props = defineProps({
     },
 })
 
-//rever
+
 const backUrl = computed(() => {
     return props.vcard ? '/vcards/' + props.vcard + '/categories' : '/categories'
 })
@@ -122,6 +120,7 @@ watch(() => props.id,
 const operation = computed( () => (!props.id || props.id < 0) ? 'insert' : 'update')
 
 </script>
+
 <template>
     <category-detail
         :is-parent-loading="isLoading"
