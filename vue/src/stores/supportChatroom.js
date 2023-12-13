@@ -70,7 +70,8 @@ export const useSupportChatRoomStore = defineStore('supportChatroom', () => {
             vcard: vCard,
             admin: null,
             messages: [],
-            isChatOver: false
+            isChatOver: false,
+            timeCreated: Date.now()
         }
     }
 
@@ -159,6 +160,10 @@ export const useSupportChatRoomStore = defineStore('supportChatroom', () => {
 
     socket.on('supportChatroomFull', (room) => {
         availableRooms.value = availableRooms.value.filter((r) => r.name !== room.name)
+    })
+
+    socket.on('availableSupportChatRooms', (rooms) => {
+        availableRooms.value = rooms
     })
 
     //vcard only
