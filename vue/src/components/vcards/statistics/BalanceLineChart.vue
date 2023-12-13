@@ -80,7 +80,7 @@ const loadChartData = async () => {
     chartData.value = newChartData
 }
 const loadChartDataT = async () => {
-    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactions?range=${lastXDays.value}`)
+    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactions?range=${lastXDaysT.value}`)
     const newChartDataT = {
         labels: [],
         datasets: [
@@ -97,7 +97,7 @@ const loadChartDataT = async () => {
     //console.log(response.data.data)
 
     //Calculate total transactions
-    //transactions.value = response.data.data
+    transactions.value = response.data.data
     //totalTransactions.value = transactions.value.length
 
 }
