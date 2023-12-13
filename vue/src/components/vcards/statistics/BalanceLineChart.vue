@@ -51,20 +51,15 @@ const periodClick = (period) => {
 }
 const periodClickT = (period) => {
     setChartDataT(period)
-    //calculateTransactions(period)
 }
-// const calculateTransactions = async (period) => {
-//     console.log(transactions.value)    
-//     console.log(transactions.value[0])
-//     //todo
-// }
+
 const setChartData = async (period) => {
-    lastXDays.value = period // Atualiza o estado da variável
-    await loadChartData() // Recarrega os dados do gráfico
+    lastXDays.value = period 
+    await loadChartData()
 }
 const setChartDataT = async (period) => {
-    lastXDaysT.value = period // Atualiza o estado da variável
-    await loadChartDataT() // Recarrega os dados do gráfico
+    lastXDaysT.value = period 
+    await loadChartDataT()
 }
 const loadChartData = async () => {
     const response = await axios.get(`vcards/${authStore.user.username}/statistics/balance?range=${lastXDays.value}`)
@@ -100,7 +95,7 @@ const loadChartDataT = async () => {
     chartDataT.value = newChartDataT
     console.log(response.data.data)
 
-    //Calculate total transactions
+    //Calcular
     transactions.value = response.data.data
     totalTransactions.value = transactions.value.length
     totalDebitTransactions.value = 0
@@ -147,14 +142,7 @@ onMounted(() => {
         </div>
       </div>
       <!-- <hr> -->
-      <div class="mx-2 mt-2">
-        <div>
-          <!-- <p>Total Credit Transactions: {{ totalCreditTransactions }}</p>
-          <p>Total Debit Transactions: {{ totalDebitTransactions }}</p> -->
-
             <br>
-        </div>
-    </div>
     <Line :data="chartData" :options="chartOptions" />
     <br>
     <div class="mx-2">
