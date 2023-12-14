@@ -158,7 +158,7 @@ onMounted(async () => {
       </div>
     </div>
     <div class="col-xs-12 col-md-6">
-      <label for="inputCategory" style="font-size: 14px;" class="form-label">Type</label>
+      <label for="inputCategory" style="font-size: 14px;" class="form-label">Category</label>
       <div class="input-group input-group-sm">
         <select :disabled="!transactionStore.selectedType || isLoading" id="inputCategory" style="font-size: 14px;"
           v-model="transactionStore.selectedCategory" class="form-select" @change="loadTransactions()">
