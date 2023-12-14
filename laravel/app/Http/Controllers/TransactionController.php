@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use stdClass;
 use App\Models\VCard;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Policies\TransactionPolicy;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\TransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
 use App\Http\Resources\TransactionResource;
-use App\Policies\TransactionPolicy;
+use App\Http\Requests\UpdateTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -233,5 +234,48 @@ class TransactionController extends Controller
         $transaction->save();
 
         return new TransactionResource($transaction);
+    }
+
+    
+    public function getAllTransactionsStatistics(Request $request)
+    {
+        
+        //$this->authorize('getAllTransactionsStatistics');
+        
+        $filterByRange = $request->query('range');
+
+        //get just balances and datetimes 
+        $ranges = ['30', '60', 'year', 'all'];
+
+        $queryable = Transaction::orderBy('date', 'asc');
+
+        if ($filterByRange) {
+            if (in_array($filterByRange, $ranges)) {
+                if ($filterByRange == '30') {
+                    $queryable->where('date', '>=', now()->subDays(30));
+                } else if ($filterByRange == '60') {
+                    $queryable->where('date', '>=', now()->subDays(60));
+                } else if ($filterByRange == 'year') {
+                    $queryable->where('date', '>=', now()->subYear());
+                }
+            }
+        } else {
+            $queryable->where('date', '>=', now()->subDays(30));
+        }
+    
+        $chartData = new stdClass();
+        $chartData->labels = [];
+        $chartData->data = [];
+    
+        $queryable->selectRaw('DATE(datetime) as date, COUNT(*) as transaction_count')
+            ->groupByRaw('DATE(datetime)')
+            ->orderBy('date', 'asc');
+    
+        foreach ($queryable->get() as $result) {
+            $chartData->labels[] = $result->date;
+            $chartData->data[] = $result->transaction_count;
+        }
+    
+        return $chartData;
     }
 }

@@ -81,5 +81,9 @@ class VCardPolicy
     {
         return $authUser->blocked == false &&  $authUser->username == $vCard->phone_number;
     }
+    public function getAllTransactionsStatistics(AuthUser $authUser): bool
+    {
+        return $authUser->user_type == 'A';
+    }
 
 }

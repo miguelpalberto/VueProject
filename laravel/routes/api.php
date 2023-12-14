@@ -32,7 +32,7 @@ Route::middleware('auth:api')->group(
     function () {
         // CATEGORIES
         Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
-        Route::apiResource('categories', CategoryController::class)->except(['show', 'index']); //G4.1, G2.1
+        Route::apiResource('categories', CategoryController::class)->except(['show', 'index']); 
 
         // DEFAULT CATEGORIES
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
@@ -43,13 +43,14 @@ Route::middleware('auth:api')->group(
         Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
         
         // TRANSACTIONS
+        Route::get('statistics/alltransactions', [TransactionController::class, 'getAllTransactionsStatistics']);
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
         Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
         Route::put('transactions/{transaction}', [TransactionController::class, 'update']);
         Route::post('transactions', [TransactionController::class, 'store']);
         
         // USERS
-        Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
+        Route::apiResource('users', UserController::class); 
         
         // VCARD
         Route::get('vcards/{vcard}/statistics/balance', [VCardController::class, 'getVCardBalanceStatistics']);
