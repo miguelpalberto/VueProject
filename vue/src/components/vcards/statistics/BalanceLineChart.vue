@@ -93,7 +93,7 @@ const loadChartDataT = async () => {
     newChartDataT.labels = response.data.labels
     newChartDataT.datasets[0].data = response.data.data
     chartDataT.value = newChartDataT
-    console.log(response.data.data)
+    //console.log(response.data.data)
 
     //Calcular
     transactions.value = response.data.data

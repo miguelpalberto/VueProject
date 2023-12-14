@@ -32,13 +32,14 @@ const chartOptions = ref(createChartOptions())
 const chartOptionsT = ref(createChartOptions())
 const lastXDays = ref('60')
 const lastXDaysT = ref('60')  //available options: 30days, 60days, year, all //Ref para ser reativa
-const transactions = ref([])
+const numberOfTransactions = ref([])
 const totalTransactions= ref(0)
 const totalDebitTransactions= ref(0)
 const totalCreditTransactions= ref(0)
 const totalDiferenceTransactions= ref(0)
 const totalDebitAmountTransactions= ref(0)
 const totalCreditAmountTransactions= ref(0)
+const totalNumberOfTransactions= ref(0)
 const chartData = ref({
     datasets: [],
 })
@@ -78,13 +79,13 @@ const loadChartData = async () => {
     chartData.value = newChartData
 }
 const loadChartDataT = async () => {
-    transactions.value = []
+    numberOfTransactions.value = []
     const response = await axios.get(`statistics/alltransactions?range=${lastXDaysT.value}`)
     const newChartDataT = {
         labels: [],
         datasets: [
             {
-                label: `Transactions`,//`Transactions of the Last ${ lastXDays.value } days`,
+                label: `Number of Transactions`,//`Transactions of the Last ${ lastXDays.value } days`,
                 backgroundColor: '#B32020',
                 data: [],
             },
@@ -96,27 +97,12 @@ const loadChartDataT = async () => {
     console.log(response.data.data)
 
     //Calcular
-    transactions.value = response.data.data
-    totalTransactions.value = transactions.value.length
-    totalDebitTransactions.value = 0
-    totalCreditTransactions.value = 0
-    totalDebitAmountTransactions.value = 0
-    totalCreditAmountTransactions.value = 0
-    totalDiferenceTransactions.value = 0
+    numberOfTransactions.value = response.data.data
+    totalNumberOfTransactions.value = 0
 
-    for(let i = 0; i < transactions.value.length; i++) {
-        if (transactions.value[i] < 0) {
-            totalDebitTransactions.value += 1
-            totalDebitAmountTransactions.value += parseFloat(transactions.value[i])
-        } else {
-            totalCreditTransactions.value += 1
-            totalCreditAmountTransactions.value += parseFloat(transactions.value[i])
-        }
+    for(let i = 0; i < numberOfTransactions.value.length; i++) {
+        totalNumberOfTransactions.value += parseFloat(numberOfTransactions.value[i])
     }
-    totalDiferenceTransactions.value = (totalCreditAmountTransactions.value + totalDebitAmountTransactions.value).toFixed(2)
-    totalDebitAmountTransactions.value = (totalDebitAmountTransactions.value).toFixed(2)
-    totalCreditAmountTransactions.value = (totalCreditAmountTransactions.value).toFixed(2)
-    
 }
 
 
@@ -133,7 +119,7 @@ onMounted(() => {
     <br>
     <div class="d-flex justify-content-between">
         <div class="mx-2">
-          <h4>Balance Fluctuation</h4>
+          <h4>Global Balance Fluctuation</h4>
         </div>
 
         <div class="mx-2">
@@ -157,7 +143,7 @@ onMounted(() => {
       <div class="d-flex justify-content-between">
         <div class="mx-2">
             <p></p>
-          <h4>Last Transactions</h4>
+          <h4>Number of Transactions per Day</h4>
         </div>
         <div class="mx-2">
         <p>Time frame: last {{ lastXDaysT }} 
@@ -170,10 +156,10 @@ onMounted(() => {
               <!-- Original block -->
               <div class="mx-2 mt-2">
                 <div>
-                  <p>Total Transactions: {{ totalTransactions }}
+                  <p>Total Number Of Transactions: {{ totalNumberOfTransactions }}
                   </p>
-                  <p>Total Debit Transactions: {{ totalDebitTransactions }}</p>
-                  <p>Total Credit Transactions: {{ totalCreditTransactions }}</p>
+                  <!-- <p>Total Number Of Debit Transactions: {{ totalDebitTransactions }}</p>
+                  <p>Total Number Of Credit Transactions: {{ totalCreditTransactions }}</p> -->
                 </div>
               </div>
         
@@ -181,9 +167,9 @@ onMounted(() => {
               <div class="mx-2 mt-2">
                 <div>
                   <!-- <p style="opacity: 0;"> . </p> -->
-                  <p>Total Diference: {{ totalDiferenceTransactions }}</p>
+                  <!-- <p>Total Diference: {{ totalDiferenceTransactions }}</p>
                   <p>Total Debit Amount: {{ totalDebitAmountTransactions }}</p>
-                  <p>Total Credit Amount: {{ totalCreditAmountTransactions }}</p>
+                  <p>Total Credit Amount: {{ totalCreditAmountTransactions }}</p> -->
                 </div>
               </div>
             </div>
