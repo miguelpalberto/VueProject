@@ -82,9 +82,14 @@ class CategoryController extends Controller
     }
 
     public function destroy(Category $category){
-        $category->transactions()->update(['category_id' => null]);	
-        $category->delete();
-
+        
+        if ($category->transactions()->exists()) {
+            return response()->json(['error' => 'Category has associated transactions. Cannot delete.'], 422);
+        }
+        else{	
+            $category->transactions()->update(['category_id' => null]);
+            $category->delete();
+        }
         return response()->noContent();
     }
 }

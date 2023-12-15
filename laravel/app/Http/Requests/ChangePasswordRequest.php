@@ -23,8 +23,8 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|different:old_password|confirmed',
-            'new_password_confirmation' => 'required|string|same:new_password'
+            'new_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|different:old_password|confirmed|max:255',
+            'new_password_confirmation' => 'required|string|same:new_password',
         ];
     }
 
@@ -41,7 +41,9 @@ class ChangePasswordRequest extends FormRequest
             'new_password.confirmed' => 'The new password confirmation does not match the new password',
             'new_password_confirmation.required' => 'The new password confirmation is required',
             'new_password_confirmation.string' => 'The new password confirmation must be a string',
-            'new_password_confirmation.same' => 'The new password confirmation must be equal to the new password'
+            'new_password_confirmation.same' => 'The new password confirmation must be equal to the new password',
+            'new_password.max' => 'The new password must have a maximum of 255 characters'
+
         ];
     }
 }

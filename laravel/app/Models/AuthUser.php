@@ -12,7 +12,7 @@ class AuthUser extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'VIEW_AUTH_USERS';
+    protected $table = 'view_auth_users';
 
     protected $fillable = [
         'user_type',

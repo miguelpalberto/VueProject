@@ -14,11 +14,9 @@ const loadVCards = async (page = 1) => {
     isLoading.value = true
     try {
         await vCardStore.load(page)
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error loading vCards. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
@@ -33,11 +31,9 @@ const deleteVCard = async (vCard) => {
         isLoading.value = true
         await vCardStore.remove(vCard)
         toast.success('VCard deleted')
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error deleting vCard. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
@@ -47,11 +43,9 @@ const blockVCard = async (vCard) => {
         isLoading.value = true
         await vCardStore.block(vCard)
         toast.success('VCard blocked')
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error blocking vCard. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
@@ -61,11 +55,9 @@ const unblockVCard = async (vCard) => {
         isLoading.value = true
         await vCardStore.unblock(vCard)
         toast.success('VCard unblocked')
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error unblocking vCard. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
@@ -75,20 +67,19 @@ const updateMaxDebit = async (vcard, maxDebit) => {
         isLoading.value = true
         await vCardStore.updateMaxDebit(vcard, maxDebit)
         toast.success('Max debit updated')
-    }
-    catch (error) {
+    } catch (error) {
         if (error.response.status == 422) {
             toast.error(error.response.data.errors.max_debit[0])
         } else {
             toast.error('Error updating max debit. Please try again.')
         }
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
 
 onMounted(() => {
+    vCardStore.resetValues()
     loadVCards()
 })
 </script>
@@ -99,21 +90,47 @@ onMounted(() => {
     <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
             <label for="inputSearch" class="form-label">Search</label>
-            <input id="inputSearch" class="form-control" v-debounce:300ms="search" type="text"
-                placeholder="Search by phone number, name or email" aria-label="Search" style="font-size: 14px;"/>
+            <input
+                id="inputSearch"
+                class="form-control"
+                v-debounce:300ms="search"
+                type="text"
+                placeholder="Search by phone number, name or email"
+                aria-label="Search"
+                style="font-size: 14px"
+            />
         </div>
         <div class="col-xs-12 col-md-3">
-
-            <label for="inputSearch" style="font-size: 14px;" class="form-label">Status</label>
-            <select id="inputStatus" style="font-size: 14px;" v-model="vCardStore.selectedStatus" class="form-select"
-                @change="loadVCards()">
-                <option v-for="status in vCardStore.statuses" :key="status.value" :value="status.value">{{ status.text }}
+            <label for="inputSearch" style="font-size: 14px" class="form-label">Status</label>
+            <select
+                id="inputStatus"
+                style="font-size: 14px"
+                v-model="vCardStore.selectedStatus"
+                class="form-select"
+                @change="loadVCards()"
+            >
+                <option
+                    v-for="status in vCardStore.statuses"
+                    :key="status.value"
+                    :value="status.value"
+                >
+                    {{ status.text }}
                 </option>
-
             </select>
         </div>
     </div>
-    <v-card-table :is-parent-loading="isLoading" :v-cards="vCardStore.paginatedVCards.data" @delete="deleteVCard"
-        @block="blockVCard" @unblock="unblockVCard" @update-max-debit="updateMaxDebit" />
-    <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" :limit="1" :keepLength="true" />
+    <v-card-table
+        :is-parent-loading="isLoading"
+        :v-cards="vCardStore.paginatedVCards.data"
+        @delete="deleteVCard"
+        @block="blockVCard"
+        @unblock="unblockVCard"
+        @update-max-debit="updateMaxDebit"
+    />
+    <Bootstrap5Pagination
+        :data="vCardStore.paginatedVCards"
+        @pagination-change-page="loadVCards"
+        :limit="1"
+        :keepLength="true"
+    />
 </template>
