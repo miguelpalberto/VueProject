@@ -246,6 +246,7 @@ class TransactionController extends Controller
 
         $filterByRange = $request->query('range');
         $filterByPaymentType = $request->query('payment_type');
+        $filterByType = $request->query('type');
 
         //get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
@@ -281,6 +282,14 @@ class TransactionController extends Controller
                 $queryable->where('payment_type', '=', 'MB');
             } else if ($filterByPaymentType == 'VISA') {
                 $queryable->where('payment_type', '=', 'VISA');
+            }
+        }
+        if ($filterByType) {
+
+            if ($filterByType == 'D') {
+                $queryable->where('type', '=', 'D');
+            } else if ($filterByType == 'C') {
+                $queryable->where('type', '=', 'C');
             }
         }
         $chartData = new stdClass();

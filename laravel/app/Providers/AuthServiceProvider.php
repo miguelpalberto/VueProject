@@ -26,5 +26,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('transaction-statistics', function (?AuthUser $user) {
             return $user != null && $user->user_type == 'A';
         });
+        Gate::define('vcards-statistics', function (?AuthUser $user) {
+            return $user != null && $user->user_type == 'A';
+        });
     }
 }

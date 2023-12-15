@@ -35,6 +35,7 @@ const chartOptionsT = ref(createChartOptions())
 const lastXDays = ref('60')
 const lastXDaysT = ref('60') 
 const paymentType = ref(null)  //available options: 30days, 60days, year, all //Ref para ser reativa
+const type = ref(null) 
 const numberOfTransactions = ref([])
 const totalTransactions= ref(0)
 const totalDebitTransactions= ref(0)
@@ -53,45 +54,42 @@ const chartDataT = ref({
 
 
 watch(paymentType, (newValue, oldValue) => {
-  // Do something when paymentType changes
-  console.log(`Payment Type changed from ${oldValue} to ${newValue}`);
+  //console.log(`Payment Type changed from ${oldValue} to ${newValue}`);
   loadChartDataT()
 });
 watch(lastXDaysT, (newValue, oldValue) => {
     loadChartDataT()
-  // Do something when lastXDays changes
-  console.log(`Last X Days changed from ${oldValue} to ${newValue}`);
+  //console.log(`Last X Days changed from ${oldValue} to ${newValue}`);
+});
+watch(type, () => {
+    loadChartDataT()
 });
 
-// const periodClick = (period) => {
-//     setChartData(period)
-// }
+ const periodClick = (period) => {
+     setChartData(period)
+ }
 const setPeriodT = (period) => {
     //console.log(period)
     lastXDaysT.value = period
 }
 
-const resetPaymentType = () => {
-    paymentType.value = ''
-    setChartDataT()
-}
 
-// const setChartData = async (period) => {
-//     lastXDays.value = period 
-//     await loadChartData()
+ const setChartData = async (period) => {
+     lastXDays.value = period 
+     await loadChartData()
+ }
+// const setChartDataT = async (period, type) => {
+//     lastXDaysT.value = period 
+//     paymentType.value = type
+//     await loadChartDataT()
 // }
-const setChartDataT = async (period, type) => {
-    lastXDaysT.value = period 
-    paymentType.value = type
-    await loadChartDataT()
-}
 const loadChartData = async () => {
-    const response = await axios.get(`statistics/balance?range=${lastXDays.value}`)
+    const response = await axios.get(`vcards/statistics?range=${lastXDays.value}`)
     const newChartData = {
         labels: [],
         datasets: [
             {
-                label: `Balance Updates`,//`Last ${ lastXDays.value } days balance updates`,
+                label: `Balance`,//`Last ${ lastXDays.value } days balance updates`,
                 backgroundColor: '#11540b',
                 data: [],
             },
@@ -103,7 +101,7 @@ const loadChartData = async () => {
 }
 const loadChartDataT = async () => {
     numberOfTransactions.value = []
-    console.log(lastXDaysT.value + ' ' + paymentType.value)
+    //console.log(lastXDaysT.value + ' ' + paymentType.value)
 
     const params = {}
 
@@ -115,7 +113,9 @@ const loadChartDataT = async () => {
     if (paymentType.value){
         params.payment_type = paymentType.value
     }
-
+    if (type.value){
+        params.type = type.value
+    }
 
     const response = await axios.get(`transactions/statistics`, { params })
     const newChartDataT = {
@@ -146,7 +146,6 @@ const loadChartDataT = async () => {
 onMounted(() => {
     loadChartData()
     loadChartDataT()
-    //calculateTransactions('60')
 })
 
 </script>
@@ -156,7 +155,7 @@ onMounted(() => {
     <br>
     <div class="d-flex justify-content-between">
         <div class="mx-2">
-          <h4>Global Balance Fluctuation</h4>
+          <h4>VCards Global Balance Fluctuation</h4>
         </div>
 
         <div class="mx-2">
@@ -164,8 +163,15 @@ onMounted(() => {
             {{ lastXDays === 'year' ? '' : (lastXDays === 'all' ? ' time' : ' days') }}</p>
         </div>
       </div>
-      <!-- <hr> -->
-            <br>
+      <div class="mx-2 mt-2">
+        <div class="d-flex flex-column flex-md-row">
+          <!-- Original block -->
+          <div class="mx-2 mt-2">
+              <p>Active VCards:</p>
+            </div>
+        </div>
+    <br>
+</div>
     <Line :data="chartData" :options="chartOptions" />
     <br>
     <div class="mx-2">
@@ -188,72 +194,77 @@ onMounted(() => {
         </div>
     </div>
     <div class="mx-2 mt-2">
-        <div>
             <div class="d-flex flex-column flex-md-row">
               <!-- Original block -->
               <div class="mx-2 mt-2">
-                <div>
                   <p>Total Number Of Transactions: {{ totalNumberOfTransactions }}</p>
-                  <!-- <p>Total Number Of Debit Transactions: {{ totalDebitTransactions }}</p>
-                  <p>Total Number Of Credit Transactions: {{ totalCreditTransactions }}</p> -->
                 </div>
-              </div>
-        
-              <!-- Repeated block on the side -->
-              <div class="mx-2 mt-2">
-                <div>
-                  <!-- <p style="opacity: 0;"> . </p> -->
-                  <!-- <p>Total Diference: {{ totalDiferenceTransactions }}</p>
-                  <p>Total Debit Amount: {{ totalDebitAmountTransactions }}</p>
-                  <p>Total Credit Amount: {{ totalCreditAmountTransactions }}</p> -->
-                </div>
-              </div>
             </div>
-          </div>
         <br>
     </div>
     <Line :data="chartDataT" :options="chartOptionsT" />
     <br>
-    <div class="mx-2">
+    <div class="mx-2 d-flex align-items-center" id="typeDropdown">
         <div>
-        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('30')">30</button>
-        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('60')">60</button>
-        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('year')">Year</button>
-        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('all')">All</button>
-    </div>
-
-        <div class="input-group input-group-sm">
-            <select id="inputPaymentType" style="font-size: 14px;"
-              v-model="paymentType" class="form-select">
-              <option v-for="paymentTypeB in transactionStore.paymentTypes" :key="paymentTypeB.value"
-                :value="paymentTypeB.value">
+          <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('30')">30</button>
+          <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('60')">60</button>
+          <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('year')">Year</button>
+          <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('all')">All</button>
+        </div>
+    
+        <div class="d-flex flex-column flex-md-row">
+          <div class="align-items-center">
+            <select id="inputPaymentType" style="font-size: 14px;" v-model="paymentType" class="form-select">
+              <option v-for="paymentTypeB in transactionStore.paymentTypes" :key="paymentTypeB.value" :value="paymentTypeB.value">
                 {{ paymentTypeB.text }}
               </option>
             </select>
-            <button :disabled="!transactionStore.selectedPaymentType || isLoading" class="btn btn-light btn-sm"
-              @click="resetPaymentType()">
-              <i class="bi bi-x"></i>
-            </button>
           </div>
-
-      </div>
-      <!-- <hr> -->
-      <br>
-
     
-</template>
-
-
-<style scoped>
-button {
-    margin: 3px; /* Optional: Add some margin between buttons */
-}
-h4 {
-    color: darkgreen;
-}
-p {
-    font-size: 17px;
-    padding-left: 30px;
-    font-weight: 600;
-}
-</style>
+          <div class="align-items-center">
+            <select id="inputType" style="font-size: 14px;" v-model="type" class="form-select">
+              <option v-for="typeB in transactionStore.types" :key="typeB.value" :value="typeB.value">
+                {{ typeB.text }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </template>
+    
+    <style scoped>
+      button,
+      select,
+      .reset-button {
+        height: 38px;
+        vertical-align: middle;
+        margin-right: 5px;
+      }
+    
+      h4 {
+        color: darkgreen;
+      }
+    
+      p {
+        font-size: 17px;
+        padding-left: 30px;
+        font-weight: 600;
+      }
+    
+      #inputPaymentType {
+        margin-right: 5px;
+        margin-left: 30px;
+      }
+    
+      #inputType {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+    
+      @media (min-width: 768px) {
+        #inputType {
+          margin-left: 70px;
+          margin-right: 5px;
+        }
+      }
+    </style>
