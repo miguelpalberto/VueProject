@@ -137,9 +137,9 @@ onMounted(() => {
         <div class="d-flex flex-column flex-md-row">
           <!-- Original block -->
           <div class="mx-2 mt-2">
-              <p>Active VCards: {{ activeVcards }}</p>
-              <p>VCards Global Balance: {{ globalBalance }}€</p>
-              <p>VCard Average Balance: {{ averageBalance }}€</p>
+              <p>Active VCards: {{ activeVcards }} <small style="font-size: 0.8em; font-weight: 170;"> (not blocked and not deleted)</small></p>
+              <p>VCards Global Balance: {{ globalBalance }}€ <small style="font-size: 0.8em; font-weight: 170;"> (active vcards only)</small></p>
+              <p>VCard Average Balance: {{ averageBalance }}€ <small style="font-size: 0.8em; font-weight: 170;"> (active vcards only)</small></p>
             </div>
         </div>
     <br>

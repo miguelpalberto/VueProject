@@ -408,20 +408,22 @@ class VCardController extends Controller
         if (!Gate::allows('vcards-statistics')) {
             abort(403);
         }
-
-        $activeVcardsCount = VCard::whereNull('deleted_at')->count();
+    
+        $activeVcardsCount = VCard::whereNull('deleted_at')->where('blocked', '=', 0)->count();
     
         return $activeVcardsCount;
     }
+    
 
     public function getGlobalBalanceStatistics(Request $request)
     {
         if (!Gate::allows('vcards-statistics')) {
             abort(403);
         }
-
-        $totalGlobalBalance = VCard::sum('balance');
-
+    
+        $totalGlobalBalance = VCard::where('blocked', '=', 0)->sum('balance'); //deleted vcards always have 0 balance - not needed here
+    
         return $totalGlobalBalance;
     }
+    
 }
