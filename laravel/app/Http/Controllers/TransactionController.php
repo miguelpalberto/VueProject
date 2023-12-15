@@ -7,11 +7,12 @@ use App\Models\VCard;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\TransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
-use App\Http\Resources\TransactionResource;
 use App\Policies\TransactionPolicy;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use App\Http\Requests\TransactionRequest;
+use App\Http\Resources\TransactionResource;
+use App\Http\Requests\UpdateTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -83,7 +84,7 @@ class TransactionController extends Controller
                         'You can only make debit transactions from your own vCard'
                     ]
                 ]
-            ], 422);
+            ], 401);
         }
 
         if ($isDebitTransaction && !Hash::check($validRequest['confirmation_code'], $vcard->confirmation_code)) {
@@ -137,6 +138,16 @@ class TransactionController extends Controller
                         ]
                     ]
                 ], 422);
+            }
+        }
+
+        if ($validRequest['payment_type'] != 'VCARD') {
+            $result = $this->performExternalApiTransactionRequest($validRequest, $isDebitTransaction);
+
+            if (!$result['isSuccessful']) {
+                return response()->json([
+                    'errors' => $result['errors']
+                ], $result['statusCode']);
             }
         }
         
@@ -198,6 +209,65 @@ class TransactionController extends Controller
         });
 
         return $transaction;
+    }
+
+
+    private function performExternalApiTransactionRequest($request, $isDebitTransaction){
+        $endpoint = $isDebitTransaction ? "debit" : "credit";
+        $fullEndpoint = env('EXTERNAL_API_URL') . "/$endpoint";
+        
+        $requestBody = [
+            'type' => $request['payment_type'],
+            'reference' => $request['payment_reference'],
+            'value' => $request['value'],
+        ];
+
+        $responseArray = [
+            'errors' => [],
+            'statusCode' => 500,
+            'isSuccessful' => false,
+        ];
+
+        try{
+            $response = Http::post($fullEndpoint, $requestBody);
+            $responseBody = $response->json();
+
+            if ($response->status() == 422) {
+                $responseArray['errors'] = $this->generateExternalRequestErrors($responseBody['message']);
+                $responseArray['statusCode'] = 422;
+            }
+
+            if ($response->status() == 201) {
+                $responseArray['statusCode'] = 201;
+                $responseArray['isSuccessful'] = true;
+            }
+        }
+        catch(\Exception $e){
+            $responseArray['statusCode'] = 500;
+        }
+
+        return $responseArray;
+    }
+
+    private function generateExternalRequestErrors($message){
+
+        $errors = [];
+        //capitalized message
+        $capitalizedMessage = ucfirst($message);
+
+        if (strpos($message, 'type') !== false) {
+            $errors['payment_type'] = [$capitalizedMessage];
+        }
+
+        if (strpos($message, 'reference') !== false) {
+            $errors['payment_reference'] = [$capitalizedMessage];
+        }
+
+        if (strpos($message, 'value') !== false || strpos($message, 'limit exceeded') !== false) {
+            $errors['value'] = [$capitalizedMessage];
+        }
+
+        return $errors;
     }
 
     public function update(UpdateTransactionRequest $request, Transaction $transaction){
