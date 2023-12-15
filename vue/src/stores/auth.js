@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             await axios.post('/auth/logout')
         } catch (error) {
-            console.log(error)
+            console.debug(error)
         } finally {
             clearUser()
             resetStores()

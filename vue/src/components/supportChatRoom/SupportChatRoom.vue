@@ -6,7 +6,7 @@ import { useSupportChatRoomStore } from '../../stores/supportChatRoom'
 const authStore = useAuthStore();
 const supportChatroomStore = useSupportChatRoomStore();
 const message = ref('')
-const isMinimized = ref(false)
+const isMinimized = ref(true)
 
 const toggleMinimize = () => {
     isMinimized.value = !isMinimized.value
@@ -177,10 +177,11 @@ const sendMessage = () => {
     bottom: 1rem;
     right: 1rem;
     background-color: whitesmoke;
+    opacity: 90%;
 }
 
 .support-chatroom.minimized {
-    height: 45px;
+    height: 43px;
     width: 200px;
 }
 

@@ -54,7 +54,7 @@ const changeConfirmationCode = async () => {
 
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="changeConfirmationCode">
-    <h3 class="mt-5 mb-3">Change Confirmation Code</h3>
+    <h3 class="mb-3">Change Confirmation Code</h3>
     <hr>
     <div class="mb-1">
       <label for="inputPassword" class="form-label">Password<span class="text-danger">*</span>

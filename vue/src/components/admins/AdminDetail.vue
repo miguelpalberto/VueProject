@@ -1,23 +1,23 @@
 <script setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
-    isParentLoading: {
-      type: Boolean,
-      required: true,
-    },
-    admin: {
-      type: Object,
-      required: true
-    },
-    errors: {
-      type: Object,
-      required: true
-    },
-    types: {
+  isParentLoading: {
+    type: Boolean,
+    required: true,
+  },
+  admin: {
+    type: Object,
+    required: true
+  },
+  errors: {
+    type: Object,
+    required: true
+  },
+  types: {
     type: Array,
     required: true
-   },
+  },
 })
 
 
@@ -79,7 +79,7 @@ const cancel = () => {
       <div class="invalid-feedback" v-if="errors && errors.password">
         {{ errors.password[0] }}
       </div>
-    </div> 
+    </div>
 
     <div class="mb-5 d-flex">
       <button :disabled="isParentLoading" type="button" class="btn btn-primary px-5" @click="save">

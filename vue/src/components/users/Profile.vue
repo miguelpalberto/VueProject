@@ -54,7 +54,6 @@ const updateProfileConfirmed = async (isConfirmed) => {
         }
         catch (error) {
             if (error.response.status === 422) {
-                console.log(error)
                 errors.value = error.response.data.errors
             }
 

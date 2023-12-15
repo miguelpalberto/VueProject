@@ -78,7 +78,7 @@ const cancel = () => {
         :msg="`Are you sure you want to dismiss your vCard?\nTHIS ACTION IS IRREVERSIBLE AND WILL PERMANENTLY DELETE ALL ASSOCIATED DATA`"
         @response="dismissConfirmation" />
     <form class="row g-3 needs-validation" novalidate @submit.prevent="changeConfirmationCode">
-        <h3 class="mt-5 mb-3">Dismiss vCard</h3>
+        <h3 class="mb-3">Dismiss vCard</h3>
         <hr>
         <div class="mb-1">
             <label for="inputPassword" class="form-label">Password<span class="text-danger">*</span>
