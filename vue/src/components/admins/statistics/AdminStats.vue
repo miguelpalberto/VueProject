@@ -60,8 +60,6 @@ const setPeriodT = (period) => {
     lastXDaysT.value = period
 }
 
-    //const response = await axios.get(`vcards/statistics/globalbalance`)
-
 const loadChartDataT = async () => {
     numberOfTransactions.value = []
     //console.log(lastXDaysT.value + ' ' + paymentType.value)

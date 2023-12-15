@@ -299,7 +299,7 @@ onMounted(() => {
 
 <style scoped>
 button {
-    margin: 3px; /* Optional: Add some margin between buttons */
+    margin: 3px;
 }
 h4 {
     color: darkgreen;
