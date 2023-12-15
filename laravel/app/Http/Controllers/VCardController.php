@@ -289,7 +289,7 @@ class VCardController extends Controller
 
         $filterByRange = $request->query('range');
 
-        //get just balances and datetimes 
+        //get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
 
         $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
@@ -326,7 +326,7 @@ class VCardController extends Controller
 
         $filterByRange = $request->query('range');
 
-        //get just balances and datetimes 
+        //get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
 
         $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
@@ -352,7 +352,7 @@ class VCardController extends Controller
             $chartData->labels[] = $transaction->datetime;
             // Check if transaction type is 'D' (debit) and apply the '-' prefix
             $value = ($transaction->type === 'D') ? ($transaction->value * -1) : $transaction->value;
-            
+
             $chartData->data[] = $value;
         }
 
