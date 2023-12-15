@@ -1,14 +1,14 @@
 <script setup>
 import axios from 'axios'
-import { ref, computed, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import DefaultCatDetail from './DefaultCatDetail.vue'
-
-
+import { useDefaultCatStore } from '../../stores/defaultCategory'
 
 const router = useRouter()
 const toast = useToast()
+const defaultCatStore = useDefaultCatStore()
 
 const newCategory = () => {
     return {
@@ -22,7 +22,7 @@ const isLoading = ref(false)
 const category = ref(newCategory())
 const errors = ref({})
 
-const save = () => {
+const save = async () => {
     isLoading.value = true
 
     if (!validateInsert()) {
@@ -30,21 +30,22 @@ const save = () => {
         return
     }
 
-    axios.post('defaultCategories', category.value)
-        .then(() => {
-            toast.success('Default Category created')
-            router.push({ name: 'defaultCategories' })
-        })
-        .catch((error) => {
-            if (error.response.status === 422) {
-                errors.value = error.response.data.errors
-            }
-            //isLoading.value = false
-            toast.error('Error creating Default Category')
-        })
-        .finally(() => {
-            isLoading.value = false //leave it here (even if doubled)
-        })
+    try {
+        await defaultCatStore.insertCategory(category.value)
+            .then(() => {
+                toast.success('Default Category created')
+                router.push({ name: 'defaultCategories' })
+            })
+    }
+    catch (error) {
+        if (error.response.status === 422) {
+            errors.value = error.response.data.errors
+        }
+        toast.error('Error creating Default Category')
+    }
+    finally {
+        isLoading.value = false
+    }
 }
 
 const validateInsert = () => {
