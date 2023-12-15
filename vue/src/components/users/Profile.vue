@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 import { useAuthStore } from '../../stores/auth';
 import { useToast } from "vue-toastification";
 import AvatarPreviewer from '../users/AvatarPreviewer.vue';
 
 const authStore = useAuthStore();
 const toast = useToast()
+const socket = inject('socket')
 
 const isLoading = ref(false)
 const errors = ref(null)
@@ -72,21 +73,21 @@ const updateProfileConfirmed = async (isConfirmed) => {
         @response="updateProfileConfirmed" />
     <AvatarPreviewer v-if="!authStore.isAdmin" :is-parent-loading="isLoading || isEditing" :imgUrl="authStore.userPhotoUrl"
         :allow-upload-in-component="true" :allowDelete="true" />
-    <div class="mb-1">
+    <div class="mb-1" v-if="!authStore.isAdmin">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" :disabled="true" :value="username">
-    </div>
-    <div class="mb-1">
-        <label for="username" class="form-label">Name</label>
-        <input type="text" class="form-control" id="inputName" :disabled="!isEditing || isLoading" v-model="formData.name"
-            autocomplete="name">
-        <field-error-message :errors="errors" fieldName="name"></field-error-message>
     </div>
     <div class="mb-1">
         <label for="username" class="form-label">Email</label>
         <input type="text" class="form-control" id="inputEmail" :disabled="!isEditing || isLoading" v-model="formData.email"
             autocomplete="email">
         <field-error-message :errors="errors" fieldName="email"></field-error-message>
+    </div>
+    <div class="mb-1">
+        <label for="username" class="form-label">Name</label>
+        <input type="text" class="form-control" id="inputName" :disabled="!isEditing || isLoading" v-model="formData.name"
+            autocomplete="name">
+        <field-error-message :errors="errors" fieldName="name"></field-error-message>
     </div>
     <div class="mt-4 d-flex justify-content-center gap-5">
         <button class="btn btn-dark" v-if="isEditing" :disabled="isLoading" @click="cancelEditing">Cancel</button>

@@ -116,11 +116,21 @@ export const useVCardStore = defineStore('vcard', () => {
         }
     })
 
+
     socket.on('vcardMaxDebitChanged', (vCard) => {
         const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.phone_number)
-        toast.info('vCard ' + vCard.phone_number + ' max debit has been changed.')
         if (idx >= 0) {
+            toast.info('vCard ' + vCard.phone_number + ' max debit has been changed.')
             paginatedVCards.value.data[idx].max_debit = vCard.max_debit
+        }
+    })
+
+    socket.on('vcardProfileUpdated', (vCard) => {
+        const idx = paginatedVCards.value.data.findIndex((t) => t.phone_number === vCard.username)
+        if (idx >= 0) {
+            toast.info('vCard ' + vCard.username + ' profile has been changed.')
+            paginatedVCards.value.data[idx].name = vCard.name
+            paginatedVCards.value.data[idx].email = vCard.email
         }
     })
 
