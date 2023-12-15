@@ -18,11 +18,9 @@ const loadUsers = async (page = 1) => {
     isLoading.value = true
     try {
         await adminStore.load(page)
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error loading admins. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
@@ -32,16 +30,15 @@ const deleteUser = (user) => {
         isLoading.value = true
         adminStore.remove(user)
         toast.success('Admin deleted')
-    }
-    catch (error) {
+    } catch (error) {
         toast.error('Error deleting admin. Please try again.')
-    }
-    finally {
+    } finally {
         isLoading.value = false
     }
 }
 
 onMounted(async () => {
+    adminStore.resetValues()
     await loadUsers()
 })
 </script>
@@ -54,17 +51,29 @@ onMounted(async () => {
         <span>New Administrator Account</span>
     </router-link>
 
-    <hr>
+    <hr />
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-md-12 mx-auto">
                 <div class="mb-1">
-                    <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search"
-                        aria-label="Search" />
+                    <input
+                        class="form-control"
+                        v-debounce:300ms="search"
+                        type="text"
+                        placeholder="Search"
+                        aria-label="Search"
+                    />
                 </div>
-                <admin-table :users="adminStore.paginatedAdmins.data" @delete="deleteUser"></admin-table>
-                <Bootstrap5Pagination :data="adminStore.paginatedAdmins" @pagination-change-page="loadUsers" :limit="1"
-                    :keepLength="true" />
+                <admin-table
+                    :users="adminStore.paginatedAdmins.data"
+                    @delete="deleteUser"
+                ></admin-table>
+                <Bootstrap5Pagination
+                    :data="adminStore.paginatedAdmins"
+                    @pagination-change-page="loadUsers"
+                    :limit="1"
+                    :keepLength="true"
+                />
             </div>
         </div>
     </div>
