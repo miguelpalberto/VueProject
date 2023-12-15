@@ -29,14 +29,19 @@ const search = (value) => {
   loadCategories(1)
 }
 
-const deleteCategory = (category) => {
+const deleteCategory = async (category) => {
   try {
     isLoading.value = true
-    categoryStore.remove(authStore.user.username, category)
-    toast.success('Category deleted')
+    await categoryStore.remove(authStore.user.username, category).then(() => {
+      toast.success('Category deleted')
+    })
   }
   catch (error) {
-    toast.error('Error deleting category. Please try again.')
+    if (error.response.status == 422) {
+            toast.error(error.response.data.error)
+        } else {
+            toast.error('Error deleting category. Please try again.')
+        }
   }
   finally {
     isLoading.value = false

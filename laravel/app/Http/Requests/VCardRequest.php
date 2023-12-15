@@ -36,7 +36,7 @@ class VCardRequest extends FormRequest
                 'email',
                 'max:255'
             ],
-            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|max:255',
             'confirmation_code' => 'required|string|size:4', //mudar para o enunciado
             'custom_options' => 'sometimes|json',
             'custom_data' => 'sometimes|json',
@@ -62,6 +62,7 @@ class VCardRequest extends FormRequest
             'password.string' => 'Password must be a string',
             'password.min' => 'Password must have at least 8 characters',
             'password.regex' => 'Password must have at least one lowercase letter, one uppercase letter and one number',
+            'password.max' => 'Password must have a maximum of 255 characters',
             'confirmation_code.required' => 'Confirmation code is required',
             'confirmation_code.string' => 'Confirmation code must be a string',
             'confirmation_code.size' => 'Confirmation code must have exactly 4 characters',
