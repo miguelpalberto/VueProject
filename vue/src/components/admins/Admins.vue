@@ -47,23 +47,25 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h3 class="mt-5 mb-3">Administrators</h3>
+    <h3 class="mb-3">Administrators</h3>
     <hr />
     <router-link class="btn btn-success btn-sm" to="/users/create">
-        <i class="bi bi-send-plus"></i> 
+        <i class="bi bi-send-plus"></i>
         <span>New Administrator Account</span>
-      </router-link>
-      
-      <hr>
-      <div class="container">
+    </router-link>
+
+    <hr>
+    <div class="container">
         <div class="row">
-          <div class="col-xs-12 col-md-12 mx-auto">
-    <div class="mb-1">
-        <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search" aria-label="Search" />
+            <div class="col-xs-12 col-md-12 mx-auto">
+                <div class="mb-1">
+                    <input class="form-control" v-debounce:300ms="search" type="text" placeholder="Search"
+                        aria-label="Search" />
+                </div>
+                <admin-table :users="adminStore.paginatedAdmins.data" @delete="deleteUser"></admin-table>
+                <Bootstrap5Pagination :data="adminStore.paginatedAdmins" @pagination-change-page="loadUsers" :limit="1"
+                    :keepLength="true" />
+            </div>
+        </div>
     </div>
-    <admin-table :users="adminStore.paginatedAdmins.data" @delete="deleteUser"></admin-table>
-    <Bootstrap5Pagination :data="adminStore.paginatedAdmins" @pagination-change-page="loadUsers" />
-</div>
-</div>
-</div>
 </template>

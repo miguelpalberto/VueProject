@@ -2,8 +2,10 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "vue-toastification/dist/index.css";
+import './assets/main.css'
 import { vue3Debounce } from 'vue-debounce'
 import "bootstrap"
+import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -26,7 +28,7 @@ const wsConnection = import.meta.env.VITE_WS_CONNECTION
 axios.defaults.baseURL = apiDomain + '/api'
 axios.defaults.headers.common['Content-type'] = 'application/json'
 
-const axiousExternal = axios.create({
+const axiosExternal = axios.create({
     baseURL: externalApiDomain + '/api',
     headers: {
         'Content-type': 'application/json'
@@ -51,13 +53,15 @@ app.use(Toast, {
     rtl: false,
 });
 
+
 app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
-app.provide('axiosExternal', axiousExternal)
+app.provide('axiosExternal', axiosExternal)
 app.provide('socket',io(wsConnection))
 
 app.component('FieldErrorMessage', FieldErrorMessage)
 app.component('ConfirmationDialog', ConfirmationDialog)
+app.component('Bootstrap5Pagination', Bootstrap5Pagination)
 
 app.directive('debounce', vue3Debounce({lock: true}))
 

@@ -39,5 +39,20 @@ export const useCategoryStore = defineStore('category', () => {
         await axios.put(`categories/${category.id}`, category)
     }
 
-    return { types, paginatedCategories, updateCategory, loadCategories, getCategories, selectedType, searchValue };
+    const remove = async (vcard, category) => {
+        await axios.delete('categories/' + category.id)
+            .then(async () => {
+                await loadCategories(vcard, computeQueryPage())
+            })
+    }
+
+    const computeQueryPage = () => {
+        if (paginatedCategories.value.current_page == 1) {
+            return 1;
+        }
+
+        return paginatedCategories.value.data.length == 1 ? paginatedCategories.value.current_page - 1 : paginatedCategories.value.current_page
+    }
+
+    return { types, paginatedCategories, updateCategory, loadCategories, remove, getCategories, selectedType, searchValue };
 })
