@@ -72,18 +72,17 @@ class VCardPolicy
     {
         return $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $vCard->phone_number;
     }
-    
+
     public function getVCardBalanceStatistics(AuthUser $authUser, VCard $vCard): bool
     {
         return $authUser->blocked == false &&  $authUser->username == $vCard->phone_number;
     }
+
     public function getVCardTransactionsStatistics(AuthUser $authUser, VCard $vCard): bool
     {
         return $authUser->blocked == false &&  $authUser->username == $vCard->phone_number;
     }
-    public function getAllTransactionsStatistics(AuthUser $authUser): bool
-    {
-        return $authUser->user_type == 'A';
-    }
+
+
 
 }

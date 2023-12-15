@@ -24,12 +24,9 @@ class TransactionPolicy
         return  $authUser->blocked == false && $authUser->userType != 'A' &&  $authUser->username == $transaction->vcard;
     }
 
-    // public function getVCardTransactions(AuthUser $authUser, VCard $vCard): bool
+    // public function getAllTransactionStatistics(AuthUser $authUser): bool
     // {
-    //     return $authUser->blocked == false && $authUser->userType != 'A' && $authUser->username == $vCard->phone_number;
-    // }
-    // public function getAllTransactionsStatistics(AuthUser $authUser): bool
-    // {
+    //     //return true;
     //     return $authUser->user_type == 'A';
     // }
 }

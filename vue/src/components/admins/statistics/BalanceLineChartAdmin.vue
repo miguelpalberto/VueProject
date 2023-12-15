@@ -1,9 +1,11 @@
 <script setup>
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import { useAuthStore } from '../../../stores/auth';
+import { useTransactionStore } from '../../../stores/transaction';
+
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
 
@@ -31,7 +33,8 @@ const createChartOptions = () => {
 const chartOptions = ref(createChartOptions())
 const chartOptionsT = ref(createChartOptions())
 const lastXDays = ref('60')
-const lastXDaysT = ref('60')  //available options: 30days, 60days, year, all //Ref para ser reativa
+const lastXDaysT = ref('60') 
+const paymentType = ref(null)  //available options: 30days, 60days, year, all //Ref para ser reativa
 const numberOfTransactions = ref([])
 const totalTransactions= ref(0)
 const totalDebitTransactions= ref(0)
@@ -40,6 +43,7 @@ const totalDiferenceTransactions= ref(0)
 const totalDebitAmountTransactions= ref(0)
 const totalCreditAmountTransactions= ref(0)
 const totalNumberOfTransactions= ref(0)
+const transactionStore = useTransactionStore()
 const chartData = ref({
     datasets: [],
 })
@@ -47,19 +51,38 @@ const chartDataT = ref({
     datasets: [],
 })
 
-const periodClick = (period) => {
-    setChartData(period)
-}
-const periodClickT = (period) => {
-    setChartDataT(period)
+
+watch(paymentType, (newValue, oldValue) => {
+  // Do something when paymentType changes
+  console.log(`Payment Type changed from ${oldValue} to ${newValue}`);
+  loadChartDataT()
+});
+watch(lastXDaysT, (newValue, oldValue) => {
+    loadChartDataT()
+  // Do something when lastXDays changes
+  console.log(`Last X Days changed from ${oldValue} to ${newValue}`);
+});
+
+// const periodClick = (period) => {
+//     setChartData(period)
+// }
+const setPeriodT = (period) => {
+    //console.log(period)
+    lastXDaysT.value = period
 }
 
-const setChartData = async (period) => {
-    lastXDays.value = period 
-    await loadChartData()
+const resetPaymentType = () => {
+    paymentType.value = ''
+    setChartDataT()
 }
-const setChartDataT = async (period) => {
+
+// const setChartData = async (period) => {
+//     lastXDays.value = period 
+//     await loadChartData()
+// }
+const setChartDataT = async (period, type) => {
     lastXDaysT.value = period 
+    paymentType.value = type
     await loadChartDataT()
 }
 const loadChartData = async () => {
@@ -80,7 +103,21 @@ const loadChartData = async () => {
 }
 const loadChartDataT = async () => {
     numberOfTransactions.value = []
-    const response = await axios.get(`statistics/alltransactions?range=${lastXDaysT.value}`)
+    console.log(lastXDaysT.value + ' ' + paymentType.value)
+
+    const params = {}
+
+    if (lastXDaysT.value)
+    {
+        params.range = lastXDaysT.value
+    }
+
+    if (paymentType.value){
+        params.payment_type = paymentType.value
+    }
+
+
+    const response = await axios.get(`transactions/statistics`, { params })
     const newChartDataT = {
         labels: [],
         datasets: [
@@ -156,8 +193,7 @@ onMounted(() => {
               <!-- Original block -->
               <div class="mx-2 mt-2">
                 <div>
-                  <p>Total Number Of Transactions: {{ totalNumberOfTransactions }}
-                  </p>
+                  <p>Total Number Of Transactions: {{ totalNumberOfTransactions }}</p>
                   <!-- <p>Total Number Of Debit Transactions: {{ totalDebitTransactions }}</p>
                   <p>Total Number Of Credit Transactions: {{ totalCreditTransactions }}</p> -->
                 </div>
@@ -179,10 +215,27 @@ onMounted(() => {
     <Line :data="chartDataT" :options="chartOptionsT" />
     <br>
     <div class="mx-2">
-        <button class="btn btn-xs btn-outline-dark" @click="periodClickT('30')">30</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClickT('60')">60</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClickT('year')">Year</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClickT('all')">All</button>
+        <div>
+        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('30')">30</button>
+        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('60')">60</button>
+        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('year')">Year</button>
+        <button class="btn btn-xs btn-outline-dark" @click="setPeriodT('all')">All</button>
+    </div>
+
+        <div class="input-group input-group-sm">
+            <select id="inputPaymentType" style="font-size: 14px;"
+              v-model="paymentType" class="form-select">
+              <option v-for="paymentTypeB in transactionStore.paymentTypes" :key="paymentTypeB.value"
+                :value="paymentTypeB.value">
+                {{ paymentTypeB.text }}
+              </option>
+            </select>
+            <button :disabled="!transactionStore.selectedPaymentType || isLoading" class="btn btn-light btn-sm"
+              @click="resetPaymentType()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+
       </div>
       <!-- <hr> -->
       <br>
