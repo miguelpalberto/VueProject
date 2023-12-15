@@ -57,6 +57,16 @@ io.on('connection', (socket) => {
         socket.to("administrators").emit('vcardMaxDebitChanged', vCard)
     })
 
+    socket.on('vcardProfileUpdated', (vCard) => {
+        console.log(`vcard profile #${vCard.username} has been updated`)
+        socket.to("administrators").emit('vcardProfileUpdated', vCard)
+    })
+
+    socket.on('adminProfileUpdated', (user) => {
+        console.log(`admin profile #${user.username} has been updated`)
+        socket.to("administrators").emit('adminProfileUpdated', user)
+    })
+
     socket.on('newTransaction', (transaction) => {
         //transação normal de vcard para vcard
         if (transaction.type == "D" && transaction.payment_type == "VCARD") {
