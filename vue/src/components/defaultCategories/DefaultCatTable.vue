@@ -191,7 +191,7 @@ const categoryToDeleteDescriptionNoId = computed(() =>
 
 .table-wrapper {
     flex: 1;
-    margin: 0 10px; /* Adjust the margin as needed */
+    margin: 0 10px;
 }
 
 .bi {
