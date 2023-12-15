@@ -22,18 +22,10 @@ import ConfirmationDialog from './components/global/ConfirmationDialog.vue'
 const app = createApp(App)
 
 const apiDomain = import.meta.env.VITE_API_DOMAIN
-const externalApiDomain = import.meta.env.VITE_EXTERNAL_API_DOMAIN
 const wsConnection = import.meta.env.VITE_WS_CONNECTION
 
 axios.defaults.baseURL = apiDomain + '/api'
 axios.defaults.headers.common['Content-type'] = 'application/json'
-
-const axiosExternal = axios.create({
-    baseURL: externalApiDomain + '/api',
-    headers: {
-        'Content-type': 'application/json'
-    }
-})
 
 app.use(createPinia())
 app.use(router)
@@ -56,7 +48,6 @@ app.use(Toast, {
 
 app.provide('serverUrl',`${apiDomain}`)
 app.provide('apiUrl',`${apiDomain}/api`)
-app.provide('axiosExternal', axiosExternal)
 app.provide('socket',io(wsConnection))
 
 app.component('FieldErrorMessage', FieldErrorMessage)

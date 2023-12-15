@@ -45,8 +45,6 @@ const selectedTypeCategories = computed(() => {
     name: "-- No Category --"
   }]
 
-
-
   if (selectedTransaction.value.type === "Debit") {
     collection.push(...props.categories.filter(category => category.type === "D"))
   }
@@ -84,7 +82,7 @@ const updateTransaction = () => {
 }
 
 const updateTransactionConfirmed = (isConfirmed) => {
-  if (isConfirmed){
+  if (isConfirmed) {
     emit('update', {
       id: selectedTransaction.value.id,
       category_id: categoryOfSelectedTransaction.value,
@@ -133,8 +131,7 @@ const updateTransactionConfirmed = (isConfirmed) => {
             <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
               <select id="inputUpdateType" :disabled="isParentLoading" style="font-size: 14px;"
                 v-model="categoryOfSelectedTransaction" class="form-select form-select-sm">
-                <option v-for="category in selectedTypeCategories" :key="category.id"
-                  :value="category.id">
+                <option v-for="category in selectedTypeCategories" :key="category.id" :value="category.id">
                   {{ category.name }}
                 </option>
               </select>
@@ -146,14 +143,14 @@ const updateTransactionConfirmed = (isConfirmed) => {
             </span>
             <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
               <textarea class="form-control" id="inputUpdateDescription" rows="1" :disabled="isParentLoading" type="text"
-                v-model="descriptionOfSelectedTransaction" maxlength="50" style="resize:none;" ></textarea>
+                v-model="descriptionOfSelectedTransaction" maxlength="50" style="resize:none;"></textarea>
             </div>
           </td>
           <td>
 
             <div class="d-flex justify-content-end gap-1">
-              <button v-if="(isEditing && isTransactionSelected(transaction))" type="button" class="btn btn-sm btn-success"
-                @click="updateTransaction(transaction)" :disabled="isParentLoading">
+              <button v-if="(isEditing && isTransactionSelected(transaction))" type="button"
+                class="btn btn-sm btn-success" @click="updateTransaction(transaction)" :disabled="isParentLoading">
                 <i class="bi bi-box-arrow-down"></i>
               </button>
               <button class="btn btn-sm btn-light" @click="toggleEditingTransaction(transaction)"

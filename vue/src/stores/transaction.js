@@ -62,6 +62,10 @@ export const useTransactionStore = defineStore('transaction', () => {
         paginatedTransactions.value = response.data;
     }
 
+    const create = async (transaction) => {
+        await axios.post('/transactions', transaction)
+    }
+
     const update = async (request) => {
         await axios.put(`/transactions/${request.id}`, {
             description: request.description,
@@ -85,6 +89,6 @@ export const useTransactionStore = defineStore('transaction', () => {
     return {
         searchValue, selectedDate, selectedPaymentType, selectedType,
         selectedCategory, paymentTypes, types, paginatedTransactions,
-        load, update
+        load, update, create
     };
 })
