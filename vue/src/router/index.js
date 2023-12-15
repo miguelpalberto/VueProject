@@ -74,18 +74,11 @@ const router = createRouter({
             name: 'createTransaction',
             component: Transaction
         },
-
         {
             path: '/vcards/:vcard/transactions/create',
             name: 'createvCardTransaction',
             component: Transaction,
             props: (route) => ({ vcard: route.params.vcard })
-        },
-        {
-            path: '/transactions/:id/edit',
-            name: 'editTransaction',
-            component: Transaction,
-            props: (route) => ({ id: parseInt(route.params.id) })
         },
         { 
             path: '/users',
@@ -113,12 +106,6 @@ const router = createRouter({
             component: Category
         },
         {
-            path: '/categories/:id',//path: '/categories/:id/edit',
-            name: 'editCategory',
-            component: Category,
-            props: (route) => ({ id: parseInt(route.params.id) })
-        },
-        {
             path: '/defaultCategories',
             name: 'defaultCategories',
             component: DefaultCategories
@@ -129,12 +116,6 @@ const router = createRouter({
             component: DefaultCategory
         },
         {
-            path: '/defaultCategories/:id',
-            name: 'editDefaultCategory',
-            component: DefaultCategory,
-            props: (route) => ({ id: parseInt(route.params.id) })
-        },
-        {
             path: '/vcards',
             name: 'vcards',
             component: VCards
@@ -143,8 +124,8 @@ const router = createRouter({
 })
 
 const publicRouteNames = ['login', 'register', 'home', 'easteregg']
-const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'editTransaction', 'dismissVcard']
-const adminOnlyRouteNames = ['createvCardTransaction', 'admins', 'vcards']
+const vcardOnlyRouteNames = ['changeConfirmationCode', 'transactions', 'createTransaction', 'categories', 'dismissVcard']
+const adminOnlyRouteNames = ['createvCardTransaction', 'admins', 'vcards', 'createAdmin', 'defaultCategories', 'createDefaultCategory']
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()

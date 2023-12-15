@@ -145,18 +145,18 @@ const updateTransactionConfirmed = (isConfirmed) => {
               {{ transaction.description }}
             </span>
             <div v-else class="d-flex justify-content-center gap-1" style="min-width: 150px;">
-              <textarea class="form-control" id="inputUpdateDescription" rows="2" :disabled="isParentLoading" type="text"
+              <textarea class="form-control" id="inputUpdateDescription" rows="1" :disabled="isParentLoading" type="text"
                 v-model="descriptionOfSelectedTransaction" maxlength="50" style="resize:none;" ></textarea>
             </div>
           </td>
           <td>
 
             <div class="d-flex justify-content-end gap-1">
-              <button v-if="(isEditing && isTransactionSelected(transaction))" type="button" class="btn btn-success"
+              <button v-if="(isEditing && isTransactionSelected(transaction))" type="button" class="btn btn-sm btn-success"
                 @click="updateTransaction(transaction)" :disabled="isParentLoading">
                 <i class="bi bi-box-arrow-down"></i>
               </button>
-              <button class="btn btn-light" @click="toggleEditingTransaction(transaction)"
+              <button class="btn btn-sm btn-light" @click="toggleEditingTransaction(transaction)"
                 :disabled="isParentLoading || (isEditing && !isTransactionSelected(transaction))">
                 <i class="bi" :class="{
                   'bi-x-circle': ((isEditing && isTransactionSelected(transaction))),

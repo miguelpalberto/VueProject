@@ -215,9 +215,11 @@ const clickMenuOption = () => {
             </div>
           </div>
         </div>
-        <div class="container-fluid py-2">
+        <div class="container-fluid py-2 mt-3">
           <router-view />
         </div>
+        <br>
+        <br>
         <support-chat-room v-if="authStore.isAuthenticated" />
       </main>
     </div>

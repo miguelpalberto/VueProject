@@ -52,7 +52,7 @@ const changePassword = async () => {
 
 <template>
   <form class="row g-3 needs-validation" novalidate @submit.prevent="changePassword">
-    <h3 class="mt-5 mb-3">Change Password</h3>
+    <h3 class="mb-3">Change Password</h3>
     <hr>
     <div class="mb-1">
       <label for="inputCurrentPassword" class="form-label">Current Password<span class="text-danger">*</span>

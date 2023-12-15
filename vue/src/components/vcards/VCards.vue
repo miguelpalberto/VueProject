@@ -94,7 +94,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <h3 class="mt-5 mb-3">VCards</h3>
+    <h3 class="mb-3">VCards</h3>
     <hr />
     <div class="mb-1 row">
         <div class="col-xs-12 col-md-9">
@@ -115,5 +115,5 @@ onMounted(() => {
     </div>
     <v-card-table :is-parent-loading="isLoading" :v-cards="vCardStore.paginatedVCards.data" @delete="deleteVCard"
         @block="blockVCard" @unblock="unblockVCard" @update-max-debit="updateMaxDebit" />
-    <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" />
+    <Bootstrap5Pagination :data="vCardStore.paginatedVCards" @pagination-change-page="loadVCards" :limit="1" :keepLength="true" />
 </template>
