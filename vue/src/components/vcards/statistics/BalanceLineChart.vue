@@ -93,7 +93,7 @@ const loadChartDataT = async () => {
     newChartDataT.labels = response.data.labels
     newChartDataT.datasets[0].data = response.data.data
     chartDataT.value = newChartDataT
-    console.log(response.data.data)
+    //console.log(response.data.data)
 
     //Calcular
     transactions.value = response.data.data
@@ -170,8 +170,7 @@ onMounted(() => {
               <!-- Original block -->
               <div class="mx-2 mt-2">
                 <div>
-                  <p>Total Transactions: {{ totalTransactions }}
-                  </p>
+                  <p>Total Transactions: {{ totalTransactions }}</p>
                   <p>Total Debit Transactions: {{ totalDebitTransactions }}</p>
                   <p>Total Credit Transactions: {{ totalCreditTransactions }}</p>
                 </div>

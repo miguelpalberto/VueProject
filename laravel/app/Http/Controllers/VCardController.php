@@ -9,6 +9,7 @@ use App\Models\DefaultCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\VCardRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\VCardResource;
 use Illuminate\Support\Facades\Route;
@@ -289,7 +290,7 @@ class VCardController extends Controller
 
         $filterByRange = $request->query('range');
 
-        //get just balances and datetimes 
+        //get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
 
         $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
@@ -326,7 +327,7 @@ class VCardController extends Controller
 
         $filterByRange = $request->query('range');
 
-        //get just balances and datetimes 
+        //get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
 
         $queryable = $vcard->transactions()->orderBy('datetime', 'asc');
@@ -352,10 +353,33 @@ class VCardController extends Controller
             $chartData->labels[] = $transaction->datetime;
             // Check if transaction type is 'D' (debit) and apply the '-' prefix
             $value = ($transaction->type === 'D') ? ($transaction->value * -1) : $transaction->value;
-            
+
             $chartData->data[] = $value;
         }
 
         return $chartData;
     }
+
+
+    public function getActiveVcardsStatistics(Request $request)
+    {
+        if (!Gate::allows('vcards-statistics')) {
+            abort(403);
+        }
+
+        $activeVcardsCount = VCard::whereNull('deleted_at')->count();
+    
+        return $activeVcardsCount;
+    }
+
+public function getGlobalBalanceStatistics(Request $request)
+{
+    if (!Gate::allows('vcards-statistics')) {
+        abort(403);
+    }
+
+    $totalGlobalBalance = VCard::sum('balance');
+
+    return $totalGlobalBalance;
+}
 }
