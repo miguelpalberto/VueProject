@@ -9,7 +9,7 @@ const isLoading = ref(false)
 const toast = useToast()
 const defaultCatStore = useDefaultCatStore()
 
-const loadCategories = async (page = 1) => {
+const loadDefaultCategories = async (page = 1) => {
   isLoading.value = true
   try {
     await defaultCatStore.loadCategories(page)
@@ -25,7 +25,7 @@ const loadCategories = async (page = 1) => {
 
 const search = (value) => {
   defaultCatStore.searchValue = value
-  loadCategories(1)
+  loadDefaultCategories(1)
 }
 
 const deleteCategory = (category) => {
@@ -43,7 +43,7 @@ const deleteCategory = (category) => {
 }
 
 onMounted(() => {
-  loadCategories()
+  loadDefaultCategories()
 })
 
 </script>
@@ -76,7 +76,7 @@ onMounted(() => {
           <div class="col-xs-12 col-md-3">
             <label for="inputSearch" class="form-label">Type</label>
             <select id="inputType" style="font-size: 14px;" v-model="defaultCatStore.selectedType" class="form-select"
-              @change="loadCategories()">
+              @change="loadDefaultCategories()">
               <option v-for="iterationType in defaultCatStore.types" :key="iterationType.value"
                 :value="iterationType.value">{{ iterationType.text }}</option>
             </select>
@@ -87,7 +87,7 @@ onMounted(() => {
                             modalId="defaultCategoryTableModal"
                             :categories="defaultCatStore.paginatedCategories.data"
                             @delete-category="deleteCategory" />
-        <Bootstrap5Pagination :data="defaultCatStore.paginatedCategories" @pagination-change-page="loadCategories" />
+        <Bootstrap5Pagination :data="defaultCatStore.paginatedCategories" @pagination-change-page="loadDefaultCategories" />
       </div>
     </div>
   </div>
