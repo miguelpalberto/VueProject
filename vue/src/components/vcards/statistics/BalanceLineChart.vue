@@ -32,6 +32,7 @@ const chartOptions = ref(createChartOptions())
 const chartOptionsT = ref(createChartOptions())
 const lastXDays = ref('60')
 const lastXDaysT = ref('60')  //available options: 30days, 60days, year, all //Ref para ser reativa
+const lastXDaysPie = ref('60') 
 const transactions = ref([])
 const totalTransactions= ref(0)
 const totalDebitTransactions= ref(0)
@@ -45,17 +46,21 @@ const chartData = ref({
 const chartDataT = ref({
     datasets: [],
 })
-const pieChartData = ref({
+const pieChartDataD = ref({
     datasets: [],
 })
-
+const pieChartDataC = ref({
+    datasets: [],
+})
 const periodClick = (period) => {
     setChartData(period)
 }
 const periodClickT = (period) => {
     setChartDataT(period)
 }
-
+const periodClickPie = (period) => {
+    setPieChartData(period)
+}
 const setChartData = async (period) => {
     lastXDays.value = period 
     await loadChartData()
@@ -63,6 +68,11 @@ const setChartData = async (period) => {
 const setChartDataT = async (period) => {
     lastXDaysT.value = period 
     await loadChartDataT()
+}
+const setPieChartData = async (period) => {
+    lastXDaysPie.value = period 
+    await loadPieChartDataD()
+    await loadPieChartDataC()
 }
 const loadChartData = async () => {
     const response = await axios.get(`vcards/${authStore.user.username}/statistics/balance?range=${lastXDays.value}`)
@@ -123,8 +133,8 @@ const loadChartDataT = async () => {
     
 }
 
-const loadPieChartData = async () => {
-    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactionscategories?range=${lastXDaysT.value}`)
+const loadPieChartDataD = async () => {
+    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactionscategories?range=${lastXDaysPie.value}&type=D`)
     const newPieChartData = {
         labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],//categories
         datasets: [
@@ -140,7 +150,27 @@ const loadPieChartData = async () => {
         };
         newPieChartData.labels = response.data.labels
         newPieChartData.datasets[0].data = response.data.data
-        pieChartData.value = newPieChartData
+        pieChartDataD.value = newPieChartData
+        
+}
+const loadPieChartDataC = async () => {
+    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactionscategories?range=${lastXDaysPie.value}&type=C`)
+    const newPieChartData = {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],//categories
+        datasets: [
+            {
+                backgroundColor: [
+                    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', 
+                    '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#00D8FF', '#800000', '#aaffc3', 
+                    '#808000', '#ffd8b1', '#000075', '#808080', '#E46651', '#41B883'
+                            ],
+            data: [] //ammounts
+            }
+        ]
+        };
+        newPieChartData.labels = response.data.labels
+        newPieChartData.datasets[0].data = response.data.data
+        pieChartDataC.value = newPieChartData
         
 }
 const pieChartOptions = {
@@ -152,7 +182,8 @@ const pieChartOptions = {
 onMounted(() => {
     loadChartData()
     loadChartDataT()
-    loadPieChartData()
+    loadPieChartDataD()
+    loadPieChartDataC()
 })
 
 </script>
@@ -220,6 +251,7 @@ onMounted(() => {
     </div>
     <Line :data="chartDataT" :options="chartOptionsT" />
     <br>
+    
     <div class="mx-2">
         <button class="btn btn-xs btn-outline-dark" @click="periodClickT('30')">30</button>
         <button class="btn btn-xs btn-outline-dark" @click="periodClickT('60')">60</button>
@@ -228,9 +260,40 @@ onMounted(() => {
       </div>
       <!-- <hr> -->
       <br>
-
-      <!-- <doughnut-chart :data="pieChartData" :options="pieChartOptions"></doughnut-chart> -->
-      <Doughnut :data="pieChartData" :options="pieChartOptions" />
+      <hr>
+      <br>
+      <div class="d-flex justify-content-between">
+        <div class="mx-2">
+            <p></p>
+          <h4>Ammount sent/received by Category</h4>
+        </div>
+        <div class="mx-2">
+        <p>Time frame: last {{ lastXDaysPie }} 
+            {{ lastXDaysPie === 'year' ? '' : (lastXDaysPie === 'all' ? ' time' : ' days') }}</p>
+        </div>
+    </div>
+      <!-- <div class="row">
+        <div class="col-md-6"> -->
+          <br>
+          <br>
+          <Doughnut :data="pieChartDataD" :options="pieChartOptions" />
+        <!-- </div>
+        <div class="col-md-6"> -->
+          <br>
+          <br>
+          <Doughnut :data="pieChartDataC" :options="pieChartOptions" />
+        <!-- </div>
+      </div> -->
+      <div class="mx-2">
+          <button class="btn btn-xs btn-outline-secondary" @click="periodClickPie('30')">30</button>
+          <button class="btn btn-xs btn-outline-secondary" @click="periodClickPie('60')">60</button>
+          <button class="btn btn-xs btn-outline-secondary" @click="periodClickPie('year')">Year</button>
+          <button class="btn btn-xs btn-outline-secondary" @click="periodClickPie('all')">All</button>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
 </template>
 
 
@@ -245,5 +308,9 @@ p {
     font-size: 17px;
     padding-left: 30px;
     font-weight: 600;
+}
+.chart-container {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

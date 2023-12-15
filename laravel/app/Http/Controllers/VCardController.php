@@ -364,12 +364,14 @@ class VCardController extends Controller
         $this->authorize('getVCardTransactionsCategoriesStatistics', $vcard);
     
         $filterByRange = $request->query('range');
+        $type = $request->query('type');
     
         // get just balances and datetimes
         $ranges = ['30', '60', 'year', 'all'];
     
         $queryable = $vcard->transactions()->with('category')
             ->select('category_id', DB::raw('SUM(value) as total_value'))
+            ->where('type', '=', $type)
             ->groupBy('category_id')
             ->orderBy('category_id', 'asc');
     
@@ -392,6 +394,7 @@ class VCardController extends Controller
         $chartData->data = [];
     
         foreach ($queryable->get() as $result) {
+        //    if($transaction->type === 'D'){
             $chartData->labels[] = $result->category->name ?? 'No Category';
             $chartData->data[] = $result->total_value;
         }
