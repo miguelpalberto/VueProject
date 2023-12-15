@@ -32,7 +32,7 @@ Route::middleware('auth:api')->group(
     function () {
         // CATEGORIES
         Route::get('vcards/{vcard}/categories', [CategoryController::class, 'getVCardCategories']);
-        Route::apiResource('categories', CategoryController::class)->except(['show', 'index']); //G4.1, G2.1
+        Route::apiResource('categories', CategoryController::class)->except(['show', 'index']);
 
         // DEFAULT CATEGORIES
         Route::apiResource('defaultCategories', DefaultCategoryController::class)->except(['show']);
@@ -41,18 +41,22 @@ Route::middleware('auth:api')->group(
         Route::get('authUsers/me', [AuthUserController::class, 'me']);
         Route::put('authUsers/me', [AuthUserController::class, 'update']);
         Route::patch('authUsers/changePassword', [AuthUserController::class, 'changePassword']);
-        
+
         // TRANSACTIONS
         Route::get('vcards/{vcard}/transactions', [TransactionController::class, 'getVCardTransactions']);
+        Route::get('transactions/statistics', [TransactionController::class, 'getAllTransactionsStatistics']);
         Route::get('transactions/{transaction}', [TransactionController::class, 'show']);
         Route::put('transactions/{transaction}', [TransactionController::class, 'update']);
         Route::post('transactions', [TransactionController::class, 'store']);
-        
+
         // USERS
-        Route::apiResource('users', UserController::class); //G4.2, G4.4, ...
-        
+        Route::apiResource('users', UserController::class);
+
         // VCARD
         Route::get('vcards/{vcard}/statistics/balance', [VCardController::class, 'getVCardBalanceStatistics']);
+        Route::get('vcards/{vcard}/statistics/transactions', [VCardController::class, 'getVCardTransactionsStatistics']);
+        Route::get('vcards/statistics/globalbalance', [VCardController::class, 'getGlobalBalanceStatistics']);
+        Route::get('vcards/statistics/activevcards', [VCardController::class, 'getActiveVcardsStatistics']);
         Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
         Route::patch('vcards/{vcard}/changeMaxDebit', [VCardController::class, 'changeMaxDebit']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);

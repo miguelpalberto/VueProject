@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use stdClass;
 use App\Models\VCard;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Policies\TransactionPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\TransactionRequest;
@@ -61,7 +63,7 @@ class TransactionController extends Controller
                 ->orWhere('description', 'like', "%{$searchFilter}%");
             });
         }
-        
+
         $paginatedResult = $queryable->paginate(10);
 
         return TransactionResource::collection($paginatedResult);
@@ -116,7 +118,7 @@ class TransactionController extends Controller
                 ]
             ], 422);
         }
-    
+
         if (isset($validRequest['category_id'])) {
             $category = $vcard->categories->where('id', $validRequest['category_id'])->first();
 
@@ -153,7 +155,7 @@ class TransactionController extends Controller
         
         $transaction = DB::transaction(function () use ($validRequest, $vcard, $isDebitTransaction) {
             $utcDatetimeNow = new DateTime('now', new \DateTimeZone('UTC'));
-            
+
             $transaction = new Transaction();
             $transaction->vcard = $vcard->phone_number;
             $transaction->date = $utcDatetimeNow->format('Y-m-d');
@@ -272,7 +274,7 @@ class TransactionController extends Controller
 
     public function update(UpdateTransactionRequest $request, Transaction $transaction){
         $validRequest = $request->validated();
-        
+
         if (isset($validRequest['category_id'])) {
             $category = $transaction->vCard->categories->where('id', $validRequest['category_id'])->first();
 
@@ -303,5 +305,76 @@ class TransactionController extends Controller
         $transaction->save();
 
         return new TransactionResource($transaction);
+    }
+
+
+    public function getAllTransactionsStatistics(Request $request)
+    {
+        if (!Gate::allows('transaction-statistics')) {
+            abort(403);
+        }
+
+        $filterByRange = $request->query('range');
+        $filterByPaymentType = $request->query('payment_type');
+        $filterByType = $request->query('type');
+
+        //get just balances and datetimes
+        $ranges = ['30', '60', 'year', 'all'];
+
+        $queryable = Transaction::orderBy('date', 'asc');
+
+        if ($filterByRange) {
+            if (in_array($filterByRange, $ranges)) {
+                if ($filterByRange == '30') {
+                    $queryable->where('date', '>=', now()->subDays(30));
+                } else if ($filterByRange == '60') {
+                    $queryable->where('date', '>=', now()->subDays(60));
+                } else if ($filterByRange == 'year') {
+                    $queryable->where('date', '>=', now()->subYear());
+                }
+            }
+        } else {
+            $queryable->where('date', '>=', now()->subDays(30));
+        }
+
+
+        if ($filterByPaymentType) {
+
+            if ($filterByPaymentType == 'VCARD') {
+                $queryable->where('payment_type', '=', 'VCARD');
+            } else if ($filterByPaymentType == 'MBWAY') {
+                $queryable->where('payment_type', '=', 'MBWAY');
+            } else if ($filterByPaymentType == 'PAYPAL') {
+                $queryable->where('payment_type', '=', 'PAYPAL');
+            } else if ($filterByPaymentType == 'IBAN') {
+                $queryable->where('payment_type', '=', 'IBAN');
+            } else if ($filterByPaymentType == 'MB') {
+                $queryable->where('payment_type', '=', 'MB');
+            } else if ($filterByPaymentType == 'VISA') {
+                $queryable->where('payment_type', '=', 'VISA');
+            }
+        }
+        if ($filterByType) {
+
+            if ($filterByType == 'D') {
+                $queryable->where('type', '=', 'D');
+            } else if ($filterByType == 'C') {
+                $queryable->where('type', '=', 'C');
+            }
+        }
+        $chartData = new stdClass();
+        $chartData->labels = [];
+        $chartData->data = [];
+
+        $queryable->selectRaw('DATE(datetime) as date, COUNT(*) as transaction_count')
+            ->groupByRaw('DATE(datetime)')
+            ->orderBy('date', 'asc');
+
+        foreach ($queryable->get() as $result) {
+            $chartData->labels[] = $result->date;
+            $chartData->data[] = $result->transaction_count;
+        }
+
+        return $chartData;
     }
 }
