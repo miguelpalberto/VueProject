@@ -80,10 +80,8 @@ export const useTransactionStore = defineStore('transaction', () => {
         }
     }
 
-    socket.on('newTransaction', (transaction) => {
-        toast.success('You received a new transaction!')
+    socket.on('newTransaction', () => {
         load(authStore.user.username)
-        authStore.user.balance = (Number(transaction.value) + Number(authStore.user.balance)).toFixed(2)
     })
 
     return {

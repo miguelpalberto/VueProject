@@ -113,6 +113,12 @@ export const useAuthStore = defineStore('auth', () => {
         }
     })
 
+    
+    socket.on('newTransaction', async () => {
+        toast.success('You received a new transaction!')
+        await loadUser()
+    })
+
     function clearUser() {
         user.value = null;
     }
