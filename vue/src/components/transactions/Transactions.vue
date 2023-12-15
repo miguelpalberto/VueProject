@@ -5,7 +5,6 @@ import { useAuthStore } from '../../stores/auth';
 import { useTransactionStore } from '../../stores/transaction';
 import { useCategoryStore } from '../../stores/category'
 import { useToast } from 'vue-toastification';
-import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 
 const authStore = useAuthStore()
 const transactionStore = useTransactionStore()
@@ -191,7 +190,7 @@ onMounted(async () => {
     </div>
   </div>
   <transaction-table :transactions="transactionStore.paginatedTransactions.data" :categories="categories" :isParentLoading="isLoading" :errors="errors" @update="updateTransaction" ></transaction-table>
-  <Bootstrap5Pagination :data="transactionStore.paginatedTransactions" @pagination-change-page="loadTransactions" />
+  <Bootstrap5Pagination :data="transactionStore.paginatedTransactions" @pagination-change-page="loadTransactions" :limit="1" :keepLength="true"/>
 </template>
   
 <style scoped>
