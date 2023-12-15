@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, inject } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import { useToast } from "vue-toastification";
 import { useAuthStore } from '../../stores/auth';
+
 
 const router = useRouter()
 const toast = useToast()
@@ -16,6 +17,7 @@ const formData = ref({
 const dismissConfirmationDialog = ref(null)
 const errors = ref({})
 const isLoading = ref(false)
+const socket = inject('socket')
 
 const isAbleToDismiss = computed(() => {
     if (!authStore.user) {
@@ -45,6 +47,7 @@ const dismissConfirmation = async (isConfirmed) => {
         isLoading.value = true
         try {
             await axios.delete(`/vcards/${authStore.user.username}`, { data: formData.value })
+            socket.emit('userDeleted', authStore.user, false)
             authStore.logout()
             toast.success('vCard dismissed successfully')
         }
