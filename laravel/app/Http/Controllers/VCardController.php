@@ -359,6 +359,45 @@ class VCardController extends Controller
 
         return $chartData;
     }
+    public function getVCardTransactionsCategoriesStatistics(VCard $vcard, Request $request)
+    {
+        $this->authorize('getVCardTransactionsCategoriesStatistics', $vcard);
+    
+        $filterByRange = $request->query('range');
+    
+        // get just balances and datetimes
+        $ranges = ['30', '60', 'year', 'all'];
+    
+        $queryable = $vcard->transactions()->with('category')
+            ->select('category_id', DB::raw('SUM(value) as total_value'))
+            ->groupBy('category_id')
+            ->orderBy('category_id', 'asc');
+    
+        if ($filterByRange) {
+            if (in_array($filterByRange, $ranges)) {
+                if ($filterByRange == '30') {
+                    $queryable->where('date', '>=', now()->subDays(30));
+                } else if ($filterByRange == '60') {
+                    $queryable->where('date', '>=', now()->subDays(60));
+                } else if ($filterByRange == 'year') {
+                    $queryable->where('date', '>=', now()->subYear());
+                }
+            }
+        } else {
+            $queryable->where('date', '>=', now()->subDays(30));
+        }
+    
+        $chartData = new stdClass();
+        $chartData->labels = [];
+        $chartData->data = [];
+    
+        foreach ($queryable->get() as $result) {
+            $chartData->labels[] = $result->category->name ?? 'No Category';
+            $chartData->data[] = $result->total_value;
+        }
+    
+        return $chartData;
+    }
 
 
     public function getActiveVcardsStatistics(Request $request)
@@ -372,14 +411,14 @@ class VCardController extends Controller
         return $activeVcardsCount;
     }
 
-public function getGlobalBalanceStatistics(Request $request)
-{
-    if (!Gate::allows('vcards-statistics')) {
-        abort(403);
+    public function getGlobalBalanceStatistics(Request $request)
+    {
+        if (!Gate::allows('vcards-statistics')) {
+            abort(403);
+        }
+
+        $totalGlobalBalance = VCard::sum('balance');
+
+        return $totalGlobalBalance;
     }
-
-    $totalGlobalBalance = VCard::sum('balance');
-
-    return $totalGlobalBalance;
-}
 }

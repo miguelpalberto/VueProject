@@ -1,11 +1,11 @@
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
-import { Line } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
+import { Line, Doughnut } from 'vue-chartjs'
+import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import { useAuthStore } from '../../../stores/auth';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
+ChartJS.register(Title, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement)
 
 const authStore = useAuthStore()
 
@@ -43,6 +43,9 @@ const chartData = ref({
     datasets: [],
 })
 const chartDataT = ref({
+    datasets: [],
+})
+const pieChartData = ref({
     datasets: [],
 })
 
@@ -104,6 +107,7 @@ const loadChartDataT = async () => {
     totalCreditAmountTransactions.value = 0
     totalDiferenceTransactions.value = 0
 
+
     for(let i = 0; i < transactions.value.length; i++) {
         if (transactions.value[i] < 0) {
             totalDebitTransactions.value += 1
@@ -119,11 +123,36 @@ const loadChartDataT = async () => {
     
 }
 
+const loadPieChartData = async () => {
+    const response = await axios.get(`vcards/${authStore.user.username}/statistics/transactionscategories?range=${lastXDaysT.value}`)
+    const newPieChartData = {
+        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],//categories
+        datasets: [
+            {
+                backgroundColor: [
+                    '#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', 
+                    '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#00D8FF', '#800000', '#aaffc3', 
+                    '#808000', '#ffd8b1', '#000075', '#808080', '#E46651', '#41B883'
+                            ],
+            data: [] //ammounts
+            }
+        ]
+        };
+        newPieChartData.labels = response.data.labels
+        newPieChartData.datasets[0].data = response.data.data
+        pieChartData.value = newPieChartData
+        
+}
+const pieChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+};
+
 
 onMounted(() => {
     loadChartData()
     loadChartDataT()
-    //calculateTransactions('60')
+    loadPieChartData()
 })
 
 </script>
@@ -200,7 +229,8 @@ onMounted(() => {
       <!-- <hr> -->
       <br>
 
-    
+      <!-- <doughnut-chart :data="pieChartData" :options="pieChartOptions"></doughnut-chart> -->
+      <Doughnut :data="pieChartData" :options="pieChartOptions" />
 </template>
 
 
