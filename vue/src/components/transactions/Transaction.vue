@@ -85,6 +85,10 @@ const save = async () => {
     }
 
     try {
+        if (transaction.value.payment_type == 'VCARD') {
+            transaction.value.pair_vcard = transaction.value.payment_reference
+        }
+
         await transactionStore.create(transaction.value)
         .then(() => {
             toast.success('Transaction created')
