@@ -1,5 +1,4 @@
 <script setup>
-import axios from 'axios'
 import { ref, computed, onMounted, inject, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
@@ -29,8 +28,6 @@ const newTransaction = () => {
         confirmation_code: undefined,
     }
 }
-
-const axiosExternal = inject('axiosExternal')
 
 const socket = inject('socket')
 const transactionStore = useTransactionStore()
@@ -65,14 +62,10 @@ const paymentTypes = computed(() => {
     if (!authStore.isAdmin) {
         return allPaymentTypes
     }
-    
+
     return allPaymentTypes.filter((paymentType) => {
         return paymentType != 'VCARD'
     })
-})
-
-const vcard = computed(() => {
-    return props.vcard ? props.vcard : authStore.user.username
 })
 
 const categories = computed(() => {
@@ -81,19 +74,8 @@ const categories = computed(() => {
     })
 })
 
-const isExternalPaymentType = computed(() => {
-    return transaction.value.payment_type != 'VCARD'
-})
 
-const externalApiRequest = computed(() => {
-    return {
-        type: transaction.value.payment_type,
-        reference: transaction.value.payment_reference,
-        value: transaction.value.value,
-    }
-})
-
-const save = () => {
+const save = async () => {
     isLoading.value = true
     delete errors.value
 
@@ -102,43 +84,8 @@ const save = () => {
         return
     }
 
-    if (isExternalPaymentType.value) {
-        const externalEndpoint = authStore.isAdmin ? 'credit' : 'debit'
-        axiosExternal.post(externalEndpoint, externalApiRequest.value)
-            .then(() => {
-                insertTransaction(transaction.value)
-            })
-            .catch((error) => {
-                if (error.response.status === 422) {
-                    generateExternalErrors(error.response.data.message)
-                }
-                isLoading.value = false
-                toast.error('Error creating transaction')
-            })
-    }
-    else {
-        transaction.value.pair_vcard = transaction.value.payment_reference
-        insertTransaction(transaction.value)
-    }
-}
-
-const generateExternalErrors = (message) => {
-    const capitalizedMessage = message.charAt(0).toUpperCase() + message.slice(1)
-    if (message.includes('type')) {
-        errors.value.payment_type = [capitalizedMessage]
-    }
-
-    if (message.includes('reference')) {
-        errors.value.payment_reference = [capitalizedMessage]
-    }
-
-    if (message.includes('value') || message.includes('limit exceeded')) {
-        errors.value.value = [capitalizedMessage]
-    }
-}
-
-const insertTransaction = (transaction) => {
-    axios.post('transactions', transaction)
+    try {
+        await transactionStore.create(transaction.value)
         .then(() => {
             toast.success('Transaction created')
             socket.emit('newTransaction', transaction)
@@ -146,16 +93,17 @@ const insertTransaction = (transaction) => {
                 authStore.loadUser()
             router.back()
         })
-        .catch((error) => {
-            if (error.response.status === 422) {
-                errors.value = error.response.data.errors
-            }
+    }
+    catch (error) {
+        if (error.response.status === 422) {
+            errors.value = error.response.data.errors
+        }
 
-            toast.error('Error creating transaction')
-        })
-        .finally(() => {
-            isLoading.value = false
-        })
+        toast.error('Error creating transaction')
+    }
+    finally{
+        isLoading.value = false
+    }
 }
 
 const validateInsert = () => {
@@ -184,20 +132,16 @@ const validateInsert = () => {
     return isValid
 }
 
-
-
 const cancel = () => {
     router.back()
 }
 
 onMounted(async () => {
     transaction.value = newTransaction()
-    if (!authStore.isAdmin){
+    if (!authStore.isAdmin) {
         allCategories.value = await categoryStore.getCategories(authStore.user.username)
     }
 })
-
-
 </script>
 <template>
     <transaction-detail :is-admin="authStore.isAdmin" :is-parent-loading="isLoading" :transaction="transaction"

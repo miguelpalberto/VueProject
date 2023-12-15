@@ -30,7 +30,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['save', 'cancel'])
-
 const editingTransaction = ref(props.transaction)
 
 watch(
@@ -71,10 +70,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   removeMask('#inputValue')
 })
-
-
 </script>
-
 <template>
   <h3 class="mb-2">{{ transactionTitle }}</h3>
   <hr>
