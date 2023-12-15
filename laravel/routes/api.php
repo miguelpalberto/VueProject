@@ -55,7 +55,8 @@ Route::middleware('auth:api')->group(
         // VCARD
         Route::get('vcards/{vcard}/statistics/balance', [VCardController::class, 'getVCardBalanceStatistics']);
         Route::get('vcards/{vcard}/statistics/transactions', [VCardController::class, 'getVCardTransactionsStatistics']);
-        Route::get('vcards/statistics', [VCardController::class, 'getGlobalBalanceStatistics']);
+        Route::get('vcards/statistics/globalbalance', [VCardController::class, 'getGlobalBalanceStatistics']);
+        Route::get('vcards/statistics/activevcards', [VCardController::class, 'getActiveVcardsStatistics']);
         Route::post('vcards/{vcard}/photo', [VCardController::class, 'uploadPhoto']);
         Route::patch('vcards/{vcard}/changeMaxDebit', [VCardController::class, 'changeMaxDebit']);
         Route::patch('vcards/{vcard}/block', [VCardController::class, 'block']);

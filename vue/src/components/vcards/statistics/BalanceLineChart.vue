@@ -170,8 +170,7 @@ onMounted(() => {
               <!-- Original block -->
               <div class="mx-2 mt-2">
                 <div>
-                  <p>Total Transactions: {{ totalTransactions }}
-                  </p>
+                  <p>Total Transactions: {{ totalTransactions }}</p>
                   <p>Total Debit Transactions: {{ totalDebitTransactions }}</p>
                   <p>Total Credit Transactions: {{ totalCreditTransactions }}</p>
                 </div>

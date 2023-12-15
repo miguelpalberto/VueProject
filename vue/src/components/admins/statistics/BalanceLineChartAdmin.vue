@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
 import { useAuthStore } from '../../../stores/auth';
@@ -30,28 +30,18 @@ const createChartOptions = () => {
 
 }
 
-const chartOptions = ref(createChartOptions())
 const chartOptionsT = ref(createChartOptions())
-const lastXDays = ref('60')
 const lastXDaysT = ref('60') 
 const paymentType = ref(null)  //available options: 30days, 60days, year, all //Ref para ser reativa
 const type = ref(null) 
 const numberOfTransactions = ref([])
-const totalTransactions= ref(0)
-const totalDebitTransactions= ref(0)
-const totalCreditTransactions= ref(0)
-const totalDiferenceTransactions= ref(0)
-const totalDebitAmountTransactions= ref(0)
-const totalCreditAmountTransactions= ref(0)
 const totalNumberOfTransactions= ref(0)
 const transactionStore = useTransactionStore()
-const chartData = ref({
-    datasets: [],
-})
 const chartDataT = ref({
     datasets: [],
 })
-
+const activeVcards = ref(0)
+const globalBalance = ref(0)
 
 watch(paymentType, (newValue, oldValue) => {
   //console.log(`Payment Type changed from ${oldValue} to ${newValue}`);
@@ -65,40 +55,13 @@ watch(type, () => {
     loadChartDataT()
 });
 
- const periodClick = (period) => {
-     setChartData(period)
- }
 const setPeriodT = (period) => {
     //console.log(period)
     lastXDaysT.value = period
 }
 
+    //const response = await axios.get(`vcards/statistics/globalbalance`)
 
- const setChartData = async (period) => {
-     lastXDays.value = period 
-     await loadChartData()
- }
-// const setChartDataT = async (period, type) => {
-//     lastXDaysT.value = period 
-//     paymentType.value = type
-//     await loadChartDataT()
-// }
-const loadChartData = async () => {
-    const response = await axios.get(`vcards/statistics?range=${lastXDays.value}`)
-    const newChartData = {
-        labels: [],
-        datasets: [
-            {
-                label: `Balance`,//`Last ${ lastXDays.value } days balance updates`,
-                backgroundColor: '#11540b',
-                data: [],
-            },
-        ],
-    }
-    newChartData.labels = response.data.labels
-    newChartData.datasets[0].data = response.data.data
-    chartData.value = newChartData
-}
 const loadChartDataT = async () => {
     numberOfTransactions.value = []
     //console.log(lastXDaysT.value + ' ' + paymentType.value)
@@ -141,11 +104,23 @@ const loadChartDataT = async () => {
         totalNumberOfTransactions.value += parseFloat(numberOfTransactions.value[i])
     }
 }
+const getActiveVcards = async () => {
+    const response = await axios.get(`vcards/statistics/activevcards`)
+    activeVcards.value = response.data
+}
+const getGlobalBalance = async () => {
+    const response = await axios.get(`vcards/statistics/globalbalance`)
+    globalBalance.value = response.data
+}
 
+const averageBalance = computed(() => {
+    return activeVcards.value !== 0 ? (globalBalance.value / activeVcards.value).toFixed(2) : 0;
+});
 
 onMounted(() => {
-    loadChartData()
     loadChartDataT()
+    getActiveVcards()
+    getGlobalBalance()
 })
 
 </script>
@@ -155,31 +130,22 @@ onMounted(() => {
     <br>
     <div class="d-flex justify-content-between">
         <div class="mx-2">
-          <h4>VCards Global Balance Fluctuation</h4>
-        </div>
-
-        <div class="mx-2">
-        <p>Time frame: last {{ lastXDays }} 
-            {{ lastXDays === 'year' ? '' : (lastXDays === 'all' ? ' time' : ' days') }}</p>
+          <h4>VCards</h4>
         </div>
       </div>
       <div class="mx-2 mt-2">
         <div class="d-flex flex-column flex-md-row">
           <!-- Original block -->
           <div class="mx-2 mt-2">
-              <p>Active VCards:</p>
+              <p>Active VCards: {{ activeVcards }}</p>
+              <p>VCards Global Balance: {{ globalBalance }}€</p>
+              <p>VCard Average Balance: {{ averageBalance }}€</p>
             </div>
         </div>
     <br>
 </div>
-    <Line :data="chartData" :options="chartOptions" />
-    <br>
-    <div class="mx-2">
-        <button class="btn btn-xs btn-outline-dark" @click="periodClick('30')">30</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClick('60')">60</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClick('year')">Year</button>
-        <button class="btn btn-xs btn-outline-dark" @click="periodClick('all')">All</button>
-      </div>
+
+
       <!-- <hr> -->
       <hr>
       <br>

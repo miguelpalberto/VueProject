@@ -361,46 +361,25 @@ class VCardController extends Controller
     }
 
 
-    public function getGlobalBalanceStatistics(Request $request)
+    public function getActiveVcardsStatistics(Request $request)
     {
         if (!Gate::allows('vcards-statistics')) {
             abort(403);
         }
 
-        $filterByRange = $request->query('range');
-
-        //get just balances and datetimes
-        $ranges = ['30', '60', 'year', 'all'];
-
-        $queryable = VCard::orderBy('date', 'asc');
-
-        if ($filterByRange) {
-            if (in_array($filterByRange, $ranges)) {
-                if ($filterByRange == '30') {
-                    $queryable->where('date', '>=', now()->subDays(30));
-                } else if ($filterByRange == '60') {
-                    $queryable->where('date', '>=', now()->subDays(60));
-                } else if ($filterByRange == 'year') {
-                    $queryable->where('date', '>=', now()->subYear());
-                }
-            }
-        } else {
-            $queryable->where('date', '>=', now()->subDays(30));
-        }
-
-        $chartData = new stdClass();
-        $chartData->labels = [];
-        $chartData->data = [];
-
-        $queryable->selectRaw('DATE(datetime) as date, SUM(balance) as balance_sum')
-            ->groupByRaw('DATE(datetime)')
-            ->orderBy('date', 'asc');
-
-        foreach ($queryable->get() as $result) {
-            $chartData->labels[] = $result->date;
-            $chartData->data[] = $result->balance_sum;
-        }
-
-        return $chartData;
+        $activeVcardsCount = VCard::whereNull('deleted_at')->count();
+    
+        return $activeVcardsCount;
     }
+
+public function getGlobalBalanceStatistics(Request $request)
+{
+    if (!Gate::allows('vcards-statistics')) {
+        abort(403);
+    }
+
+    $totalGlobalBalance = VCard::sum('balance');
+
+    return $totalGlobalBalance;
+}
 }
