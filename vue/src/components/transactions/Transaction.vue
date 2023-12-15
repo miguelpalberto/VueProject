@@ -92,7 +92,7 @@ const save = async () => {
         await transactionStore.create(transaction.value)
         .then(() => {
             toast.success('Transaction created')
-            socket.emit('newTransaction', transaction)
+            socket.emit('newTransaction', transaction.value)
             if (!authStore.isAdmin)
                 authStore.loadUser()
             router.back()
