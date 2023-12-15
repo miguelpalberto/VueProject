@@ -76,6 +76,13 @@ export const useAuthStore = defineStore('auth', () => {
         await axios.put("authUsers/me", data)
         user.value.name = data.name
         user.value.email = data.email
+
+        if (isAdmin.value) {
+            user.value.username = data.email
+        }
+
+        const eventName = isAdmin.value ? 'adminProfileUpdated' : 'vcardProfileUpdated'
+        socket.emit(eventName, user.value)
     }
 
     const logout = async () => {

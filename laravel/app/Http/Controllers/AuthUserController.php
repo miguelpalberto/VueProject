@@ -18,7 +18,8 @@ class AuthUserController extends Controller
         return new AuthUserResource($request->user());
     }
 
-    public function changePassword(ChangePasswordRequest $request){
+    public function changePassword(ChangePasswordRequest $request)
+    {
         $validRequest = $request->validated();
         $user = $request->user();
 
@@ -48,7 +49,7 @@ class AuthUserController extends Controller
             'message' => 'Successfully changed password'
         ], 200);
     }
-    
+
     public function update(AuthUserUpdateRequest $request)
     {
         $validRequest = $request->validated();
@@ -56,6 +57,15 @@ class AuthUserController extends Controller
         $actualUser = null;
 
         if ($user->user_type == 'A') {
+            if (User::where('email', $validRequest['email'])->whereNot('id', $user ->id)->exists()) {
+                return response()->json([
+                    'errors' => [
+                        'email' => [
+                            'The email has already been taken.'
+                        ]
+                    ]
+                ], 422);
+            }
             $actualUser = User::find($user->id);
         } else {
             $actualUser = VCard::find($user->username);

@@ -47,6 +47,15 @@ export const useAdminStore = defineStore('admin', () => {
         }
     })
 
+    socket.on('adminProfileUpdated', (user) => {
+        const idx = paginatedAdmins.value.data.findIndex((t) => t.id === user.id)
+        if (idx >= 0) {
+            toast.info('Admin ' + user.username + ' profile has been changed.')
+            paginatedAdmins.value.data[idx].name = user.name
+            paginatedAdmins.value.data[idx].email = user.email
+        }
+    })
+
     const computeQueryPage = () => {
         if (paginatedAdmins.value.current_page == 1) {
             return 1;
