@@ -41,11 +41,13 @@ io.on('connection', (socket) => {
         socket.to("administrators").emit('vCardUnblocked', vCard)
     })
 
-    socket.on('userDeleted', (user) => {
+    socket.on('userDeleted', (user, isAdminRequest = true) => {
         console.log(`user #${user.username} has been deleted`)
-        io.to(user.username).emit('requestUserLogout', {
-            message: "Your account has been deleted. Please contact an administrator for more information."
-        })
+        if (isAdminRequest) {
+            io.to(user.username).emit('requestUserLogout', {
+                message: "Your account has been deleted. Please contact an administrator for more information."
+            })
+        }
         socket.to("administrators").emit('userDeleted', user)
     })
 
@@ -53,6 +55,16 @@ io.on('connection', (socket) => {
         console.log(`vcard #${vCard.phone_number} max debit has been changed`)
         io.to(vCard.phone_number).emit('maxDebitChanged', vCard)
         socket.to("administrators").emit('vcardMaxDebitChanged', vCard)
+    })
+
+    socket.on('vcardProfileUpdated', (vCard) => {
+        console.log(`vcard profile #${vCard.username} has been updated`)
+        socket.to("administrators").emit('vcardProfileUpdated', vCard)
+    })
+
+    socket.on('adminProfileUpdated', (user) => {
+        console.log(`admin profile #${user.username} has been updated`)
+        socket.to("administrators").emit('adminProfileUpdated', user)
     })
 
     socket.on('newTransaction', (transaction) => {
